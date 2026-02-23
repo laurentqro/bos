@@ -68,10 +68,18 @@
                   class: "mt-1 form-control" %>
             </div>
             <div>
-              <%= label_tag :total_employees, "Total Employees", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+              <%= label_tag :total_employees, "Total Employees (headcount)", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
               <%= number_field_tag "settings[total_employees]", get_setting_value("total_employees"),
                   id: "total_employees", name: "settings[total_employees]",
                   class: "mt-1 form-control", min: 0 %>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Including non-salaried partners and owners</p>
+            </div>
+            <div>
+              <%= label_tag :total_employees_fte, "Total Employees (FTE)", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+              <%= number_field_tag "settings[total_employees_fte]", get_setting_value("total_employees_fte"),
+                  id: "total_employees_fte", name: "settings[total_employees_fte]",
+                  class: "mt-1 form-control", min: 0 %>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Full-time equivalent, including non-salaried partners and owners</p>
             </div>
             <div>
               <%= label_tag :compliance_officers, "Compliance Officers", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>

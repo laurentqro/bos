@@ -76,8 +76,8 @@ class Survey
         LEGAL_FORMS[code] || LEGAL_FORMS["INCONNU"]
       end
 
-      # Q189: Total employees (headcount) at end of reporting period
-      # Reuses "total_employees" setting (same as ac1102/ac1102a)
+      # Q189: Total employees (headcount) + non-salaried partners/owners
+      # Same question as ac1102a — both read from total_employees
       def a3301
         setting_value("total_employees")&.to_i
       end
@@ -248,14 +248,15 @@ class Survey
 
       # === SAR (Suspicious Activity Reports) ===
 
-      # C1: Total number of employees (including non-salaried partners/owners)
+      # C1: Total employees (headcount) + non-salaried partners/owners
+      # Same question as a3301
       def ac1102a
         setting_value("total_employees")&.to_i
       end
 
-      # Total FTE employees plus non-salaried partners/owners
+      # C2: Total FTE employees + non-salaried partners/owners
       def ac1102
-        setting_value("total_employees")&.to_i
+        setting_value("total_employees_fte")&.to_i
       end
 
       def ac1101z
