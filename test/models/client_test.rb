@@ -578,6 +578,36 @@ class ClientTest < ActiveSupport::TestCase
     assert Client.include?(AmsfConstants)
   end
 
+  # === Business Sector ===
+
+  test "business_sector must be valid when present" do
+    client = Client.new(
+      organization: @organization,
+      name: "John Doe",
+      client_type: "NATURAL_PERSON",
+      business_sector: "FREELANCE_WRITING"
+    )
+    assert_not client.valid?
+    assert_includes client.errors[:business_sector], "is not included in the list"
+  end
+
+  test "business_sector can be blank" do
+    client = Client.new(
+      organization: @organization,
+      name: "John Doe",
+      client_type: "NATURAL_PERSON",
+      business_sector: nil
+    )
+    assert client.valid?
+  end
+
+  test "business_sector_label returns a label for every valid sector" do
+    AmsfConstants::BUSINESS_SECTORS.each do |sector|
+      client = Client.new(business_sector: sector)
+      assert_not_nil client.business_sector_label, "Missing label for #{sector}"
+    end
+  end
+
   # === Due Diligence Fields (AMSF Data Capture) ===
 
   test "due_diligence_level must be valid when present" do

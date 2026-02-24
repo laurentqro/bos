@@ -198,22 +198,14 @@ module AmsfConstants
 
   # AMSF High-Risk Business Sectors (Q81-Q109)
   # Used to classify Monegasque clients by sector for the annual survey.
-  BUSINESS_SECTORS = %w[
-    LEGAL_SERVICES ACCOUNTING NOMINEE_SHAREHOLDER BEARER_INSTRUMENTS
-    REAL_ESTATE NMPPP TCSP MULTI_FAMILY_OFFICE SINGLE_FAMILY_OFFICE
-    COMPLEX_STRUCTURES CASH_INTENSIVE PREPAID_CARDS ART_ANTIQUITIES
-    IMPORT_EXPORT HIGH_VALUE_GOODS NPO GAMBLING CONSTRUCTION EXTRACTIVE
-    DEFENSE_WEAPONS YACHTING SPORTS_AGENTS FUND_MANAGEMENT HOLDING_COMPANY
-    AUCTIONEERS CAR_DEALERS GOVERNMENT AIRCRAFT_JETS TRANSPORT
-  ].freeze
-
+  # BUSINESS_SECTORS is derived from labels to keep a single source of truth.
   BUSINESS_SECTOR_LABELS = {
     "LEGAL_SERVICES" => "Lawyers / Legal professionals",
     "ACCOUNTING" => "Auditors / Accountants",
     "NOMINEE_SHAREHOLDER" => "Nominee shareholders / directors",
     "BEARER_INSTRUMENTS" => "Bearer shares / instruments",
     "REAL_ESTATE" => "Real estate agents",
-    "NMPPP" => "NMPPP",
+    "NMPPP" => "Dealers in precious metals & stones (NMPPP)",
     "TCSP" => "Trust & company service providers",
     "MULTI_FAMILY_OFFICE" => "Multi-Family Office",
     "SINGLE_FAMILY_OFFICE" => "Single-Family Office",
@@ -238,6 +230,8 @@ module AmsfConstants
     "AIRCRAFT_JETS" => "Aircraft sales / Private jet charter",
     "TRANSPORT" => "Transport"
   }.freeze
+
+  BUSINESS_SECTORS = BUSINESS_SECTOR_LABELS.keys.freeze
 
   # Year-over-year comparison threshold (FR-019)
   # Changes greater than this percentage require additional review

@@ -326,7 +326,6 @@ calc_legal_5:
   residence_country: "MC"
   is_pep: false
   risk_level: "LOW"
-  business_sector: "LEGAL_SERVICES"
   became_client_at: <%= 6.months.ago %>
 
 # T012: PEP clients (calc_pep_1 and calc_pep_2)
@@ -586,7 +585,7 @@ foundation_client:
   residence_country: "MC"
   is_pep: false
   risk_level: "LOW"
-  business_sector: "ART_ANTIQUITIES"
+  business_sector: "NPO"
   became_client_at: <%= 2.months.ago %>
 
 # Legal entity with OTHER type + free-text (for a11006 free-text testing)
