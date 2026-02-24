@@ -608,6 +608,10 @@ class ClientTest < ActiveSupport::TestCase
     end
   end
 
+  test "business_sector_label returns nil when sector is blank" do
+    assert_nil Client.new(business_sector: nil).business_sector_label
+  end
+
   # === Due Diligence Fields (AMSF Data Capture) ===
 
   test "due_diligence_level must be valid when present" do

@@ -156,7 +156,6 @@ vasp_client:
   is_vasp: true
   vasp_type: "EXCHANGE"
   risk_level: "HIGH"
-  business_sector: "CASH_INTENSIVE"
   became_client_at: <%= 2.months.ago %>
 
 # =============================================================================
@@ -418,7 +417,6 @@ introduced_from_france_last_year:
   residence_country: "MC"
   is_pep: false
   risk_level: "LOW"
-  business_sector: "TCSP"
   became_client_at: <%= Date.new(Date.current.year - 1, 2, 1) %>
   introduced_by_third_party: true
   introducer_country: "FR"
@@ -501,7 +499,6 @@ vasp_exchange_fr:
   is_vasp: true
   vasp_type: "EXCHANGE"
   risk_level: "HIGH"
-  business_sector: "CASH_INTENSIVE"
   became_client_at: <%= 3.months.ago %>
 
 # VASP Custodian client incorporated in Luxembourg
@@ -517,7 +514,6 @@ vasp_custodian_lu:
   is_vasp: true
   vasp_type: "CUSTODIAN"
   risk_level: "HIGH"
-  business_sector: "CASH_INTENSIVE"
   became_client_at: <%= 2.months.ago %>
 
 # VASP ICO client incorporated in Switzerland
@@ -533,7 +529,6 @@ vasp_ico_ch:
   is_vasp: true
   vasp_type: "ICO"
   risk_level: "HIGH"
-  business_sector: "CASH_INTENSIVE"
   became_client_at: <%= 1.month.ago %>
 
 # VASP DeFi client incorporated in Monaco (maps to AMSF "other" bucket)
@@ -549,7 +544,6 @@ vasp_other_mc:
   is_vasp: true
   vasp_type: "DEFI"
   risk_level: "HIGH"
-  business_sector: "CASH_INTENSIVE"
   became_client_at: <%= 1.month.ago %>
 
 # VASP Other client with free-text description, incorporated in Germany
@@ -567,7 +561,6 @@ vasp_other_freetext_de:
   vasp_other_service_type: "Crypto ATM operator"
   legal_entity_type_other: "GmbH"
   risk_level: "HIGH"
-  business_sector: "CASH_INTENSIVE"
   became_client_at: <%= 1.month.ago %>
 
 # =============================================================================
