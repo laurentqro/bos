@@ -256,7 +256,8 @@
       <%= form.label :business_sector, "Business sector" %>
       <%= form.select :business_sector,
           options_for_select(AmsfConstants::BUSINESS_SECTOR_LABELS.map { |k, v| [v, k] }, client.business_sector),
-          { include_blank: "Select business sector..." } %>
+          { include_blank: "Select business sector..." },
+          { class: "form-control" } %>
       <p class="form-hint">AMSF high-risk business sector classification (if applicable).</p>
     </div>
 

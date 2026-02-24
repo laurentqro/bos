@@ -3,6 +3,16 @@
 # Data-only migration: maps free-text business_sector values to AMSF constants.
 # No schema change — the column stays string.
 class NormalizeBusinessSectorValues < ActiveRecord::Migration[8.1]
+  # Inlined to avoid coupling migration to application code.
+  VALID_SECTORS = %w[
+    LEGAL_SERVICES ACCOUNTING NOMINEE_SHAREHOLDER BEARER_INSTRUMENTS
+    REAL_ESTATE NMPPP TCSP MULTI_FAMILY_OFFICE SINGLE_FAMILY_OFFICE
+    COMPLEX_STRUCTURES CASH_INTENSIVE PREPAID_CARDS ART_ANTIQUITIES
+    IMPORT_EXPORT HIGH_VALUE_GOODS NPO GAMBLING CONSTRUCTION EXTRACTIVE
+    DEFENSE_WEAPONS YACHTING SPORTS_AGENTS FUND_MANAGEMENT HOLDING_COMPANY
+    AUCTIONEERS CAR_DEALERS GOVERNMENT AIRCRAFT_JETS TRANSPORT
+  ].freeze
+
   # Mapping from known free-text values (from seeds/manual entry) to AMSF constants.
   MAPPING = {
     "Real Estate Investment" => "REAL_ESTATE",
@@ -17,7 +27,10 @@ class NormalizeBusinessSectorValues < ActiveRecord::Migration[8.1]
     "Luxury Goods" => "HIGH_VALUE_GOODS"
   }.freeze
 
-  # Reverse mapping for rollback (best-effort — some info is lost)
+  # Reverse mapping for rollback (best-effort — some info is lost).
+  # NOTE: "Private Banking" is permanently lost on rollback because both
+  # "Private Banking" and "Asset Management" mapped to FUND_MANAGEMENT;
+  # only "Asset Management" is restored.
   REVERSE_MAPPING = {
     "REAL_ESTATE" => "Real Estate Investment",
     "FUND_MANAGEMENT" => "Asset Management",
@@ -36,7 +49,7 @@ class NormalizeBusinessSectorValues < ActiveRecord::Migration[8.1]
     end
 
     # Null out any remaining values that aren't valid AMSF constants
-    valid_sectors = AmsfConstants::BUSINESS_SECTORS.map { |s| quote(s) }.join(", ")
+    valid_sectors = VALID_SECTORS.map { |s| quote(s) }.join(", ")
     execute <<~SQL.squish
       UPDATE clients SET business_sector = NULL
       WHERE business_sector IS NOT NULL
