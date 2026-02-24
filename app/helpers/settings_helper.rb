@@ -16,9 +16,16 @@ module SettingsHelper
   end
 
   # Returns ISO 3166 country options for select_tag (alpha-2 codes).
-  # Sorted alphabetically by country name.
+  # Monaco and France are listed first (most common for Monaco real estate),
+  # then remaining countries sorted alphabetically by name.
   def country_options
-    ISO3166::Country.all.map { |c| [c.iso_short_name, c.alpha2] }.sort
+    priority, rest = ISO3166::Country.all
+      .map { |c| ["#{c.iso_short_name} (#{c.alpha2})", c.alpha2] }
+      .partition { |_, code| %w[MC FR].include?(code) }
+    priority.sort_by! { |_, code| code == "MC" ? 0 : 1 }
+    rest.sort_by! { |name, _| name.unicode_normalize(:nfkd).gsub(/\p{Mn}/, "") }
+    separator = [["───────────", "", {disabled: true}]]
+    priority + separator + rest
   end
 
   # Returns XBRL-compliant country options for select_tag.

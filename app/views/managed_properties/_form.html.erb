@@ -102,15 +102,7 @@
         <div class="form-group">
           <%= form.label :tenant_country, "Tenant country" %>
           <%= form.select :tenant_country,
-              options_for_select([
-                ["Monaco", "MC"],
-                ["France", "FR"],
-                ["Italy", "IT"],
-                ["Switzerland", "CH"],
-                ["United Kingdom", "GB"],
-                ["United States", "US"],
-                ["Other", ""]
-              ], managed_property.tenant_country),
+              options_for_select(country_options, managed_property.tenant_country),
               { include_blank: "Select country..." } %>
         </div>
       </div>
