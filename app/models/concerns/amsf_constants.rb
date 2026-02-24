@@ -196,6 +196,43 @@ module AmsfConstants
   # Third-Party CDD Types (local vs foreign providers)
   THIRD_PARTY_CDD_TYPES = %w[LOCAL FOREIGN].freeze
 
+  # AMSF High-Risk Business Sectors (Q81-Q109)
+  # Used to classify Monegasque clients by sector for the annual survey.
+  # BUSINESS_SECTORS is derived from labels to keep a single source of truth.
+  BUSINESS_SECTOR_LABELS = {
+    "LEGAL_SERVICES" => "Lawyers / Legal professionals",
+    "ACCOUNTING" => "Auditors / Accountants",
+    "NOMINEE_SHAREHOLDER" => "Nominee shareholders / directors",
+    "BEARER_INSTRUMENTS" => "Bearer shares / instruments",
+    "REAL_ESTATE" => "Real estate agents",
+    "NMPPP" => "Dealers in precious metals & stones (NMPPP)",
+    "TCSP" => "Trust & company service providers",
+    "MULTI_FAMILY_OFFICE" => "Multi-Family Office",
+    "SINGLE_FAMILY_OFFICE" => "Single-Family Office",
+    "COMPLEX_STRUCTURES" => "Complex ownership structures",
+    "CASH_INTENSIVE" => "Cash-intensive businesses",
+    "PREPAID_CARDS" => "Prepaid / anonymous cards",
+    "ART_ANTIQUITIES" => "Art & antiquities",
+    "IMPORT_EXPORT" => "Import / Export",
+    "HIGH_VALUE_GOODS" => "High-value goods dealers",
+    "NPO" => "Non-profit organisations (OBNL)",
+    "GAMBLING" => "Casino / Gambling",
+    "CONSTRUCTION" => "Construction / Property development",
+    "EXTRACTIVE" => "Extractive industries",
+    "DEFENSE_WEAPONS" => "Defence / Weapons",
+    "YACHTING" => "Yachting / Pleasure navigation",
+    "SPORTS_AGENTS" => "Sports agents / intermediaries",
+    "FUND_MANAGEMENT" => "Fund management",
+    "HOLDING_COMPANY" => "Holding companies",
+    "AUCTIONEERS" => "Auctioneers",
+    "CAR_DEALERS" => "Motor vehicle dealers",
+    "GOVERNMENT" => "Government / Public sector",
+    "AIRCRAFT_JETS" => "Aircraft sales / Private jet charter",
+    "TRANSPORT" => "Transport"
+  }.freeze
+
+  BUSINESS_SECTORS = BUSINESS_SECTOR_LABELS.keys.freeze
+
   # Year-over-year comparison threshold (FR-019)
   # Changes greater than this percentage require additional review
   SIGNIFICANCE_THRESHOLD = 25.0
