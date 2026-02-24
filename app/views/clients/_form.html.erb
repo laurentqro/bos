@@ -75,32 +75,14 @@
       <div class="form-group">
         <%= form.label :nationality %>
         <%= form.select :nationality,
-            options_for_select([
-              ["Monaco", "MC"],
-              ["France", "FR"],
-              ["Italy", "IT"],
-              ["Switzerland", "CH"],
-              ["United Kingdom", "GB"],
-              ["United States", "US"],
-              ["Russia", "RU"],
-              ["Other", ""]
-            ], client.nationality),
+            options_for_select(country_options, client.nationality),
             { include_blank: "Select country..." } %>
       </div>
 
       <div class="form-group">
         <%= form.label :residence_country, "Residence country" %>
         <%= form.select :residence_country,
-            options_for_select([
-              ["Monaco", "MC"],
-              ["France", "FR"],
-              ["Italy", "IT"],
-              ["Switzerland", "CH"],
-              ["United Kingdom", "GB"],
-              ["United States", "US"],
-              ["Russia", "RU"],
-              ["Other", ""]
-            ], client.residence_country),
+            options_for_select(country_options, client.residence_country),
             { include_blank: "Select country..." } %>
       </div>
     </div>
