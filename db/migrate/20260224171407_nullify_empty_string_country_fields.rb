@@ -7,6 +7,7 @@ class NullifyEmptyStringCountryFields < ActiveRecord::Migration[8.1]
       UPDATE beneficial_owners SET residence_country = NULL WHERE residence_country = '';
       UPDATE transactions SET property_country = NULL WHERE property_country = '';
       UPDATE managed_properties SET tenant_country = NULL WHERE tenant_country = '';
+      UPDATE organizations SET country = NULL WHERE country = '';
     SQL
   end
 

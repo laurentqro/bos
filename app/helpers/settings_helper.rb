@@ -19,9 +19,11 @@ module SettingsHelper
   # Monaco and France are listed first (most common for Monaco real estate),
   # then remaining countries sorted alphabetically by name.
   def country_options
-    all = ISO3166::Country.all.map { |c| ["#{c.iso_short_name} (#{c.alpha2})", c.alpha2] }
-    priority = all.select { |_, code| %w[MC FR].include?(code) }.sort_by { |_, code| code == "MC" ? 0 : 1 }
-    rest = all.reject { |_, code| %w[MC FR].include?(code) }.sort
+    priority, rest = ISO3166::Country.all
+      .map { |c| ["#{c.iso_short_name} (#{c.alpha2})", c.alpha2] }
+      .partition { |_, code| %w[MC FR].include?(code) }
+    priority.sort_by! { |_, code| code == "MC" ? 0 : 1 }
+    rest.sort_by! { |name, _| name.unicode_normalize(:nfkd).gsub(/\p{Mn}/, "") }
     separator = [["───────────", "", {disabled: true}]]
     priority + separator + rest
   end

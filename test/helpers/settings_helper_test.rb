@@ -3,7 +3,7 @@ require "test_helper"
 class SettingsHelperTest < ActionView::TestCase
   test "country_options returns all ISO 3166 countries" do
     options = country_options
-    codes = options.map { |o| o.is_a?(Array) ? (o[1].is_a?(Hash) ? nil : o[1]) : o }.compact
+    codes = options.map { |o| o[1] }.reject(&:blank?)
 
     assert codes.include?("MC"), "Should include Monaco"
     assert codes.include?("FR"), "Should include France"
@@ -26,12 +26,24 @@ class SettingsHelperTest < ActionView::TestCase
     assert_equal true, separator[2][:disabled], "Separator should be disabled"
   end
 
-  test "country_options sorts remaining countries alphabetically" do
+  test "country_options sorts remaining countries alphabetically with unicode awareness" do
     options = country_options
     rest = options[3..] # skip MC, FR, separator
-    names = rest.map(&:first)
 
-    assert_equal names, names.sort, "Countries after separator should be alphabetically sorted"
+    # Åland Islands (AX) should sort near the top with other "A" countries,
+    # not after "Z" as it would with naive byte-order sorting
+    aland_index = rest.index { |_, code| code == "AX" }
+    zimbabwe_index = rest.index { |_, code| code == "ZW" }
+
+    assert aland_index < zimbabwe_index, "Åland Islands should sort before Zimbabwe"
+  end
+
+  test "country_options includes non-ASCII country names" do
+    options = country_options
+    aland = options.find { |_, code| code == "AX" }
+
+    assert_not_nil aland, "Should include Åland Islands (AX)"
+    assert_match(/Åland/, aland.first, "Label should contain Åland")
   end
 
   test "country_options formats labels as 'Name (CODE)'" do
