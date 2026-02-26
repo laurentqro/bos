@@ -134,6 +134,19 @@ class Survey
         bos.group(:nationality).count
       end
 
+      # Q13 — a1202OB: Total number of BOs representing a legal person,
+      # broken down by primary nationality
+      # Type: xbrli:integerItemType — dimensional by country (hash of counts)
+      def a1202ob
+        bos = BeneficialOwner
+          .joins(:client)
+          .where(clients: {organization_id: organization.id})
+          .where(control_type: "REPRESENTATIVE")
+          .where.not(nationality: nil)
+
+        bos.group(:nationality).count
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)

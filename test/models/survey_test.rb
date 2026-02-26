@@ -456,4 +456,41 @@ class SurveyTest < ActiveSupport::TestCase
     total = result.values.sum
     assert_equal 11, total
   end
+
+  # Q13 — a1202OB: Total number of BOs representing a legal person,
+  # broken down by primary nationality (dimensional, integer counts)
+  test "a1202ob returns count of representative BOs grouped by nationality" do
+    result = @survey.a1202ob
+
+    assert_instance_of Hash, result
+
+    # Only pep_owner has control_type: REPRESENTATIVE (nationality: MC)
+    assert_equal({"MC" => 1}, result)
+  end
+
+  test "a1202ob excludes BOs with DIRECT or INDIRECT control type" do
+    result = @survey.a1202ob
+
+    # owner_one (FR, DIRECT), cascade_owner_two (FR, INDIRECT) should NOT appear
+    assert_nil result["FR"]
+  end
+
+  test "a1202ob excludes BOs with nil nationality" do
+    result = @survey.a1202ob
+
+    # minimal_owner has no nationality and no control_type — should be excluded
+    assert_equal 1, result.values.sum
+  end
+
+  test "a1202ob returns empty hash when no representative BOs exist" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_equal({}, survey.a1202ob)
+  end
+
+  test "a1202ob excludes BOs from other organizations" do
+    result = @survey.a1202ob
+
+    # other_org_owner (FR, org:two) should not appear
+    assert_equal 1, result.values.sum
+  end
 end
