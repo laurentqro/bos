@@ -779,6 +779,22 @@ class SurveyTest < ActiveSupport::TestCase
     assert_nil result&.dig(nil)
   end
 
+  # Q19 — a11201BCD: Does entity identify and record client type: HNWIs?
+  # Type: enum "Oui" / "Non" (settings-based)
+  test "a11201bcd returns the setting value when set" do
+    Setting.create!(
+      organization: @organization,
+      key: "identifies_records_hnwi_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+    assert_equal "Oui", @survey.a11201bcd
+  end
+
+  test "a11201bcd returns nil when setting is not set" do
+    assert_nil @survey.a11201bcd
+  end
+
   test "a1210o excludes BOs from other organizations" do
     Setting.create!(
       organization: @organization,

@@ -210,6 +210,12 @@ class Survey
           .count
       end
 
+      # Q19 — a11201BCD: Does entity identify and record client type: HNWIs?
+      # Type: enum "Oui" / "Non" (settings-based)
+      def a11201bcd
+        setting_value_for("identifies_records_hnwi_clients")
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)
