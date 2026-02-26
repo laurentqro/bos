@@ -594,3 +594,35 @@ other_legal_freetext:
   risk_level: "LOW"
   business_sector: "TCSP"
   became_client_at: <%= 1.month.ago %>
+
+# =============================================================================
+# Simplified Due Diligence Test Fixtures
+# These fixtures test ac1612 (simplified DD count) and ac1612a (simplified DD gate)
+# =============================================================================
+
+# Client with simplified due diligence in organization :one
+simplified_dd_client_1:
+  organization: one
+  name: "Low Risk Monegasque Client"
+  client_type: "NATURAL_PERSON"
+  nationality: "MC"
+  residence_country: "MC"
+  is_pep: false
+  risk_level: "LOW"
+  due_diligence_level: "SIMPLIFIED"
+  simplified_dd_reason: "Listed company on regulated market"
+  became_client_at: <%= 3.months.ago %>
+
+# Second client with simplified due diligence in organization :one
+simplified_dd_client_2:
+  organization: one
+  name: "Government Entity Client"
+  client_type: "LEGAL_ENTITY"
+  legal_entity_type: "SA"
+  nationality: "MC"
+  residence_country: "MC"
+  is_pep: false
+  risk_level: "LOW"
+  due_diligence_level: "SIMPLIFIED"
+  simplified_dd_reason: "Public authority or body"
+  became_client_at: <%= 2.months.ago %>

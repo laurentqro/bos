@@ -635,6 +635,38 @@ class SurveyTest < ActiveSupport::TestCase
     assert_includes result, "Crypto ATM operator"
   end
 
+  # === Signatories DB-Computable Field Tests ===
+
+  test "ac1801 returns count of risk levels from system constants" do
+    result = @survey.send(:ac1801)
+
+    assert_equal AmsfConstants::RISK_LEVELS.size, result
+    assert_equal 3, result
+  end
+
+  test "ac1612 returns count of simplified DD clients from database" do
+    result = @survey.send(:ac1612)
+
+    expected = @organization.clients.kept.where(due_diligence_level: "SIMPLIFIED").count
+    assert expected > 0, "Expected at least one SIMPLIFIED DD client in fixtures"
+    assert_equal expected, result
+  end
+
+  test "ac1612a returns Oui when simplified DD clients exist" do
+    result = @survey.send(:ac1612a)
+
+    assert_equal "Oui", result
+  end
+
+  test "ac1612a returns Non when no simplified DD clients exist" do
+    org = organizations(:two)
+    survey = Survey.new(organization: org, year: 2025)
+
+    result = survey.send(:ac1612a)
+
+    assert_equal "Non", result
+  end
+
   # === Other Legal Constructions (a11006) Field Tests ===
 
   # Use compliance_test_org which has:

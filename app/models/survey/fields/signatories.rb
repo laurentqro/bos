@@ -61,10 +61,12 @@ class Survey
         setting_value("legal_services")
       end
 
-      # === Financial Information ===
+      # === Risk Classification ===
 
+      # C81: How many AML/CFT risk levels does the entity have?
+      # Derived from system constant (LOW/MEDIUM/HIGH)
       def ac1801
-        setting_value("annual_revenue")&.to_i || 0
+        AmsfConstants::RISK_LEVELS.size
       end
 
       # C51: Total unique clients (repeat of a1101 — uses clients_kept scope)
@@ -85,14 +87,16 @@ class Survey
         setting_value("annual_transaction_volume") || "Non"
       end
 
-      # === Market Information ===
+      # === Simplified Due Diligence ===
 
+      # C52a: Applied simplified DD in period?
       def ac1612a
-        setting_value("residential_vs_commercial") || "Non"
+        clients_kept.where(due_diligence_level: "SIMPLIFIED").exists? ? "Oui" : "Non"
       end
 
+      # C52: Total clients under simplified due diligence
       def ac1612
-        setting_value("market_segments")&.to_i || 0
+        clients_kept.where(due_diligence_level: "SIMPLIFIED").count
       end
 
       # === Office Information ===
