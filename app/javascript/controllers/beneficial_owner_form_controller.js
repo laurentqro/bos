@@ -14,5 +14,10 @@ export default class extends Controller {
     const isPep = this.isPepTarget.checked
 
     this.pepTypeTarget.classList.toggle("hidden", !isPep)
+
+    if (!isPep) {
+      const select = this.pepTypeTarget.querySelector("select")
+      if (select) select.value = ""
+    }
   }
 }

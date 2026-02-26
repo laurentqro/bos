@@ -477,12 +477,18 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     assert Client.last.is_pep_associated
   end
 
-  test "new form has rejection_reason select" do
+  test "creates client with rejection_reason" do
     sign_in @user
 
-    get new_client_path
-    assert_response :success
-    assert_select "select[name='client[rejection_reason]']"
+    post clients_path, params: {
+      client: {
+        name: "Rejected Prospect",
+        client_type: "NATURAL_PERSON",
+        rejection_reason: "AML_CFT"
+      }
+    }
+
+    assert_equal "AML_CFT", Client.last.rejection_reason
   end
 
   # === Policy Authorization ===

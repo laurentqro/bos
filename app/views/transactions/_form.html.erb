@@ -47,7 +47,7 @@
             } %>
       </div>
 
-      <div class="form-group" data-transaction-form-target="purchasePurpose" <%= 'hidden' unless transaction.purchase? %>>
+      <div class="form-group <%= 'hidden' unless transaction.purchase? %>" data-transaction-form-target="purchasePurpose">
         <%= form.label :purchase_purpose, "Purchase Purpose" %>
         <%= form.select :purchase_purpose,
             options_for_select([
@@ -140,22 +140,19 @@
     </div>
 
     <%# Rental-specific fields %>
-    <div data-transaction-form-target="rentalFields" <%= 'hidden' unless transaction.rental? %>>
+    <div data-transaction-form-target="rentalFields" class="<%= 'hidden' unless transaction.rental? %>">
       <div class="border-t pt-6" style="border-color: var(--base-border-tertiary);">
         <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Rental Details</h4>
 
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
           <div class="form-group">
-            <%= form.label :rental_duration_years, "Rental Duration" %>
-            <%= form.select :rental_duration_years,
-                options_for_select([
-                  ["1 year", 1],
-                  ["2 years", 2],
-                  ["3 years", 3],
-                  ["5 years", 5],
-                  ["10 years", 10]
-                ], transaction.rental_duration_years),
-                { include_blank: "Select duration..." } %>
+            <%= form.label :rental_duration_years, "Rental Duration (years)" %>
+            <%= form.number_field :rental_duration_years,
+                class: "form-control",
+                min: "1",
+                max: "99",
+                step: "1",
+                placeholder: "e.g., 3" %>
           </div>
 
           <div class="form-group">
@@ -201,7 +198,7 @@
               } %>
         </div>
 
-        <div class="form-group" data-transaction-form-target="cashAmount" <%= 'hidden' unless transaction.has_cash? %>>
+        <div class="form-group <%= 'hidden' unless transaction.has_cash? %>" data-transaction-form-target="cashAmount">
           <%= form.label :cash_amount, "Cash Amount (€)" %>
           <%= form.number_field :cash_amount,
               class: "form-control",
