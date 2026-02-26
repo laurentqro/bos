@@ -42,7 +42,7 @@
 - [x] Task 24: Q24 — a1103 — total unique natural person clients who are foreign residents (purchase/sale + rentals >= 10k/month) (2026-02-27)
 - [x] Task 25: Q25 — a1104 — total unique natural person clients who are non-residents (purchase/sale + rentals >= 10k/month) (2026-02-27)
 - [x] Task 26: Q26 — a1401 — total unique natural person clients by primary nationality for purchase/sale (dimensional) (2026-02-27)
-- [ ] Task 27: Q27 — Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des personnes physiques pour l'achat 
+- [x] Task 27: Q27 — a1403B — total transactions by natural person clients for purchase/sale (2026-02-27)
 - [ ] Task 28: Q28 — Veuillez indiquer la valeur totale des fonds transférés par des clients qui sont des personnes physiques, pour l'achat e
 - [ ] Task 29: Q29 — Veuillez indiquer le nombre total de clients uniques qui sont des personnes physiques (individus) pour la location de bi
 - [ ] Task 30: Q30 — Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des personnes physiques pour la locat

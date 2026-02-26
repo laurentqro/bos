@@ -1349,6 +1349,50 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 1, result["FR"]
   end
 
+  # Q27 — a1403B: Total transactions by natural person clients for purchase/sale
+  test "a1403b counts purchase and sale transactions where client is natural person" do
+    # Org :one has these current-year purchase/sale transactions with NP clients:
+    # purchase (natural_person, PURCHASE), sale (natural_person, SALE),
+    # cash_payment (natural_person, PURCHASE), pep_transaction (pep_client, PURCHASE)
+    # Excluded: high_value (LEGAL_ENTITY), crypto_payment (LEGAL_ENTITY),
+    # check_payment (LEGAL_ENTITY), rental (RENTAL type), discarded (soft-deleted),
+    # last_year (wrong year)
+    assert_equal 4, @survey.a1403b
+  end
+
+  test "a1403b excludes legal entity client transactions" do
+    # high_value, crypto_payment, check_payment are all legal entity clients
+    # They should not be counted
+    le_count = @organization.transactions.kept.for_year(@year)
+      .where(transaction_type: %w[PURCHASE SALE])
+      .joins(:client)
+      .where(clients: {client_type: "LEGAL_ENTITY"})
+      .count
+    assert le_count > 0, "Precondition: org should have legal entity transactions"
+    # a1403b should only count NP transactions
+    assert_equal 4, @survey.a1403b
+  end
+
+  test "a1403b excludes rental transactions" do
+    # rental fixture is type RENTAL — should not be counted even if client were NP
+    assert_equal 4, @survey.a1403b
+  end
+
+  test "a1403b excludes soft-deleted transactions" do
+    # discarded_transaction is soft-deleted — should not be counted
+    assert_equal 4, @survey.a1403b
+  end
+
+  test "a1403b excludes transactions from other organizations" do
+    # other_org_transaction belongs to org :two
+    assert_equal 4, @survey.a1403b
+  end
+
+  test "a1403b returns 0 when no qualifying transactions exist" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_equal 0, survey.a1403b
+  end
+
   test "a1210o excludes BOs from other organizations" do
     Setting.create!(
       organization: @organization,

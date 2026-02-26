@@ -316,6 +316,16 @@ class Survey
           .count("clients.id")
       end
 
+      # Q27 — a1403B: Total transactions by natural person clients for purchase/sale
+      # Type: xbrli:integerItemType — scalar integer (no country dimension)
+      def a1403b
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE])
+          .joins(:client)
+          .where(clients: {client_type: "NATURAL_PERSON"})
+          .count
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)
