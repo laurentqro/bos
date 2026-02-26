@@ -48,3 +48,6 @@ yarn-debug.log*
 
 # Ignore .claude
 /.claude/*
+
+# Ralph (ephemeral progress tracking)
+/progress.txt
