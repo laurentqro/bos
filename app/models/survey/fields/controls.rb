@@ -301,7 +301,7 @@ class Survey
 
       # Filed STR reports with FIU in period?
       def ac11501b
-        setting_value("filed_str_reports_in_period")
+        organization.str_reports.kept.for_year(year).exists? ? "Oui" : "Non"
       end
 
       # Terrorism financing STR count
@@ -451,10 +451,7 @@ class Survey
         setting_value("policies_cover_targeted_financial_sanctions")
       end
 
-      # Checks national asset freeze list?
-      def ac1125a
-        setting_value("checks_national_asset_freeze_list")
-      end
+      # Checks national asset freeze list? → CRM capability (moved to Survey::CrmCapabilities)
 
       # === PEP Screening ===
 
@@ -468,10 +465,7 @@ class Survey
         setting_value("pep_additional_procedures")
       end
 
-      # Continuous PEP screening?
-      def ac11305
-        setting_value("continuous_pep_screening")
-      end
+      # Continuous PEP screening? → CRM capability (moved to Survey::CrmCapabilities)
 
       # All PEP relationships considered high risk?
       def ac11307

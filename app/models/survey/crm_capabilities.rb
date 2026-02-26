@@ -219,8 +219,20 @@ class Survey
       "Oui"
     end
 
+    # ac11305: Le filtrage des PPE est-il effectué de manière continue ?
+    def ac11305
+      "Oui"
+    end
+
     # ac11306: Les PPE font-elles l'objet d'une surveillance accrue ?
     def ac11306
+      "Oui"
+    end
+
+    # === Sanctions screening ===
+
+    # ac1125a: Votre entité vérifie-t-elle la liste nationale de gel des avoirs ?
+    def ac1125a
       "Oui"
     end
 

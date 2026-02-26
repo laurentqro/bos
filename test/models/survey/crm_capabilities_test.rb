@@ -181,9 +181,21 @@ class Survey::CrmCapabilitiesTest < ActiveSupport::TestCase
     assert_equal "Oui", @survey.send(:ac11304)
   end
 
+  # ac11305: Continuous PEP screening
+  test "ac11305 returns Oui" do
+    assert_equal "Oui", @survey.send(:ac11305)
+  end
+
   # ac11306: Enhanced surveillance for PEPs
   test "ac11306 returns Oui" do
     assert_equal "Oui", @survey.send(:ac11306)
+  end
+
+  # === Sanctions screening ===
+
+  # ac1125a: Checks national asset freeze list
+  test "ac1125a returns Oui" do
+    assert_equal "Oui", @survey.send(:ac1125a)
   end
 
   # === Documented procedures ===

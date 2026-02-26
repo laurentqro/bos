@@ -118,13 +118,23 @@ class Survey::Fields::ControlsSettingKeysTest < ActiveSupport::TestCase
 
   # === STR Reports ===
 
-  test "ac11501b reads from filed_str_reports_in_period setting" do
-    @org.settings.create!(key: "filed_str_reports_in_period", value: "Oui", category: "compliance_policies")
+  test "ac11501b returns Oui when STR reports exist for the year" do
+    @org.str_reports.create!(report_date: Date.new(2025, 6, 15), reason: "CASH")
     assert_equal "Oui", @survey.send(:ac11501b)
   end
 
-  test "ac11501b returns nil when setting is not set" do
-    assert_nil @survey.send(:ac11501b)
+  test "ac11501b returns Non when no STR reports exist for the year" do
+    assert_equal "Non", @survey.send(:ac11501b)
+  end
+
+  test "ac11501b ignores STR reports from other years" do
+    @org.str_reports.create!(report_date: Date.new(2024, 6, 15), reason: "CASH")
+    assert_equal "Non", @survey.send(:ac11501b)
+  end
+
+  test "ac11501b ignores discarded STR reports" do
+    @org.str_reports.create!(report_date: Date.new(2025, 6, 15), reason: "CASH", deleted_at: Time.current)
+    assert_equal "Non", @survey.send(:ac11501b)
   end
 
   test "ac11502 reads from str_terrorism_financing_count setting" do
@@ -398,14 +408,7 @@ class Survey::Fields::ControlsSettingKeysTest < ActiveSupport::TestCase
     assert_equal "Management approval", @survey.send(:ac11303)
   end
 
-  test "ac11305 reads from continuous_pep_screening setting" do
-    @org.settings.create!(key: "continuous_pep_screening", value: "Oui", category: "kyc_procedures")
-    assert_equal "Oui", @survey.send(:ac11305)
-  end
-
-  test "ac11305 returns nil when setting is not set" do
-    assert_nil @survey.send(:ac11305)
-  end
+  # ac11305 moved to CrmCapabilities (continuous PEP screening is a CRM capability)
 
   test "ac11307 reads from all_pep_relationships_high_risk setting" do
     @org.settings.create!(key: "all_pep_relationships_high_risk", value: "Oui", category: "kyc_procedures")
@@ -418,14 +421,7 @@ class Survey::Fields::ControlsSettingKeysTest < ActiveSupport::TestCase
 
   # === Sanctions ===
 
-  test "ac1125a reads from checks_national_asset_freeze_list setting" do
-    @org.settings.create!(key: "checks_national_asset_freeze_list", value: "Oui", category: "kyc_procedures")
-    assert_equal "Oui", @survey.send(:ac1125a)
-  end
-
-  test "ac1125a returns nil when setting is not set" do
-    assert_nil @survey.send(:ac1125a)
-  end
+  # ac1125a moved to CrmCapabilities (asset freeze list checking is a CRM capability)
 
   test "ac11201 reads from policies_cover_targeted_financial_sanctions setting" do
     @org.settings.create!(key: "policies_cover_targeted_financial_sanctions", value: "Oui", category: "compliance_policies")
