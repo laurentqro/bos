@@ -222,6 +222,12 @@ class Survey
         setting_value_for("identifies_records_uhnwi_clients")
       end
 
+      # Q21 — a1801: Does entity identify/record trusts and other legal constructions?
+      # Type: enum "Oui" / "Non" (settings-based)
+      def a1801
+        setting_value_for("identifies_records_trusts_legal_constructions")
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)

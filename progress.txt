@@ -29,12 +29,12 @@
 - [x] Task 15: Q15 — a120425O — total BOs holding 25%+ by primary nationality (dimensional, conditional on a1204o) (2026-02-26)
 - [x] Task 16: Q16 — a1203D — does entity record BO residence for 25%+ holders (settings-based) (2026-02-27)
 - [x] Task 17: Q17 — a1207O — foreign-resident BOs (25%+) by primary nationality (dimensional, conditional on a1203d) (2026-02-27)
-- [ ] Task 18: Q18 — Veuillez indiquer le nombre total de bénéficiaires effectifs des non-résidents, par nationalité principale du bénéficiai
+- [x] Task 18: Q18 — a1210O — non-resident BOs (≥25%) by primary nationality (dimensional, conditional on a1203d) (2026-02-27)
 
 ### Section 1.4
-- [ ] Task 19: Q19 — Que vous ayez ou non de tels clients, votre entité identifie-t-elle et enregistre-t-elle le type de clients lorsqu'il s'
-- [ ] Task 20: Q20 — UHNWIs?
-- [ ] Task 21: Q21 — Trusts et d'autres constructions juridiques non mentionnées ci-dessus ?
+- [x] Task 19: Q19 — a11201BCD — identifies/records HNWI clients (settings-based) (2026-02-27)
+- [x] Task 20: Q20 — a11201BCDU — identifies/records UHNWI clients (settings-based) (2026-02-27)
+- [x] Task 21: Q21 — a1801 — identifies/records trusts and other legal constructions (settings-based) (2026-02-27)
 - [ ] Task 22: Q22 — PSAV (prestataires de services d'actifs virtuels) qui fournissent d'autres services ?
 
 ### Section 1.5
