@@ -341,4 +341,20 @@ class SurveyTest < ActiveSupport::TestCase
       "Precondition: there should be discarded transactions"
     assert_equal BigDecimal("14150000"), @survey.a1106w
   end
+
+  # Q10 — a1204S: Can your entity distinguish the nationality of the beneficial owner of clients?
+  # Type: enum "Oui" / "Non" (settings-based)
+  test "a1204s returns the setting value when set" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_bo_nationality",
+      category: "entity_info",
+      value: "Oui"
+    )
+    assert_equal "Oui", @survey.a1204s
+  end
+
+  test "a1204s returns nil when setting is not set" do
+    assert_nil @survey.a1204s
+  end
 end

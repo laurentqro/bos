@@ -13,6 +13,7 @@
 #   survey.valid?   # => true/false
 #
 class Survey
+  include Survey::Fields::Helpers
   include Survey::Fields::CustomerRisk
   include Survey::Fields::ProductsServicesRisk
   include Survey::Fields::DistributionRisk

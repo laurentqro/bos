@@ -114,6 +114,11 @@ class Survey
 
         purchase_sale_count + rental_count
       end
+      # Q10 — a1204S: Can your entity distinguish the nationality of the beneficial owner of clients?
+      # Type: enum "Oui" / "Non" (settings-based)
+      def a1204s
+        setting_value_for("can_distinguish_bo_nationality")
+      end
     end
   end
 end
