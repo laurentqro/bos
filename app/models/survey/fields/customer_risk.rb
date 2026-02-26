@@ -316,6 +316,19 @@ class Survey
           .count("clients.id")
       end
 
+      # Q29 — a1401R: Total unique natural person clients
+      # for rental of real estate (monthly rent >= 10,000 EUR)
+      # Type: xbrli:integerItemType (scalar — NoCountryDimension)
+      def a1401r
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: "RENTAL")
+          .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
+          .joins(:client)
+          .where(clients: {client_type: "NATURAL_PERSON"})
+          .distinct
+          .count("clients.id")
+      end
+
       # Q27 — a1403B: Total transactions by natural person clients for purchase/sale
       # Type: xbrli:integerItemType — scalar integer (no country dimension)
       def a1403b
