@@ -827,6 +827,22 @@ class SurveyTest < ActiveSupport::TestCase
     assert_nil @survey.a1801
   end
 
+  # Q22 — a13601: Does entity have PSAV clients that provide other services?
+  # Type: enum "Oui" / "Non" (settings-based)
+  test "a13601 returns the setting value when set" do
+    Setting.create!(
+      organization: @organization,
+      key: "has_psav_clients_other_services",
+      category: "entity_info",
+      value: "Oui"
+    )
+    assert_equal "Oui", @survey.a13601
+  end
+
+  test "a13601 returns nil when setting is not set" do
+    assert_nil @survey.a13601
+  end
+
   test "a1210o excludes BOs from other organizations" do
     Setting.create!(
       organization: @organization,
