@@ -509,4 +509,75 @@ class SurveyTest < ActiveSupport::TestCase
   test "a1204o returns nil when setting is not set" do
     assert_nil @survey.a1204o
   end
+
+  # Q15 — a120425O: Total number of BOs holding at least 25%,
+  # broken down by primary nationality (dimensional, integer counts)
+  # Conditional on a1204o == "Oui"
+  test "a120425o returns nil when a1204o is not Oui" do
+    assert_nil @survey.a120425o
+  end
+
+  test "a120425o returns count of BOs with 25%+ ownership grouped by nationality" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_bo_25pct_or_more",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    result = @survey.a120425o
+
+    assert_instance_of Hash, result
+    # owner_one (FR, 51%), at_hnwi_threshold (FR, 25%), cascade_owner_two (FR, 40%) = 3
+    assert_equal 3, result["FR"]
+    # owner_two (MC, 49%), cascade_owner_one (MC, 60%), trust_owner (MC, 100%),
+    # hnwi_owner (MC, 30%), low_net_worth_owner (MC, 25%) = 5
+    assert_equal 5, result["MC"]
+    # other_client_owner (IT, 100%), at_uhnwi_threshold (IT, 25%) = 2
+    assert_equal 2, result["IT"]
+  end
+
+  test "a120425o excludes BOs with less than 25% ownership" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_bo_25pct_or_more",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    result = @survey.a120425o
+
+    # uhnwi_owner has 20%, pep_owner has 0% — neither should be counted
+    # CH nationality only from uhnwi_owner (20%), so should not appear
+    assert_nil result["CH"]
+  end
+
+  test "a120425o excludes BOs with nil nationality" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_bo_25pct_or_more",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    result = @survey.a120425o
+
+    # minimal_owner has nil nationality — should be excluded
+    assert_nil result[nil]
+  end
+
+  test "a120425o excludes BOs from other organizations" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_bo_25pct_or_more",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    result = @survey.a120425o
+
+    # other_org_owner (FR, org:two, 100%) should not appear
+    # Total count should be 10 (only org:one BOs with >= 25%)
+    assert_equal 10, result.values.sum
+  end
 end

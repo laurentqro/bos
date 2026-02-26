@@ -153,6 +153,22 @@ class Survey
         setting_value_for("can_distinguish_bo_25pct_or_more")
       end
 
+      # Q15 — a120425O: Total number of BOs holding at least 25%,
+      # broken down by primary nationality
+      # Type: xbrli:integerItemType — dimensional by country (hash of counts)
+      # Conditional: only when a1204o == "Oui"
+      def a120425o
+        return nil unless a1204o == "Oui"
+
+        BeneficialOwner
+          .joins(:client)
+          .where(clients: { organization_id: organization.id })
+          .with_significant_control
+          .where.not(nationality: nil)
+          .group(:nationality)
+          .count
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)
