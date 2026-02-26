@@ -48,22 +48,26 @@ class Survey
         setting_value("applies_aml_risk_ratings")
       end
 
-      # === Compliance Function ===
+      # === Revenue ===
 
+      # Reporting period revenue
       def a381
-        setting_value("a381")&.to_d || 0
+        setting_value("reporting_period_revenue")&.to_d
       end
 
+      # Revenue in Monaco
       def a3802
-        setting_value("a3802")&.to_d || 0
+        setting_value("revenue_in_monaco")&.to_d
       end
 
+      # Revenue outside Monaco
       def a3803
-        setting_value("a3803")&.to_d || 0
+        setting_value("revenue_outside_monaco")&.to_d
       end
 
+      # Last annual VAT declaration amount
       def a3804
-        setting_value("a3804")&.to_d || 0
+        setting_value("last_vat_declaration_amount")&.to_d
       end
 
       # === Due Diligence Procedures ===
@@ -117,13 +121,14 @@ class Survey
         questionnaire.question(:a3305).resolve_code(code)
       end
 
-      # Q198: Has entity had significant changes (management, shareholders, statutes) during period?
+      # Q198: Has entity had significant changes during period?
       def a3307
-        setting_value("a3307") || "Non"
+        setting_value("had_significant_changes")
       end
 
+      # Significant changes details
       def a3308
-        setting_value("a3308")
+        setting_value("significant_changes_details")
       end
 
       # Q196: Shareholders with 25%+ ownership, grouped by nationality/country
@@ -181,38 +186,68 @@ class Survey
 
       # === Section 3 Comments ===
 
-      # Q214: Has comments on section 3?
+      # Q214: Has comments on inherent risk section?
       def a3701a
-        setting_value("a3701a").present? ? "Oui" : "Non"
+        setting_value("inherent_risk_section_comments").present? ? "Oui" : "Non"
       end
 
-      # Q215: Section 3 comment text
+      # Q215: Inherent risk section comment text
       def a3701
-        setting_value("a3701")
+        setting_value("inherent_risk_section_comments")
       end
 
       # === ID Verification and Records ===
 
+      # Records other individual info when operation performed by individual?
       def ac1629
-        setting_value("ac1629") || "Non"
+        setting_value("records_other_individual_info")
+      end
+
+      # Other client info details
+      def ac1630
+        setting_value("other_client_info_details")
+      end
+
+      # CDD elements not collected
+      def ac1602
+        setting_value("cdd_elements_not_collected")
       end
 
       # === High-Risk CDD Frequency ===
 
+      # High-risk sales/purchase client CDD frequency
       def ac1616b
         setting_value("high_risk_cdd_frequency")
       end
 
+      # High-risk rental client CDD frequency
       def ac1616a
-        setting_value("standard_cdd_frequency")
+        setting_value("high_risk_rental_cdd_frequency")
       end
 
+      # Has additional measures for high-risk clients?
       def ac1618
-        setting_value("ac1618") || "Oui"
+        setting_value("has_additional_high_risk_measures")
       end
 
+      # Additional high-risk measures details
       def ac1619
-        setting_value("ac1619")
+        setting_value("additional_high_risk_measures_details")
+      end
+
+      # Third-party CDD difficulties?
+      def ac1622a
+        setting_value("has_third_party_cdd_difficulties")
+      end
+
+      # Third-party CDD difficulties details
+      def ac1622b
+        setting_value("third_party_cdd_difficulties_details")
+      end
+
+      # Virtual asset BO verification method
+      def ac1621
+        setting_value("virtual_asset_bo_verification_method")
       end
 
       # === SAR (Suspicious Activity Reports) ===
@@ -228,194 +263,236 @@ class Survey
         setting_value("total_employees_fte")&.to_i
       end
 
+      # Monthly compliance hours
       def ac1101z
-        setting_value("ac1101z")
+        setting_value("monthly_compliance_hours")
       end
 
-      # === Sanctions Screening ===
+      # === Board and Compliance ===
 
+      # Has board of directors and/or senior management?
       def ac114
-        setting_value("ac114") || "Oui"
+        setting_value("has_board_or_senior_management")
       end
 
-      def ac11401
-        setting_value("ac11401") || "Oui"
-      end
-
-      def ac11402
-        setting_value("ac11402") || "Oui"
-      end
-
-      def ac11403
-        setting_value("ac11403")
-      end
-
-      # === Transaction Monitoring ===
-
-      def ac11501b
-        setting_value("ac11501b") || "Non"
-      end
-
-      def ac11502
-        setting_value("ac11502")&.to_i || 0
-      end
-
-      def ac11504
-        setting_value("ac11504")&.to_i || 0
-      end
-
-      def ac11508
-        setting_value("ac11508") || "Non"
-      end
-
-      # === SICCFIN Requests ===
-
+      # Has compliance department?
       def ac1106
-        setting_value("ac1106") || "Non"
+        setting_value("has_compliance_department")
       end
 
-      # === AML System and Software ===
+      # === Cash Operations ===
 
+      # Conducts cash operations with clients?
+      def ac11401
+        setting_value("conducts_cash_operations")
+      end
+
+      # Has specific AML controls for cash operations?
+      def ac11402
+        setting_value("has_cash_aml_controls")
+      end
+
+      # Cash controls description
+      def ac11403
+        setting_value("cash_controls_description")
+      end
+
+      # === STR Reports ===
+
+      # Filed STR reports with FIU in period?
+      def ac11501b
+        setting_value("filed_str_reports_in_period")
+      end
+
+      # Terrorism financing STR count
+      def ac11502
+        setting_value("str_terrorism_financing_count")&.to_i
+      end
+
+      # Money laundering STR count
+      def ac11504
+        setting_value("str_money_laundering_count")&.to_i
+      end
+
+      # Strengthened internal controls for STR reporting?
+      def ac11508
+        setting_value("strengthened_internal_controls")
+      end
+
+      # === AML Training ===
+
+      # Directors received AML training in period?
       def ac1501
-        setting_value("ac1501") || "Non"
+        setting_value("directors_received_aml_training")
       end
 
+      # Staff received AML training in period?
       def ac1503b
-        setting_value("ac1503b") || "Non"
+        setting_value("staff_received_aml_training")
       end
 
+      # Total employees trained on AML
       def ac1506
-        setting_value("ac1506")&.to_i || 0
+        setting_value("employees_trained_aml_count")&.to_i
       end
 
+      # Is entity part of a group?
       def ac1518a
-        setting_value("ac1518a") || "Non"
+        setting_value("is_part_of_group")
       end
 
-      # === AML Policy ===
+      # === AML Policies ===
 
+      # Policies approved by board?
       def ac1202
-        setting_value("ac1202") || "Oui"
+        setting_value("policies_approved_by_board")
       end
 
+      # Policies distributed to staff?
       def ac1203
-        setting_value("ac1203") || "Oui"
+        setting_value("policies_distributed_to_staff")
       end
 
+      # Policies known by staff?
       def ac1204
-        setting_value("ac1204") || "Oui"
+        setting_value("policies_known_by_staff")
       end
 
+      # Policies updated this year?
       def ac1205
-        setting_value("ac1205") || "Oui"
+        setting_value("policies_updated_this_year")
       end
 
+      # Policies last updated date
       def ac1206
-        setting_value("ac1206")
+        setting_value("policies_last_updated_date")
       end
 
+      # Systematic policy change tracking?
       def ac1207
-        setting_value("ac1207") || "Oui"
+        setting_value("systematic_policy_change_tracking")
       end
 
+      # Has group-wide AML program?
       def ac1209b
-        setting_value("ac1209b") || "Oui"
+        setting_value("has_group_aml_program")
       end
 
+      # Group program Monaco compliant?
       def ac1209c
-        setting_value("ac1209c") || "Non"
+        setting_value("group_program_monaco_compliant")
       end
 
+      # Compliance policies author
       def ac1208
         setting_value("compliance_policies_author")
       end
 
+      # Self-assessed AML procedures?
       def ac1209
-        setting_value("ac1209") || "Oui"
+        setting_value("self_assessed_aml_procedures")
       end
 
       # === Board and Management ===
 
+      # Board demonstrates AML responsibility?
       def ac1301
-        setting_value("ac1301") || "Oui"
+        setting_value("board_demonstrates_aml_responsibility")
       end
 
+      # Board receives regular AML reports?
       def ac1302
-        setting_value("ac1302") || "Oui"
+        setting_value("board_receives_aml_reports")
       end
 
+      # Board addresses AML gaps?
       def ac1303
-        setting_value("ac1303") || "Oui"
+        setting_value("board_addresses_aml_gaps")
       end
 
+      # Management approves high-risk clients?
       def ac1304
-        setting_value("ac1304") || "Oui"
+        setting_value("management_approves_high_risk_clients")
       end
 
-      # === Staff ===
+      # === AML Violations ===
 
+      # Had AML violations in last 5 years?
       def ac1401
-        setting_value("ac1401") || "Non"
+        setting_value("had_aml_violations_5_years")
       end
 
+      # AML violation count in last 5 years
       def ac1402
-        setting_value("ac1402")&.to_i || 0
+        setting_value("aml_violation_count_5_years")&.to_i
       end
 
+      # AML violation details
       def ac1403
-        setting_value("ac1403")
+        setting_value("aml_violation_details")
       end
 
-      # === Record Retention ===
+      # === Controls Section Comments ===
 
       # C104: Has comments on controls section?
       def ac116a
-        setting_value("ac116a").present? ? "Oui" : "Non"
+        setting_value("controls_section_comments").present? ? "Oui" : "Non"
       end
 
       # C105: Controls section comment text
       def ac11601
-        setting_value("ac11601")
+        setting_value("controls_section_comments")
       end
 
-      # === Audit ===
+      # === Sanctions and Financial Screening ===
 
+      # Policies cover targeted financial sanctions?
       def ac11201
-        setting_value("ac11201") || "Non"
+        setting_value("policies_cover_targeted_financial_sanctions")
       end
 
+      # Checks national asset freeze list?
       def ac1125a
-        setting_value("ac1125a") || "Non"
+        setting_value("checks_national_asset_freeze_list")
       end
 
+      # === PEP Screening ===
+
+      # PEP identification measures
       def ac11302
-        setting_value("ac11302")
+        setting_value("pep_identification_measures")
       end
 
+      # PEP additional procedures
       def ac11303
-        setting_value("ac11303")
+        setting_value("pep_additional_procedures")
       end
 
+      # Continuous PEP screening?
       def ac11305
-        setting_value("ac11305") || "Non"
+        setting_value("continuous_pep_screening")
       end
 
+      # All PEP relationships considered high risk?
       def ac11307
-        setting_value("ac11307") || "Non"
+        setting_value("all_pep_relationships_high_risk")
       end
 
-      # === Group Information Sharing ===
+      # === Terrorism/Proliferation Declarations ===
 
+      # DBT terrorism financing declaration count
       def ac12236
-        setting_value("ac12236")&.to_i || 0
+        setting_value("dbt_terrorism_financing_declarations")&.to_i
       end
 
+      # DBT WMD proliferation declaration count
       def ac12237
-        setting_value("ac12237")&.to_i || 0
+        setting_value("dbt_wmd_proliferation_declarations")&.to_i
       end
 
+      # Identified terrorism or proliferation financing?
       def ac12333
-        setting_value("ac12333") || "Non"
+        setting_value("identified_terrorism_or_proliferation")
       end
     end
   end

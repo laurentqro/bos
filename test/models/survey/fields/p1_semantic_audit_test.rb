@@ -249,7 +249,7 @@ class Survey::Fields::P1SemanticAuditTest < ActiveSupport::TestCase
   end
 
   test "a3701a returns Oui when section 3 comment setting present" do
-    Setting.create!(organization: @org, category: "controls", key: "a3701a", value: "Some comment")
+    Setting.create!(organization: @org, category: "controls", key: "inherent_risk_section_comments", value: "Some comment")
     assert_equal "Oui", @survey.send(:a3701a)
   end
 
@@ -258,7 +258,7 @@ class Survey::Fields::P1SemanticAuditTest < ActiveSupport::TestCase
   end
 
   test "a3701 returns comment text" do
-    Setting.create!(organization: @org, category: "controls", key: "a3701", value: "Section 3 feedback")
+    Setting.create!(organization: @org, category: "controls", key: "inherent_risk_section_comments", value: "Section 3 feedback")
     assert_equal "Section 3 feedback", @survey.send(:a3701)
   end
 
@@ -271,12 +271,12 @@ class Survey::Fields::P1SemanticAuditTest < ActiveSupport::TestCase
   end
 
   test "ac116a returns Oui when controls comment setting present" do
-    Setting.create!(organization: @org, category: "controls", key: "ac116a", value: "Controls feedback")
+    Setting.create!(organization: @org, category: "controls", key: "controls_section_comments", value: "Controls feedback")
     assert_equal "Oui", @survey.send(:ac116a)
   end
 
   test "ac11601 returns controls comment text" do
-    Setting.create!(organization: @org, category: "controls", key: "ac11601", value: "My controls comment")
+    Setting.create!(organization: @org, category: "controls", key: "controls_section_comments", value: "My controls comment")
     assert_equal "My controls comment", @survey.send(:ac11601)
   end
 

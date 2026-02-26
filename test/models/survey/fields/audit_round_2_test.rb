@@ -212,8 +212,8 @@ class Survey::Fields::AuditRound2Test < ActiveSupport::TestCase
 
   # === a3307 — setting value ===
 
-  test "a3307 returns setting value defaulting to Non" do
-    assert_equal "Non", @survey.send(:a3307)
+  test "a3307 returns nil when setting is not set" do
+    assert_nil @survey.send(:a3307)
   end
 
   # === ac1611 — uses clients_kept ===
