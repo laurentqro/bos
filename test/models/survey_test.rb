@@ -1084,6 +1084,176 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 0, @survey.a1103
   end
 
+  # Q25 — a1104: Total unique natural person clients who are non-residents
+  # for purchases, sales, and rentals (>= 10k/month) of real estate
+  # Type: xbrli:integerItemType
+  test "a1104 returns count of unique natural person clients with nil residence_country" do
+    # All existing fixture natural persons have residence_country set → 0
+    assert_equal 0, @survey.a1104
+
+    # Create a non-resident natural person with a purchase transaction
+    non_resident = Client.create!(
+      organization: @organization,
+      name: "Non Resident",
+      client_type: "NATURAL_PERSON",
+      nationality: "US",
+      residence_country: nil,
+      is_pep: false,
+      risk_level: "MEDIUM",
+      became_client_at: 3.months.ago
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: non_resident,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 5, 1),
+      transaction_value: 500_000,
+      payment_method: "WIRE"
+    )
+
+    assert_equal 1, @survey.a1104
+  end
+
+  test "a1104 counts each client only once even with multiple transactions" do
+    non_resident = Client.create!(
+      organization: @organization,
+      name: "Non Resident Multi",
+      client_type: "NATURAL_PERSON",
+      nationality: "US",
+      residence_country: nil,
+      is_pep: false,
+      risk_level: "MEDIUM",
+      became_client_at: 3.months.ago
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: non_resident,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 3, 1),
+      transaction_value: 300_000,
+      payment_method: "WIRE"
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: non_resident,
+      transaction_type: "SALE",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_value: 400_000,
+      payment_method: "WIRE"
+    )
+
+    assert_equal 1, @survey.a1104
+  end
+
+  test "a1104 includes non-resident natural persons with qualifying rental transactions" do
+    non_resident = Client.create!(
+      organization: @organization,
+      name: "Non Resident Renter",
+      client_type: "NATURAL_PERSON",
+      nationality: "US",
+      residence_country: nil,
+      is_pep: false,
+      risk_level: "LOW",
+      became_client_at: 3.months.ago
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: non_resident,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 4, 1),
+      transaction_value: 120_000,
+      rental_annual_value: 120_000,
+      payment_method: "WIRE"
+    )
+
+    assert_equal 1, @survey.a1104
+  end
+
+  test "a1104 excludes rental clients below 10000 monthly threshold" do
+    non_resident = Client.create!(
+      organization: @organization,
+      name: "Non Resident Low Renter",
+      client_type: "NATURAL_PERSON",
+      nationality: "US",
+      residence_country: nil,
+      is_pep: false,
+      risk_level: "LOW",
+      became_client_at: 3.months.ago
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: non_resident,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 4, 1),
+      transaction_value: 60_000,
+      rental_annual_value: 60_000,
+      payment_method: "WIRE"
+    )
+
+    assert_equal 0, @survey.a1104
+  end
+
+  test "a1104 excludes MC residents" do
+    assert_equal "MC", clients(:natural_person).residence_country
+    assert @organization.transactions.kept.for_year(@year)
+      .where(client: clients(:natural_person)).exists?
+    assert_equal 0, @survey.a1104
+  end
+
+  test "a1104 excludes foreign residents" do
+    foreign_resident = Client.create!(
+      organization: @organization,
+      name: "Foreign Resident",
+      client_type: "NATURAL_PERSON",
+      nationality: "US",
+      residence_country: "FR",
+      is_pep: false,
+      risk_level: "LOW",
+      became_client_at: 3.months.ago
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: foreign_resident,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 5, 1),
+      transaction_value: 500_000,
+      payment_method: "WIRE"
+    )
+
+    assert_equal 0, @survey.a1104
+  end
+
+  test "a1104 excludes legal entities even with nil residence_country" do
+    le_no_residence = Client.create!(
+      organization: @organization,
+      name: "LE No Residence",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      nationality: "US",
+      residence_country: nil,
+      is_pep: false,
+      risk_level: "LOW",
+      became_client_at: 3.months.ago
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: le_no_residence,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 5, 1),
+      transaction_value: 500_000,
+      payment_method: "WIRE"
+    )
+
+    assert_equal 0, @survey.a1104
+  end
+
   test "a1210o excludes BOs from other organizations" do
     Setting.create!(
       organization: @organization,

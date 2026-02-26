@@ -280,6 +280,28 @@ class Survey
         (purchase_sale_client_ids + rental_client_ids).uniq.count
       end
 
+      # Q25 — a1104: Total unique natural person clients who are non-residents
+      # (nil residence_country) for purchases, sales, and rentals (>= 10k/month) of real estate
+      # Type: xbrli:integerItemType
+      def a1104
+        txns = organization.transactions.kept.for_year(year)
+
+        purchase_sale_client_ids = txns
+          .where(transaction_type: %w[PURCHASE SALE])
+          .joins(:client)
+          .where(clients: {client_type: "NATURAL_PERSON", residence_country: nil})
+          .pluck(:client_id)
+
+        rental_client_ids = txns
+          .where(transaction_type: "RENTAL")
+          .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
+          .joins(:client)
+          .where(clients: {client_type: "NATURAL_PERSON", residence_country: nil})
+          .pluck(:client_id)
+
+        (purchase_sale_client_ids + rental_client_ids).uniq.count
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)
