@@ -43,9 +43,9 @@
 - [x] Task 25: Q25 — a1104 — total unique natural person clients who are non-residents (purchase/sale + rentals >= 10k/month) (2026-02-27)
 - [x] Task 26: Q26 — a1401 — total unique natural person clients by primary nationality for purchase/sale (dimensional) (2026-02-27)
 - [x] Task 27: Q27 — a1403B — total transactions by natural person clients for purchase/sale (2026-02-27)
-- [ ] Task 28: Q28 — Veuillez indiquer la valeur totale des fonds transférés par des clients qui sont des personnes physiques, pour l'achat e
-- [ ] Task 29: Q29 — Veuillez indiquer le nombre total de clients uniques qui sont des personnes physiques (individus) pour la location de bi
-- [ ] Task 30: Q30 — Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des personnes physiques pour la locat
+- [x] Task 28: Q28 — a1404B — total value of funds transferred by natural person clients for purchase/sale (2026-02-27)
+- [x] Task 29: Q29 — a1401R — total unique natural person clients for rental (>= 10k/month) (2026-02-27)
+- [x] Task 30: Q30 — a1403R — total transactions by natural person clients for rental (>= 10k/month) (2026-02-27)
 - [ ] Task 31: Q31 — Certains des achats immobiliers effectués pendant la période de déclaration avaient-ils pour but d'établir une résidence
 - [ ] Task 32: Q32 — Combien d'achats ont-ils été effectués dans le but d'établir une résidence à Monaco au cours de la période de déclaratio
 

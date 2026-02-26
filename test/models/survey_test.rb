@@ -1505,6 +1505,88 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 0, survey.a1401r
   end
 
+  # Q30 — a1403R: Total transactions by natural person clients
+  # for rental of real estate (monthly rent >= 10,000 EUR)
+
+  test "a1403r counts transactions by NP clients for qualifying rentals" do
+    np_fr = clients(:natural_person)
+    np_mc = clients(:pep_client)
+
+    Transaction.create!(
+      organization: @organization,
+      client: np_fr,
+      reference: "RENTAL-A1403R-1",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "RENTAL",
+      rental_annual_value: 180_000
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: np_mc,
+      reference: "RENTAL-A1403R-2",
+      transaction_date: Date.current - 3.days,
+      transaction_type: "RENTAL",
+      rental_annual_value: 120_000
+    )
+
+    assert_equal 2, @survey.a1403r
+  end
+
+  test "a1403r excludes rentals below 10000 monthly threshold" do
+    np = clients(:natural_person)
+    Transaction.create!(
+      organization: @organization,
+      client: np,
+      reference: "RENTAL-A1403R-LOW",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "RENTAL",
+      rental_annual_value: 60_000
+    )
+
+    assert_equal 0, @survey.a1403r
+  end
+
+  test "a1403r excludes legal entity clients" do
+    le = clients(:legal_entity)
+    Transaction.create!(
+      organization: @organization,
+      client: le,
+      reference: "RENTAL-A1403R-LE",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "RENTAL",
+      rental_annual_value: 120_000
+    )
+
+    assert_equal 0, @survey.a1403r
+  end
+
+  test "a1403r counts each transaction individually even for same client" do
+    np = clients(:natural_person)
+    Transaction.create!(
+      organization: @organization,
+      client: np,
+      reference: "RENTAL-A1403R-MULTI-1",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "RENTAL",
+      rental_annual_value: 120_000
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: np,
+      reference: "RENTAL-A1403R-MULTI-2",
+      transaction_date: Date.current - 3.days,
+      transaction_type: "RENTAL",
+      rental_annual_value: 150_000
+    )
+
+    assert_equal 2, @survey.a1403r
+  end
+
+  test "a1403r returns 0 when no qualifying rental transactions exist" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_equal 0, survey.a1403r
+  end
+
   test "a1210o excludes BOs from other organizations" do
     Setting.create!(
       organization: @organization,
