@@ -27,8 +27,8 @@
 - [x] Task 13: Q13 — a1202OB — total BOs representing a legal person, by nationality (dimensional) (2026-02-26)
 - [x] Task 14: Q14 — a1204O — can entity distinguish BOs holding 25% or more (settings-based) (2026-02-26)
 - [x] Task 15: Q15 — a120425O — total BOs holding 25%+ by primary nationality (dimensional, conditional on a1204o) (2026-02-26)
-- [ ] Task 16: Q16 — Votre entité enregistre-t-elle la résidence pour les bénéficiaires effectifs détenant une participation de 25 % ou plus 
-- [ ] Task 17: Q17 — Veuillez indiquer le nombre total de bénéficiaires effectifs des résidents étrangers, par nationalité principale du béné
+- [x] Task 16: Q16 — a1203D — does entity record BO residence for 25%+ holders (settings-based) (2026-02-27)
+- [x] Task 17: Q17 — a1207O — foreign-resident BOs (25%+) by primary nationality (dimensional, conditional on a1203d) (2026-02-27)
 - [ ] Task 18: Q18 — Veuillez indiquer le nombre total de bénéficiaires effectifs des non-résidents, par nationalité principale du bénéficiai
 
 ### Section 1.4

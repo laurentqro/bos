@@ -596,4 +596,100 @@ class SurveyTest < ActiveSupport::TestCase
   test "a1203d returns nil when setting is not set" do
     assert_nil @survey.a1203d
   end
+
+  # Q17 — a1207O: Total number of BOs who are foreign residents (residence != MC),
+  # holding 25% or more, broken down by primary nationality
+  # Type: xbrli:integerItemType — dimensional by country (hash of counts)
+  # Conditional on a1203d == "Oui"
+  test "a1207o returns nil when a1203d is not Oui" do
+    assert_nil @survey.a1207o
+  end
+
+  test "a1207o returns count of foreign-resident BOs with 25%+ ownership grouped by nationality" do
+    Setting.create!(
+      organization: @organization,
+      key: "records_bo_residence_25pct_or_more",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    result = @survey.a1207o
+
+    assert_instance_of Hash, result
+    # Foreign resident BOs (residence_country != "MC") with >= 25% ownership:
+    # at_hnwi_threshold: FR nationality, FR residence, 25% → FR: 1
+    # other_client_owner: IT nationality, IT residence, 100% → IT: 1
+    # at_uhnwi_threshold: IT nationality, IT residence, 25% → IT: 1
+    assert_equal 1, result["FR"]
+    assert_equal 2, result["IT"]
+  end
+
+  test "a1207o excludes BOs who are Monaco residents" do
+    Setting.create!(
+      organization: @organization,
+      key: "records_bo_residence_25pct_or_more",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    result = @survey.a1207o
+
+    # owner_one (FR, MC residence, 51%), owner_two (MC, MC residence, 49%),
+    # cascade_owner_one (MC, MC residence, 60%), etc. — all excluded
+    # MC nationality BOs are all MC residents, so MC should not appear
+    assert_nil result["MC"]
+  end
+
+  test "a1207o excludes BOs with less than 25% ownership" do
+    Setting.create!(
+      organization: @organization,
+      key: "records_bo_residence_25pct_or_more",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    result = @survey.a1207o
+
+    # uhnwi_owner has CH nationality, MC residence, 20% — excluded (below 25%)
+    assert_nil result["CH"]
+  end
+
+  test "a1207o excludes BOs with nil nationality" do
+    Setting.create!(
+      organization: @organization,
+      key: "records_bo_residence_25pct_or_more",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    result = @survey.a1207o
+
+    assert_nil result[nil]
+  end
+
+  test "a1207o excludes BOs from other organizations" do
+    Setting.create!(
+      organization: @organization,
+      key: "records_bo_residence_25pct_or_more",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    result = @survey.a1207o
+
+    # other_org_owner (FR, FR residence, 100%, org:two) should not appear
+    # Total should be 3 (only org:one foreign-resident BOs with >= 25%)
+    assert_equal 3, result.values.sum
+  end
+
+  test "a1207o returns empty hash when no foreign-resident BOs exist" do
+    Setting.create!(
+      organization: organizations(:company),
+      key: "records_bo_residence_25pct_or_more",
+      category: "entity_info",
+      value: "Oui"
+    )
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_equal({}, survey.a1207o)
+  end
 end
