@@ -190,22 +190,6 @@ class Survey
 
       # === Acquisition and Marketing Channels ===
 
-      def ac1608
-        setting_value("ac1608") || "Non"
-      end
-
-      def ac1631
-        setting_value("ac1631") || "Non"
-      end
-
-      def ac1633
-        setting_value("ac1633") || "Non"
-      end
-
-      def ac1634
-        setting_value("ac1634") || "Non"
-      end
-
       def ac1630
         setting_value("ac1630")
       end

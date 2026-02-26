@@ -126,10 +126,6 @@ class Survey
           .sum(:transaction_value)
       end
 
-      # Does the entity identify Monaco legal entity types?
-      def a155
-        setting_value("a155") || "Non"
-      end
 
       # === Trust Statistics ===
 
@@ -349,21 +345,6 @@ class Survey
       end
 
       # === Beneficial Owner Statistics ===
-
-      # Can identify BO nationality
-      def a1204s
-        setting_value("a1204s") || "Oui"
-      end
-
-      # Can identify BOs with 25%+ ownership
-      def a1204o
-        setting_value("a1204o") || "Oui"
-      end
-
-      # Records BO residence
-      def a1203d
-        setting_value("a1203d") || "Oui"
-      end
 
       # Records dual nationality
       def a1203

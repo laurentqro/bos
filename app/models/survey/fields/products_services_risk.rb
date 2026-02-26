@@ -106,10 +106,6 @@ class Survey
         year_transactions.with_client.with_cash.where("cash_amount >= ?", 10000).count
       end
 
-      def a2113w
-        setting_value("a2113w") || "Oui"
-      end
-
       def a2113aw
         year_transactions
           .with_client
@@ -160,10 +156,6 @@ class Survey
 
       def a2110b
         year_transactions.by_client.with_cash.where("cash_amount >= ?", 10000).count
-      end
-
-      def a2113b
-        setting_value("a2113b") || "Oui"
       end
 
       def a2113ab

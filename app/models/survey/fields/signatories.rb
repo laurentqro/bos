@@ -49,23 +49,6 @@ class Survey
 
       # === Business Profile ===
 
-      def ac1601
-        setting_value("primary_activity") || "Non"
-      end
-
-      def ac168
-        setting_value("other_services") || "Non"
-      end
-
-      # Services offered
-      def ac1635
-        setting_value("escrow_services") || "Non"
-      end
-
-      def ac1635a
-        setting_value("escrow_volume") || "Non"
-      end
-
       def ac1636
         setting_value("property_management") || "Non"
       end
@@ -74,24 +57,8 @@ class Survey
         setting_value("ancillary_services")
       end
 
-      def ac1638a
-        setting_value("insurance_services") || "Non"
-      end
-
-      def ac1639a
-        setting_value("mortgage_services") || "Non"
-      end
-
-      def ac1641a
-        setting_value("valuation_services") || "Non"
-      end
-
       def ac1640a
         setting_value("legal_services")
-      end
-
-      def ac1642a
-        setting_value("renovation_services") || "Non"
       end
 
       # === Financial Information ===
@@ -114,10 +81,6 @@ class Survey
         setting_value("operating_expenses") || "Non"
       end
 
-      def ac1609
-        setting_value("avg_transaction_size") || "Non"
-      end
-
       def ac1610
         setting_value("annual_transaction_volume") || "Non"
       end
@@ -130,14 +93,6 @@ class Survey
 
       def ac1612
         setting_value("market_segments")&.to_i || 0
-      end
-
-      def ac1614
-        setting_value("luxury_percentage") || "Non"
-      end
-
-      def ac1615
-        setting_value("new_vs_existing_property") || "Non"
       end
 
       # === Office Information ===

@@ -154,11 +154,6 @@ class Survey
           .count
       end
 
-      # Q209: Can the entity distinguish if rejection was due to client attributes vs discretionary practice?
-      def a3402
-        setting_value("a3402") || "Oui"
-      end
-
       # Q210: Prospects rejected due to client attributes/activities/deficiencies
       # Counts clients rejected specifically for AML_CFT reasons (client-attributable)
       def a3403
@@ -174,11 +169,6 @@ class Survey
           .where.not(relationship_end_reason: [nil, ""])
           .where(relationship_ended_at: Date.new(year, 1, 1)..Date.new(year, 12, 31))
           .count
-      end
-
-      # Q212: Can entity distinguish if termination was due to client attributes vs discretionary?
-      def a3415
-        setting_value("a3415") || "Oui"
       end
 
       # Q213: Terminations due to client attributes/activities/deficiencies
@@ -202,26 +192,6 @@ class Survey
       end
 
       # === ID Verification and Records ===
-
-      def ac1620
-        setting_value("ac1620") || "Oui"
-      end
-
-      def ac1617
-        setting_value("ac1617") || "Oui"
-      end
-
-      def ac1625
-        setting_value("ac1625") || "Oui"
-      end
-
-      def ac1626
-        setting_value("ac1626") || "Oui"
-      end
-
-      def ac1627
-        setting_value("ac1627") || "Oui"
-      end
 
       def ac1629
         setting_value("ac1629") || "Non"
@@ -260,27 +230,6 @@ class Survey
 
       def ac1101z
         setting_value("ac1101z")
-      end
-
-      # SAR breakdowns
-      def ac11101
-        setting_value("ac11101") || "Non"
-      end
-
-      def ac11102
-        setting_value("ac11102") || "Non"
-      end
-
-      def ac11103
-        setting_value("ac11103") || "Non"
-      end
-
-      def ac11104
-        setting_value("ac11104") || "Non"
-      end
-
-      def ac11105
-        setting_value("ac11105") || "Non"
       end
 
       # === Sanctions Screening ===
@@ -344,10 +293,6 @@ class Survey
       end
 
       # === AML Policy ===
-
-      def ac1201
-        setting_value("ac1201") || "Oui"
-      end
 
       def ac1202
         setting_value("ac1202") || "Oui"
@@ -443,10 +388,6 @@ class Survey
         setting_value("ac1125a") || "Non"
       end
 
-      def ac11301
-        setting_value("ac11301") || "Non"
-      end
-
       def ac11302
         setting_value("ac11302")
       end
@@ -455,16 +396,8 @@ class Survey
         setting_value("ac11303")
       end
 
-      def ac11304
-        setting_value("ac11304") || "Non"
-      end
-
       def ac11305
         setting_value("ac11305") || "Non"
-      end
-
-      def ac11306
-        setting_value("ac11306") || "Non"
       end
 
       def ac11307
