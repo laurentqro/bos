@@ -1123,6 +1123,24 @@ class Survey
           .where(clients: {nationality: "MC"})
           .exists? ? "Oui" : "Non"
       end
+
+      # Q81 — a11502B: Total unique Monegasque clients who are lawyers or other legal professionals
+      # Type: xbrli:integerItemType — computed, conditional on aC171
+      def a11502b
+        mc_clients_by_sector("LEGAL_SERVICES")
+      end
+
+      private
+
+      def mc_clients_by_sector(sector)
+        return nil unless ac171 == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE])
+          .joins(:client)
+          .where(clients: {nationality: "MC", business_sector: sector})
+          .select("clients.id").distinct.count
+      end
     end
   end
 end

@@ -4227,4 +4227,28 @@ class SurveyTest < ActiveSupport::TestCase
     survey = Survey.new(organization: organizations(:company), year: @year)
     assert_equal "Non", survey.ac171
   end
+
+  test "a11502b returns count of Monegasque lawyer clients when ac171 is Oui" do
+    client = Client.create!(
+      organization: @organization,
+      client_type: "NATURAL_PERSON",
+      name: "MC Lawyer",
+      nationality: "MC",
+      business_sector: "LEGAL_SERVICES"
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "SALE",
+      transaction_date: Date.new(@year, 4, 1),
+      transaction_value: 800_000
+    )
+
+    assert_equal 1, @survey.a11502b
+  end
+
+  test "a11502b returns nil when ac171 is not Oui" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a11502b
+  end
 end
