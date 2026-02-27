@@ -5068,4 +5068,24 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal baseline + 1, @survey.air235s
   end
+
+  # Q155 — aIR237B: Total transactions by country for purchase/sale (5-year lookback, dimensional)
+  test "air237b returns transaction counts by country over 5 years" do
+    baseline = @survey.air237b
+
+    np_fr = Client.create!(organization: @organization, name: "NP FR", client_type: "NATURAL_PERSON", nationality: "FR")
+
+    # Current year transaction
+    Transaction.create!(organization: @organization, client: np_fr, transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 1, 1), transaction_value: 100_000, payment_method: "WIRE")
+    # 3 years ago transaction (within 5-year window)
+    Transaction.create!(organization: @organization, client: np_fr, transaction_type: "SALE",
+      transaction_date: Date.new(@year - 3, 6, 1), transaction_value: 200_000, payment_method: "WIRE")
+    # 5 years ago transaction (outside 5-year window)
+    Transaction.create!(organization: @organization, client: np_fr, transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year - 5, 1, 1), transaction_value: 300_000, payment_method: "WIRE")
+
+    result = @survey.air237b
+    assert_equal (baseline["FR"] || 0) + 2, result["FR"]  # 2 within 5-year window
+  end
 end
