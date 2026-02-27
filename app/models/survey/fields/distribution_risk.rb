@@ -56,6 +56,17 @@ class Survey
           .group(:third_party_cdd_country)
           .count
       end
+
+      # Q173 — aB3206: New NP clients onboarded during reporting period
+      # Type: xbrli:integerItemType — computed
+      def ab3206
+        year_range = Date.new(year, 1, 1)..Date.new(year, 12, 31)
+
+        organization.clients.kept
+          .where(client_type: "NATURAL_PERSON")
+          .where(became_client_at: year_range)
+          .count
+      end
     end
   end
 end

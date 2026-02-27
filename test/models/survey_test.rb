@@ -5382,4 +5382,24 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal (baseline["GB"] || 0) + 1, result["GB"]
     assert_equal (baseline["CH"] || 0) + 1, result["CH"]
   end
+
+  # Q173 — aB3206: New NP clients onboarded during reporting period
+  test "ab3206 counts new natural person clients onboarded in reporting year" do
+    baseline = @survey.ab3206
+
+    # NP onboarded in reporting year (counts)
+    Client.create!(organization: @organization, name: "New NP", client_type: "NATURAL_PERSON",
+      nationality: "FR", became_client_at: Date.new(@year, 6, 15))
+
+    # NP onboarded in previous year (does NOT count)
+    Client.create!(organization: @organization, name: "Old NP", client_type: "NATURAL_PERSON",
+      nationality: "DE", became_client_at: Date.new(@year - 1, 3, 1))
+
+    # LE onboarded in reporting year (does NOT count — not NP)
+    Client.create!(organization: @organization, name: "New LE", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SARL", incorporation_country: "IT",
+      became_client_at: Date.new(@year, 9, 1))
+
+    assert_equal baseline + 1, @survey.ab3206
+  end
 end
