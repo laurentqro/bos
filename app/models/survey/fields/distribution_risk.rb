@@ -23,6 +23,12 @@ class Survey
           .group(Arel.sql(country_sql))
           .count
       end
+
+      # Q170 — a3103: Does entity use foreign third parties for CDD?
+      # Type: enum (Oui/Non) — settings-based
+      def a3103
+        setting_value_for("uses_foreign_third_party_cdd")
+      end
     end
   end
 end

@@ -5321,4 +5321,12 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal (baseline["FR"] || 0) + 1, result["FR"]
     assert_equal (baseline["IT"] || 0) + 1, result["IT"]
   end
+
+  # Q170 — a3103: Does entity use foreign third parties for CDD?
+  test "a3103 returns setting value for uses_foreign_third_party_cdd" do
+    assert_nil @survey.a3103
+
+    Setting.create!(organization: @organization, key: "uses_foreign_third_party_cdd", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a3103
+  end
 end
