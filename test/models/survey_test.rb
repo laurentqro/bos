@@ -7102,4 +7102,16 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "incomplete_submission_reason", category: "entity_info", value: "Complet")
     assert_equal "Complet", @survey.aincomplete
   end
+
+  # Coverage — ensure all 323 questionnaire fields have a method implementation
+  test "Survey implements all questionnaire fields" do
+    questionnaire = AmsfSurvey.questionnaire(industry: :real_estate, year: 2025)
+    survey = Survey.new(organization: @organization, year: 2025)
+
+    missing = questionnaire.questions.map { |q| q.id.to_s.downcase.to_sym }.reject do |field_id|
+      survey.respond_to?(field_id, true)
+    end
+
+    assert missing.empty?, "Survey is missing implementations for: #{missing.join(", ")}"
+  end
 end
