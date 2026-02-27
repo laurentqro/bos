@@ -597,6 +597,20 @@ class Survey
         setting_value_for("trust_clients_transaction_info_available")
       end
 
+      # Q46 — a1806TOLA: Total number of transactions by trust/legal construction clients
+      # for purchase and sale of real estate
+      # Type: xbrli:integerItemType
+      # Conditional: only when a11001btola == "Oui"
+      def a1806tola
+        return nil unless a11001btola == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE])
+          .joins(:client)
+          .where(clients: {client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST"})
+          .count
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)

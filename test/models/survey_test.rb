@@ -3034,4 +3034,73 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_nil @survey.a11001btola
   end
+
+  # Q46 — a1806TOLA: Total number of transactions by trust/legal construction clients
+  # for purchase and sale of real estate
+  # Type: xbrli:integerItemType
+  # Conditional: only when a11001btola == "Oui"
+
+  test "a1806tola returns nil when a11001btola is not Oui" do
+    assert_nil @survey.a1806tola
+  end
+
+  test "a1806tola counts transactions by trust clients for purchase and sale" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_trust_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+    Setting.create!(
+      organization: @organization,
+      key: "trust_clients_transaction_info_available",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    trust_client = Client.create!(
+      organization: @organization,
+      name: "Trust Alpha",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST",
+      incorporation_country: "MC"
+    )
+
+    # Two purchase/sale transactions
+    Transaction.create!(
+      organization: @organization,
+      client: trust_client,
+      reference: "A1806TOLA-T1",
+      transaction_date: Date.new(@year, 1, 15),
+      transaction_type: "PURCHASE",
+      transaction_value: 1_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: trust_client,
+      reference: "A1806TOLA-T2",
+      transaction_date: Date.new(@year, 2, 10),
+      transaction_type: "SALE",
+      transaction_value: 2_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    # Rental transaction — should NOT be counted
+    Transaction.create!(
+      organization: @organization,
+      client: trust_client,
+      reference: "A1806TOLA-T3",
+      transaction_date: Date.new(@year, 1, 20),
+      transaction_type: "RENTAL",
+      transaction_value: 180_000,
+      rental_annual_value: 180_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    assert_equal 2, @survey.a1806tola
+  end
 end
