@@ -3192,4 +3192,107 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal 3_500_000, @survey.a1807tola
   end
+
+  # Q48 — a11006: Specify type of other legal constructions not mentioned in previous questions
+  # Type: xbrli:stringItemType — computed from client data, conditional on a1802btola
+
+  test "a11006 returns nil when a1802btola is not Oui" do
+    assert_nil @survey.a11006
+  end
+
+  test "a11006 returns nil when no clients have non-standard legal entity types" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_trust_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    # Discard any pre-existing non-standard legal entity clients from fixtures
+    @organization.clients
+      .where(client_type: "LEGAL_ENTITY")
+      .where.not(legal_entity_type: AmsfConstants::AMSF_STANDARD_LEGAL_FORMS)
+      .where.not(legal_entity_type: nil)
+      .each(&:discard!)
+
+    # Create a client with a standard legal form (SCI) — should NOT appear in a11006
+    Client.create!(
+      organization: @organization,
+      name: "SCI Standard",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SCI"
+    )
+
+    assert_nil @survey.a11006
+  end
+
+  test "a11006 returns labels for non-standard legal entity types" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_trust_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    Client.create!(
+      organization: @organization,
+      name: "Foundation Client",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "FOUNDATION"
+    )
+
+    Client.create!(
+      organization: @organization,
+      name: "Association Client",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "ASSOCIATION"
+    )
+
+    result = @survey.a11006
+    assert_includes result, "Monegasque Foundation"
+    assert_includes result, "Monegasque Association"
+  end
+
+  test "a11006 includes free-text for OTHER legal entity type" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_trust_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    Client.create!(
+      organization: @organization,
+      name: "Fiducie Client",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "OTHER",
+      legal_entity_type_other: "Fiducie"
+    )
+
+    result = @survey.a11006
+    assert_includes result, "Fiducie"
+  end
+
+  test "a11006 excludes standard forms and trusts" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_trust_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    # Standard forms — should NOT appear
+    Client.create!(organization: @organization, name: "SCI Co", client_type: "LEGAL_ENTITY", legal_entity_type: "SCI")
+    Client.create!(organization: @organization, name: "Trust Co", client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST")
+    Client.create!(organization: @organization, name: "SARL Co", client_type: "LEGAL_ENTITY", legal_entity_type: "SARL")
+
+    # Non-standard — SHOULD appear
+    Client.create!(organization: @organization, name: "Foundation Co", client_type: "LEGAL_ENTITY", legal_entity_type: "FOUNDATION")
+
+    result = @survey.a11006
+    assert_includes result, "Monegasque Foundation"
+    refute_includes result, "SCI"
+    refute_includes result, "Trust"
+    refute_includes result, "SARL"
+  end
 end

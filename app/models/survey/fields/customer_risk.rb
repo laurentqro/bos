@@ -625,6 +625,33 @@ class Survey
           .sum(:transaction_value)
       end
 
+      # Q48 — a11006: Specify type of other legal constructions not mentioned in previous questions
+      # Type: xbrli:stringItemType
+      # Conditional: only when a1802btola == "Oui"
+      # Collects non-standard legal entity type labels (excluding AMSF_STANDARD_LEGAL_FORMS)
+      # For "OTHER" type, uses the free-text legal_entity_type_other field
+      def a11006
+        return nil unless a1802btola == "Oui"
+
+        other_clients = organization.clients.kept
+          .where(client_type: "LEGAL_ENTITY")
+          .where.not(legal_entity_type: AmsfConstants::AMSF_STANDARD_LEGAL_FORMS)
+          .where.not(legal_entity_type: nil)
+
+        types = other_clients.distinct.pluck(:legal_entity_type, :legal_entity_type_other)
+        return nil if types.empty?
+
+        labels = types.map do |type, other_text|
+          if type == "OTHER" && other_text.present?
+            other_text
+          else
+            AmsfConstants::LEGAL_ENTITY_TYPE_LABELS[type] || type
+          end
+        end
+
+        labels.uniq.sort.join(", ")
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)
