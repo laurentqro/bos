@@ -4582,4 +4582,15 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "accepts_cash_operations", category: "entity_info", value: "Oui")
     assert_equal "Oui", @survey.a2107w
   end
+
+  # Q127 — a2107WRP: Did entity accept or carry out cash operations with clients during reporting period?
+  test "a2107wrp returns setting value when a2107w is Oui" do
+    Setting.create!(organization: @organization, key: "accepts_cash_operations", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "had_cash_operations_in_period", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a2107wrp
+  end
+
+  test "a2107wrp returns nil when a2107w is not Oui" do
+    assert_nil @survey.a2107wrp
+  end
 end

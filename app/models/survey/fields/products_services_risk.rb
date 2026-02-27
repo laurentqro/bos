@@ -134,6 +134,13 @@ class Survey
       def a2107w
         setting_value_for("accepts_cash_operations")
       end
+
+      # Q127 — a2107WRP: Did entity accept or carry out cash operations with clients during reporting period?
+      # Type: enum (Oui/Non) — settings-based, conditional on a2107w
+      def a2107wrp
+        return nil unless a2107w == "Oui"
+        setting_value_for("had_cash_operations_in_period")
+      end
     end
   end
 end
