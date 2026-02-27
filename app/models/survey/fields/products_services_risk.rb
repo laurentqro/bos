@@ -442,6 +442,14 @@ class Survey
           .sum(:transaction_value)
       end
 
+      # Q158 — aIR117: How many purchases/sales were for investment purposes?
+      # Type: xbrli:integerItemType — computed
+      def air117
+        organization.transactions.kept.for_year(year)
+          .where(purchase_purpose: "INVESTMENT")
+          .count
+      end
+
       # Q157 — aIR239B: Total value of funds transferred by client country, 5-year lookback (dimensional)
       # Type: xbrli:monetaryItemType — dimensional by country
       def air239b

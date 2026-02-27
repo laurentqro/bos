@@ -5128,4 +5128,23 @@ class SurveyTest < ActiveSupport::TestCase
     result = @survey.air239b
     assert_equal (baseline["FR"] || 0) + 800_000, result["FR"]  # 500k + 300k within window
   end
+
+  # Q158 — aIR117: How many purchases/sales were for investment purposes?
+  test "air117 counts transactions with investment purchase purpose" do
+    baseline = @survey.air117 || 0
+
+    client = Client.create!(organization: @organization, name: "Investor", client_type: "NATURAL_PERSON", nationality: "FR")
+
+    # Investment purchase — should count
+    Transaction.create!(organization: @organization, client: client, transaction_type: "PURCHASE",
+      purchase_purpose: "INVESTMENT", transaction_date: Date.new(@year, 3, 1), transaction_value: 500_000, payment_method: "WIRE")
+    # Residence purchase — should not count
+    Transaction.create!(organization: @organization, client: client, transaction_type: "PURCHASE",
+      purchase_purpose: "RESIDENCE", transaction_date: Date.new(@year, 6, 1), transaction_value: 300_000, payment_method: "WIRE")
+    # Sale (no purchase_purpose) — should not count
+    Transaction.create!(organization: @organization, client: client, transaction_type: "SALE",
+      transaction_date: Date.new(@year, 9, 1), transaction_value: 400_000, payment_method: "WIRE")
+
+    assert_equal baseline + 1, @survey.air117
+  end
 end
