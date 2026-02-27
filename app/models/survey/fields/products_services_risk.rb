@@ -409,6 +409,15 @@ class Survey
           .group(Arel.sql(country_sql))
           .count
       end
+
+      # Q153 — aIR235B_2: For how many purchases/sales did you represent the buyer?
+      # Type: xbrli:integerItemType — computed
+      def air235b_2
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE])
+          .where(agency_role: "BUYER_AGENT")
+          .count
+      end
     end
   end
 end
