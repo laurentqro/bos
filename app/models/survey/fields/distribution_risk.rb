@@ -353,6 +353,12 @@ class Survey
       def a3401
         setting_value_for("rejected_prospects_count")
       end
+
+      # Q209 — a3402: Can entity distinguish rejection reasons?
+      # Type: enum (Oui/Non) — settings-based
+      def a3402
+        setting_value_for("can_distinguish_rejection_reasons")
+      end
     end
   end
 end

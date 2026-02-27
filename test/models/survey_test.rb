@@ -5848,4 +5848,12 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "rejected_prospects_count", category: "entity_info", value: "3")
     assert_equal "3", @survey.a3401
   end
+
+  # Q209 — a3402: Can entity distinguish rejection reasons?
+  test "a3402 returns setting value for can_distinguish_rejection_reasons" do
+    assert_nil @survey.a3402
+
+    Setting.create!(organization: @organization, key: "can_distinguish_rejection_reasons", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a3402
+  end
 end
