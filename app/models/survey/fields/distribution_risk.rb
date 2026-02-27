@@ -105,6 +105,13 @@ class Survey
         return nil unless a3209 == "Oui"
         setting_value_for("non_face_to_face_np_onboarded_count")
       end
+
+      # Q178 — a3211C: LP clients onboarded without face-to-face during reporting period
+      # Type: xbrli:integerItemType — settings-based, conditional on a3209
+      def a3211c
+        return nil unless a3209 == "Oui"
+        setting_value_for("non_face_to_face_lp_onboarded_count")
+      end
     end
   end
 end
