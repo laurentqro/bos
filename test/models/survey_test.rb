@@ -5271,4 +5271,15 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "has_products_services_comments", category: "entity_info", value: "Oui")
     assert_equal "Oui", @survey.a2501a
   end
+
+  # Q167 — a2501: Products/services section comments text
+  test "a2501 returns nil when a2501a is not Oui" do
+    assert_nil @survey.a2501
+  end
+
+  test "a2501 returns setting value when a2501a is Oui" do
+    Setting.create!(organization: @organization, key: "has_products_services_comments", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "products_services_comments", category: "entity_info", value: "Some comments about products and services risk")
+    assert_equal "Some comments about products and services risk", @survey.a2501
+  end
 end

@@ -539,6 +539,13 @@ class Survey
       def a2501a
         setting_value_for("has_products_services_comments")
       end
+
+      # Q167 — a2501: Products/services section comments text
+      # Type: xbrli:stringItemType — settings-based, conditional on a2501A
+      def a2501
+        return nil unless a2501a == "Oui"
+        setting_value_for("products_services_comments")
+      end
     end
   end
 end
