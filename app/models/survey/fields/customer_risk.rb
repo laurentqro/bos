@@ -368,6 +368,17 @@ class Survey
         setting_value_for("purchases_intended_for_residence_establishment")
       end
 
+      # Q32 — aIR1210: How many purchases have been made for the purpose of
+      # establishing a residence in Monaco during the reporting period?
+      # Type: xbrli:integerItemType (conditional on air129)
+      def air1210
+        return nil unless air129 == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: "PURCHASE", purchase_purpose: "RESIDENCE")
+          .count
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)
