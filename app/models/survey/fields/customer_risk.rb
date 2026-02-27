@@ -901,6 +901,20 @@ class Survey
           .count
       end
 
+      # Q68 — a13604CB: Total value of funds transferred by ICO service provider
+      # PSAV clients for purchase, sale, and rental of real estate
+      # Type: xbrli:monetaryItemType
+      # Conditional: only when a13601ico == "Oui"
+      def a13604cb
+        return nil unless a13601ico == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+          .joins(:client)
+          .where(clients: {is_vasp: true, vasp_type: "ICO"})
+          .sum(:transaction_value)
+      end
+
       # Q64 — a13604AB: Total value of funds transferred by virtual currency exchange provider
       # PSAV clients for purchase, sale, and rental of real estate
       # Type: xbrli:monetaryItemType

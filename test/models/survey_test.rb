@@ -3791,4 +3791,47 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal 2, @survey.a13603cacb
   end
+
+  # Q68 — a13604CB: Total value of funds transferred by ICO service provider
+  # PSAV clients for purchase, sale, and rental of real estate
+  # Type: xbrli:monetaryItemType
+  # Conditional: only when a13601ico == "Oui"
+
+  test "a13604cb returns nil when a13601ico is not Oui" do
+    assert_nil @survey.a13604cb
+  end
+
+  test "a13604cb sums transaction values by ICO service provider VASP clients" do
+    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "distinguishes_ico_providers", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "has_ico_provider_clients", category: "entity_info", value: "Oui")
+
+    ico_client = Client.create!(
+      organization: @organization,
+      name: "ICO Service Provider",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      is_vasp: true,
+      vasp_type: "ICO",
+      incorporation_country: "FR"
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: ico_client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 4, 15),
+      transaction_value: 750_000
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: ico_client,
+      transaction_type: "SALE",
+      transaction_date: Date.new(@year, 9, 20),
+      transaction_value: 400_000
+    )
+
+    assert_equal 1_150_000, @survey.a13604cb
+  end
 end
