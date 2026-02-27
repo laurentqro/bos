@@ -79,6 +79,19 @@ class Survey
           .where(became_client_at: year_range)
           .count
       end
+
+      # Q175 — a3208TOLA: New trust/legal construction clients onboarded during reporting period
+      # Type: xbrli:integerItemType — computed, conditional on a1802btola
+      def a3208tola
+        return nil unless a1802btola == "Oui"
+
+        year_range = Date.new(year, 1, 1)..Date.new(year, 12, 31)
+
+        organization.clients.kept
+          .where(client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST")
+          .where(became_client_at: year_range)
+          .count
+      end
     end
   end
 end

@@ -5424,4 +5424,31 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal baseline + 1, @survey.ab3207
   end
+
+  # Q175 — a3208TOLA: New trust/legal construction clients onboarded during reporting period
+  test "a3208tola returns nil when a1802btola is not Oui" do
+    assert_nil @survey.a3208tola
+  end
+
+  test "a3208tola counts new trust clients onboarded in reporting year" do
+    Setting.create!(organization: @organization, key: "can_distinguish_trust_clients", category: "entity_info", value: "Oui")
+    baseline = @survey.a3208tola
+
+    # Trust onboarded in reporting year (counts)
+    Client.create!(organization: @organization, name: "New Trust", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST", incorporation_country: "JE",
+      became_client_at: Date.new(@year, 4, 1))
+
+    # Non-trust LE onboarded in reporting year (does NOT count)
+    Client.create!(organization: @organization, name: "New LE", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SARL", incorporation_country: "MC",
+      became_client_at: Date.new(@year, 5, 1))
+
+    # Trust onboarded in previous year (does NOT count)
+    Client.create!(organization: @organization, name: "Old Trust", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST", incorporation_country: "GG",
+      became_client_at: Date.new(@year - 1, 6, 1))
+
+    assert_equal baseline + 1, @survey.a3208tola
+  end
 end
