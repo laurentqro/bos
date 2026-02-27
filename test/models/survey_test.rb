@@ -5840,4 +5840,12 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "annual_vat_declaration_amount", category: "entity_info", value: "75000.00")
     assert_equal "75000.00", @survey.a3804
   end
+
+  # Q208 — a3401: Total rejected prospects count
+  test "a3401 returns setting value for rejected prospects" do
+    assert_nil @survey.a3401
+
+    Setting.create!(organization: @organization, key: "rejected_prospects_count", category: "entity_info", value: "3")
+    assert_equal "3", @survey.a3401
+  end
 end

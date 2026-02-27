@@ -347,6 +347,12 @@ class Survey
       def a3804
         setting_value_for("annual_vat_declaration_amount")
       end
+
+      # Q208 — a3401: Total rejected prospects due to AML/CFT considerations
+      # Type: xbrli:integerItemType — settings-based
+      def a3401
+        setting_value_for("rejected_prospects_count")
+      end
     end
   end
 end
