@@ -503,6 +503,12 @@ class Survey
           .group(Arel.sql(country_sql))
           .count
       end
+
+      # Q162 — aIR234: Total unique properties rented in the reporting period
+      # Type: xbrli:integerItemType — computed
+      def air234
+        organization.managed_properties.active_in_year(year).count
+      end
     end
   end
 end

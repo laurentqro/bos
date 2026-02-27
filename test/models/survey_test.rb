@@ -5179,4 +5179,27 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal "2500000", @survey.air2393
   end
+
+  # Q162 — aIR234: Total unique properties rented in the reporting period
+  test "air234 counts unique managed properties active in the year" do
+    baseline = @survey.air234 || 0
+
+    client = Client.create!(organization: @organization, name: "Landlord", client_type: "NATURAL_PERSON", nationality: "MC")
+
+    # Active in year
+    ManagedProperty.create!(organization: @organization, client: client,
+      property_address: "1 Rue Test", management_start_date: Date.new(@year - 1, 6, 1),
+      monthly_rent: 15_000, management_fee_percent: 5, property_type: "RESIDENTIAL")
+    # Ended before year
+    ManagedProperty.create!(organization: @organization, client: client,
+      property_address: "2 Rue Test", management_start_date: Date.new(@year - 3, 1, 1),
+      management_end_date: Date.new(@year - 1, 12, 31),
+      monthly_rent: 8_000, management_fee_percent: 5, property_type: "RESIDENTIAL")
+    # Started during year
+    ManagedProperty.create!(organization: @organization, client: client,
+      property_address: "3 Rue Test", management_start_date: Date.new(@year, 6, 1),
+      monthly_rent: 5_000, management_fee_percent: 5, property_type: "COMMERCIAL")
+
+    assert_equal baseline + 2, @survey.air234  # 2 active in year (1st and 3rd)
+  end
 end
