@@ -176,6 +176,22 @@ class Survey
         setting_value_for("records_all_client_nationalities")
       end
 
+      # Q79 — a1402: Total secondary nationalities of unique natural person clients,
+      # broken down by secondary nationality (including nationals)
+      # Type: xbrli:integerItemType — dimensional by country (hash of counts)
+      # Conditional: only when a1203 == "Oui"
+      def a1402
+        return nil unless a1203 == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+          .joins(client: :client_nationalities)
+          .where(clients: {client_type: "NATURAL_PERSON"})
+          .distinct
+          .group("client_nationalities.country_code")
+          .count("clients.id")
+      end
+
       # Q16 — a1203D: Does entity record residence for BOs holding 25% or more?
       # Type: enum (Oui/Non) — settings-based
       def a1203d

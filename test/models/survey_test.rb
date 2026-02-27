@@ -4173,4 +4173,33 @@ class SurveyTest < ActiveSupport::TestCase
   test "a1203 returns nil when setting is not set" do
     assert_nil @survey.a1203
   end
+
+  test "a1402 returns secondary nationalities breakdown when a1203 is Oui" do
+    Setting.create!(organization: @organization, key: "records_all_client_nationalities", category: "entity_info", value: "Oui")
+
+    client = Client.create!(
+      organization: @organization,
+      client_type: "NATURAL_PERSON",
+      name: "Dual National",
+      nationality: "FR"
+    )
+    ClientNationality.create!(client: client, country_code: "IT")
+    ClientNationality.create!(client: client, country_code: "CH")
+
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 6, 15),
+      transaction_value: 500_000
+    )
+
+    result = @survey.a1402
+    assert_equal 1, result["IT"]
+    assert_equal 1, result["CH"]
+  end
+
+  test "a1402 returns nil when a1203 is not Oui" do
+    assert_nil @survey.a1402
+  end
 end

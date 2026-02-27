@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_26_121700) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_27_033514) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -172,6 +172,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_26_121700) do
     t.bigint "organization_id", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_branches_on_organization_id"
+  end
+
+  create_table "client_nationalities", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.string "country_code", limit: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id", "country_code"], name: "index_client_nationalities_on_client_id_and_country_code", unique: true
+    t.index ["client_id"], name: "index_client_nationalities_on_client_id"
   end
 
   create_table "clients", force: :cascade do |t|
@@ -638,6 +647,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_26_121700) do
   add_foreign_key "audit_logs", "users", on_delete: :nullify
   add_foreign_key "beneficial_owners", "clients"
   add_foreign_key "branches", "organizations"
+  add_foreign_key "client_nationalities", "clients"
   add_foreign_key "clients", "organizations"
   add_foreign_key "entity_beneficial_owners", "organizations"
   add_foreign_key "entity_shareholders", "organizations"

@@ -19,6 +19,7 @@ class Client < ApplicationRecord
   has_many :trustees, dependent: :destroy
   has_many :transactions, dependent: :destroy  # cascades on org/account deletion; use discard for soft-delete
   has_many :managed_properties, dependent: :destroy
+  has_many :client_nationalities, dependent: :destroy
   has_many :str_reports, dependent: :nullify
 
   accepts_nested_attributes_for :trustees, allow_destroy: true, reject_if: :all_blank
