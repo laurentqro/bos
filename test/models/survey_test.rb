@@ -5824,4 +5824,12 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "revenue_in_monaco", category: "entity_info", value: "1200000.00")
     assert_equal "1200000.00", @survey.a3802
   end
+
+  # Q206 — a3803: Revenue outside Monaco (monetaryItemType)
+  test "a3803 returns setting value for revenue outside Monaco" do
+    assert_nil @survey.a3803
+
+    Setting.create!(organization: @organization, key: "revenue_outside_monaco", category: "entity_info", value: "300000.00")
+    assert_equal "300000.00", @survey.a3803
+  end
 end
