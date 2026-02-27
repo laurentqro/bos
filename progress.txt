@@ -219,11 +219,11 @@
 - [x] Task 167: Q167 — a2501 — products/services section comments text (settings-based, conditional on a2501A) (2026-02-27)
 
 ### Section 3.1
-- [ ] Task 168: Q168 — Votre entité a-t-elle recours à des tiers locaux pour appliquer certaines/ toutes les mesures de vigilance relatives à l
-- [ ] Task 169: Q169 — Prière d'indiquer le nombre total de clients où des tiers locaux ont été utilisés pour appliquer certaines/ toutes les m
-- [ ] Task 170: Q170 — Votre entité a-t-elle recours à des tiers étrangers pour appliquer certaines/ toutes les mesures de vigilance relatives 
-- [ ] Task 171: Q171 — Prière d'indiquer le nombre total de clients où des tiers étrangers ont été utilisés pour appliquer certaines/ toutes le
-- [ ] Task 172: Q172 — Prière d'indiquer le nombre total de clients où des tiers étrangers ont été utilisés pour appliquer certaines/ toutes le
+- [x] Task 168: Q168 — a3101 — entity uses local third parties for CDD (settings-based, enum) (2026-02-27)
+- [x] Task 169: Q169 — a3102 — local third-party CDD client count by nationality (computed dimensional, conditional on a3101) (2026-02-27)
+- [x] Task 170: Q170 — a3103 — entity uses foreign third parties for CDD (settings-based, enum) (2026-02-27)
+- [x] Task 171: Q171 — a3104 — foreign third-party CDD client count by nationality (computed dimensional, conditional on a3103) (2026-02-27)
+- [x] Task 172: Q172 — a3105 — foreign third-party CDD client count by third-party country (computed dimensional, conditional on a3103) (2026-02-27)
 
 ### Section 3.2
 - [ ] Task 173: Q173 — Prière d'indiquer le nombre de clients uniques nouveaux, qui sont des personnes physiques, dont l'entrée en relation est
