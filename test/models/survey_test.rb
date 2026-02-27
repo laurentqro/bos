@@ -3352,4 +3352,17 @@ class SurveyTest < ActiveSupport::TestCase
     # Fixture pep_client has 1 PURCHASE transaction (pep_transaction)
     assert_equal 1, @survey.a11304b
   end
+
+  # Q53 — a11305B: Total value of funds transferred by PEP clients for purchase/sale
+  # Type: xbrli:monetaryItemType
+  # Conditional: only when a11301 == "Oui"
+  test "a11305b returns nil when a11301 is Non (no PEP clients)" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a11305b
+  end
+
+  test "a11305b returns total value of purchase/sale transactions by PEP clients" do
+    # Fixture pep_client has 1 PURCHASE transaction (pep_transaction) with transaction_value 3500000.00
+    assert_equal 3_500_000.00, @survey.a11305b
+  end
 end

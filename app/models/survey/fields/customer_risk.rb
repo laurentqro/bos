@@ -751,6 +751,21 @@ class Survey
           .count
       end
 
+      # Q53 — a11305B: Total value of funds transferred by PEP clients for purchase/sale
+      # Type: xbrli:monetaryItemType
+      # Scope: Purchase and sale transactions only (NOT rentals)
+      # Conditional: only when a11301 == "Oui"
+      def a11305b
+        return nil unless a11301 == "Oui"
+
+        pep_client_ids = organization.clients.kept.peps.pluck(:id)
+
+        organization.transactions.kept.for_year(year)
+          .where(client_id: pep_client_ids)
+          .where(transaction_type: %w[PURCHASE SALE])
+          .sum(:transaction_value)
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)
