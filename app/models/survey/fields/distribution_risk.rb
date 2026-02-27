@@ -98,6 +98,13 @@ class Survey
       def a3209
         setting_value_for("non_face_to_face_onboarding")
       end
+
+      # Q177 — a3210C: NP clients onboarded without face-to-face during reporting period
+      # Type: xbrli:integerItemType — settings-based, conditional on a3209
+      def a3210c
+        return nil unless a3209 == "Oui"
+        setting_value_for("non_face_to_face_np_onboarded_count")
+      end
     end
   end
 end

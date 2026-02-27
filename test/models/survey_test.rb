@@ -5459,4 +5459,17 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "non_face_to_face_onboarding", category: "entity_info", value: "Oui")
     assert_equal "Oui", @survey.a3209
   end
+
+  # Q177 — a3210C: NP clients onboarded without face-to-face
+  test "a3210c returns nil when a3209 is not Oui" do
+    assert_nil @survey.a3210c
+  end
+
+  test "a3210c returns setting value when a3209 is Oui" do
+    Setting.create!(organization: @organization, key: "non_face_to_face_onboarding", category: "entity_info", value: "Oui")
+    assert_nil @survey.a3210c
+
+    Setting.create!(organization: @organization, key: "non_face_to_face_np_onboarded_count", category: "entity_info", value: "5")
+    assert_equal "5", @survey.a3210c
+  end
 end
