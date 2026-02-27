@@ -248,6 +248,13 @@ class Survey
       def a3304c
         setting_value_for("is_branch_of_another_entity")
       end
+
+      # Q194 — a3305: Parent company country
+      # Type: enum (country names) — settings-based, conditional on a3304
+      def a3305
+        return nil unless a3304 == "Oui"
+        setting_value_for("parent_company_country")
+      end
     end
   end
 end
