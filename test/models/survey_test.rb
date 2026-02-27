@@ -2825,4 +2825,82 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal 1, @survey.a1802tola
   end
+
+  # Q43 — a1808: Professional trustees by primary nationality (dimensional)
+  # Conditional on a1802btola == "Oui"
+
+  test "a1808 returns nil when a1802btola is not Oui" do
+    assert_nil @survey.a1808
+  end
+
+  test "a1808 counts professional trustees by nationality" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_trust_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    # Trust client with MC professional trustee and FR professional trustee
+    trust_1 = Client.create!(
+      organization: @organization,
+      name: "Trust Alpha",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST",
+      incorporation_country: "LU",
+      became_client_at: 6.months.ago
+    )
+    Trustee.create!(client: trust_1, name: "Pro Trustee MC", nationality: "MC", is_professional: true)
+    Trustee.create!(client: trust_1, name: "Pro Trustee FR", nationality: "FR", is_professional: true)
+    Trustee.create!(client: trust_1, name: "Non-Pro Trustee GB", nationality: "GB", is_professional: false)
+
+    Transaction.create!(
+      organization: @organization,
+      client: trust_1,
+      reference: "A1808-T1",
+      transaction_date: Date.current - 1.month,
+      transaction_type: "PURCHASE",
+      transaction_value: 1_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    # Another trust client with MC professional trustee (rental transaction)
+    trust_2 = Client.create!(
+      organization: @organization,
+      name: "Trust Beta",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST",
+      incorporation_country: "MC",
+      became_client_at: 3.months.ago
+    )
+    Trustee.create!(client: trust_2, name: "Pro Trustee MC 2", nationality: "MC", is_professional: true)
+
+    Transaction.create!(
+      organization: @organization,
+      client: trust_2,
+      reference: "A1808-T2",
+      transaction_date: Date.current - 2.weeks,
+      transaction_type: "RENTAL",
+      transaction_value: 180_000,
+      rental_annual_value: 180_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    # Trust client with NO transactions in reporting period (should be excluded)
+    trust_no_txn = Client.create!(
+      organization: @organization,
+      name: "Trust No Txn",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST",
+      incorporation_country: "CH",
+      became_client_at: 6.months.ago
+    )
+    Trustee.create!(client: trust_no_txn, name: "Pro Trustee CH", nationality: "CH", is_professional: true)
+
+    result = @survey.a1808
+
+    assert_equal({"MC" => 2, "FR" => 1}, result)
+  end
 end
