@@ -873,6 +873,13 @@ class Survey
         setting_value_for("has_exchange_provider_clients")
       end
 
+      # Q65 — a13601C: Does your entity distinguish if PSAV clients are ICO service providers?
+      # Type: enum "Oui" / "Non" (settings-based, conditional on a13501b)
+      def a13601c
+        return nil unless a13501b == "Oui"
+        setting_value_for("distinguishes_ico_providers")
+      end
+
       # Q64 — a13604AB: Total value of funds transferred by virtual currency exchange provider
       # PSAV clients for purchase, sale, and rental of real estate
       # Type: xbrli:monetaryItemType
