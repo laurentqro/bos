@@ -5108,4 +5108,24 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal (baseline["FR"] || 0) + 800_000, result["FR"]
     assert_equal (baseline["IT"] || 0) + 1_200_000, result["IT"]
   end
+
+  # Q157 — aIR239B: Total value of funds transferred by client country, 5-year lookback (dimensional, monetary)
+  test "air239b returns total transaction values by country over 5 years" do
+    baseline = @survey.air239b
+
+    np_fr = Client.create!(organization: @organization, name: "NP FR", client_type: "NATURAL_PERSON", nationality: "FR")
+
+    # Current year transaction
+    Transaction.create!(organization: @organization, client: np_fr, transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 1, 1), transaction_value: 500_000, payment_method: "WIRE")
+    # 3 years ago transaction (within 5-year window)
+    Transaction.create!(organization: @organization, client: np_fr, transaction_type: "SALE",
+      transaction_date: Date.new(@year - 3, 6, 1), transaction_value: 300_000, payment_method: "WIRE")
+    # 5 years ago transaction (outside 5-year window)
+    Transaction.create!(organization: @organization, client: np_fr, transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year - 5, 1, 1), transaction_value: 1_000_000, payment_method: "WIRE")
+
+    result = @survey.air239b
+    assert_equal (baseline["FR"] || 0) + 800_000, result["FR"]  # 500k + 300k within window
+  end
 end

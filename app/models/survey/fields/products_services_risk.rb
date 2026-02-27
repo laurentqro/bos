@@ -442,6 +442,23 @@ class Survey
           .sum(:transaction_value)
       end
 
+      # Q157 — aIR239B: Total value of funds transferred by client country, 5-year lookback (dimensional)
+      # Type: xbrli:monetaryItemType — dimensional by country
+      def air239b
+        country_sql = "CASE WHEN clients.client_type = 'NATURAL_PERSON' " \
+          "THEN clients.nationality ELSE clients.incorporation_country END"
+
+        five_year_range = Date.new(year - 4, 1, 1)..Date.new(year, 12, 31)
+
+        organization.transactions.kept
+          .where(transaction_date: five_year_range)
+          .where(transaction_type: %w[PURCHASE SALE])
+          .joins(:client)
+          .where("#{country_sql} IS NOT NULL")
+          .group(Arel.sql(country_sql))
+          .sum(:transaction_value)
+      end
+
       # Q155 — aIR237B: Total transactions by country for purchase/sale (5-year lookback, dimensional)
       # Type: xbrli:integerItemType — dimensional by country
       def air237b
