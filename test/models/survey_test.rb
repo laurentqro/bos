@@ -4048,4 +4048,37 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 1, result["CH"]
     assert_equal 1, result["MC"] # from vasp_client fixture
   end
+
+  # Q75 — a13602C: Unique ICO service provider PSAV clients
+  # by country of establishment, for purchase, sale, and rental
+  # Type: xbrli:integerItemType — dimensional by country (hash of counts)
+  # Conditional: only when a13601ico == "Oui"
+
+  test "a13602c returns nil when a13601ico is not Oui" do
+    assert_nil @survey.a13602c
+  end
+
+  test "a13602c returns unique ICO VASP clients by incorporation country" do
+    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "distinguishes_ico_providers", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "has_ico_provider_clients", category: "entity_info", value: "Oui")
+
+    vasp = Client.create!(
+      organization: @organization,
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      name: "ICO Provider SG",
+      incorporation_country: "SG",
+      is_vasp: true,
+      vasp_type: "ICO"
+    )
+
+    Transaction.create!(
+      organization: @organization, client: vasp,
+      reference: "ICO-SG-1", transaction_type: "SALE",
+      transaction_date: Date.new(@year, 5, 20), transaction_value: 900_000
+    )
+
+    assert_equal({"SG" => 1}, @survey.a13602c)
+  end
 end

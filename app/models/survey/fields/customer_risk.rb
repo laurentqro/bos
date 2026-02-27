@@ -992,6 +992,23 @@ class Survey
           .count("clients.id")
       end
 
+      # Q75 — a13602C: Unique ICO service provider PSAV clients
+      # by country of establishment, for purchase, sale, and rental
+      # Type: xbrli:integerItemType — dimensional by country (hash of counts)
+      # Conditional: only when a13601ico == "Oui"
+      def a13602c
+        return nil unless a13601ico == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+          .joins(:client)
+          .where(clients: {is_vasp: true, vasp_type: "ICO"})
+          .where.not(clients: {incorporation_country: nil})
+          .distinct
+          .group("clients.incorporation_country")
+          .count("clients.id")
+      end
+
       # Q64 — a13604AB: Total value of funds transferred by virtual currency exchange provider
       # PSAV clients for purchase, sale, and rental of real estate
       # Type: xbrli:monetaryItemType
