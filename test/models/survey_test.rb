@@ -3103,4 +3103,93 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal 2, @survey.a1806tola
   end
+
+  # Q47 — a1807TOLA: Total value of funds transferred by trust/legal construction clients
+  # for purchase and sale of real estate (monetaryItemType, conditional on a11001btola)
+
+  test "a1807tola returns nil when a11001btola is not Oui" do
+    assert_nil @survey.a1807tola
+  end
+
+  test "a1807tola sums transaction values for trust clients for purchase and sale only" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_trust_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+    Setting.create!(
+      organization: @organization,
+      key: "trust_clients_transaction_info_available",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    trust_client = Client.create!(
+      organization: @organization,
+      name: "Trust Alpha",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST",
+      incorporation_country: "MC"
+    )
+
+    non_trust_client = Client.create!(
+      organization: @organization,
+      name: "SCI Beta",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SCI",
+      incorporation_country: "MC"
+    )
+
+    # Purchase by trust client — included
+    Transaction.create!(
+      organization: @organization,
+      client: trust_client,
+      reference: "A1807TOLA-T1",
+      transaction_date: Date.new(@year, 1, 15),
+      transaction_type: "PURCHASE",
+      transaction_value: 1_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    # Sale by trust client — included
+    Transaction.create!(
+      organization: @organization,
+      client: trust_client,
+      reference: "A1807TOLA-T2",
+      transaction_date: Date.new(@year, 2, 10),
+      transaction_type: "SALE",
+      transaction_value: 2_500_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    # Rental by trust client — excluded (purchase/sale only)
+    Transaction.create!(
+      organization: @organization,
+      client: trust_client,
+      reference: "A1807TOLA-T3",
+      transaction_date: Date.new(@year, 1, 20),
+      transaction_type: "RENTAL",
+      transaction_value: 180_000,
+      rental_annual_value: 180_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    # Purchase by non-trust legal entity — excluded (not a trust)
+    Transaction.create!(
+      organization: @organization,
+      client: non_trust_client,
+      reference: "A1807TOLA-T4",
+      transaction_date: Date.new(@year, 3, 5),
+      transaction_type: "PURCHASE",
+      transaction_value: 500_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    assert_equal 3_500_000, @survey.a1807tola
+  end
 end

@@ -611,6 +611,20 @@ class Survey
           .count
       end
 
+      # Q47 — a1807TOLA: Total value of funds transferred by trust/legal construction clients
+      # for purchase and sale of real estate
+      # Type: xbrli:monetaryItemType (EUR)
+      # Conditional: only when a11001btola == "Oui"
+      def a1807tola
+        return nil unless a11001btola == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE])
+          .joins(:client)
+          .where(clients: {client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST"})
+          .sum(:transaction_value)
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)
