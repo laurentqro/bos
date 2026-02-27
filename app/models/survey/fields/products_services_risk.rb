@@ -509,6 +509,14 @@ class Survey
       def air234
         organization.managed_properties.active_in_year(year).count
       end
+
+      # Q163 — aIR236: Total rental operations in the reporting period
+      # Type: xbrli:integerItemType — computed
+      def air236
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: "RENTAL")
+          .count
+      end
     end
   end
 end

@@ -5202,4 +5202,21 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal baseline + 2, @survey.air234  # 2 active in year (1st and 3rd)
   end
+
+  # Q163 — aIR236: Total rental operations in the reporting period
+  test "air236 counts rental transactions in the year" do
+    baseline = @survey.air236 || 0
+
+    client = Client.create!(organization: @organization, name: "Tenant", client_type: "NATURAL_PERSON", nationality: "MC")
+
+    Transaction.create!(organization: @organization, client: client, transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 3, 1), transaction_value: 120_000, payment_method: "WIRE")
+    Transaction.create!(organization: @organization, client: client, transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 9, 1), transaction_value: 60_000, payment_method: "WIRE")
+    # PURCHASE should not count
+    Transaction.create!(organization: @organization, client: client, transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 6, 1), transaction_value: 500_000, payment_method: "WIRE")
+
+    assert_equal baseline + 2, @survey.air236
+  end
 end
