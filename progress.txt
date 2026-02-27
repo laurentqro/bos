@@ -80,8 +80,8 @@
 
 ### Section 1.9
 - [x] Task 56: Q56 — a13501B — entity has VASP (PSAV) clients (settings-based) (2026-02-27)
-- [ ] Task 57: Q57 — Votre entité distingue-t-elle si des clients PSAV sont des prestataires de conservation (Custodian Wallet Providers) ?
-- [ ] Task 58: Q58 — Votre entité a-t-elle des clients PSAV qui sont des prestataires de conservation (Custodian Wallet Providers) ?
+- [x] Task 57: Q57 — a13601A — entity distinguishes custodian wallet provider PSAV clients (settings-based, conditional on a13501B) (2026-02-27)
+- [x] Task 58: Q58 — a13601CW — entity has custodian wallet provider PSAV clients (settings-based, conditional on a13601A) (2026-02-27)
 - [ ] Task 59: Q59 — Veuillez indiquer le nombre total de clients uniques PSAV qui sont des prestataires de conservation (Custodian Wallet Pr
 - [ ] Task 60: Q60 — Veuillez indiquer le nombre total d'opérations effectuées par les clients PSAV qui qui sont des prestataires de conserva
 - [ ] Task 61: Q61 — Veuillez indiquer la valeur totale des fonds transférés avec et par les clients PSAV qui sont des prestataires de conser

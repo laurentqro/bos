@@ -3430,4 +3430,24 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
     assert_nil @survey.a13601a
   end
+
+  # Q58 — a13601CW: Does your entity have PSAV clients who are custodian wallet providers?
+  # Type: enum "Oui" / "Non" (settings-based, conditional on a13601a)
+
+  test "a13601cw returns nil when a13601a is not Oui" do
+    assert_nil @survey.a13601cw
+  end
+
+  test "a13601cw returns setting value when a13601a is Oui" do
+    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "distinguishes_custodian_wallet_providers", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "has_custodian_wallet_provider_clients", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a13601cw
+  end
+
+  test "a13601cw returns nil when setting is not set but a13601a is Oui" do
+    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "distinguishes_custodian_wallet_providers", category: "entity_info", value: "Oui")
+    assert_nil @survey.a13601cw
+  end
 end
