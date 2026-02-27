@@ -141,6 +141,17 @@ class Survey
         return nil unless a2107w == "Oui"
         setting_value_for("had_cash_operations_in_period")
       end
+
+      # Q128 — a2108W: Total number of cash operations with clients
+      # Type: xbrli:integerItemType — computed, conditional on a2107wrp
+      def a2108w
+        return nil unless a2107wrp == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+          .where(payment_method: %w[CASH MIXED])
+          .count
+      end
     end
   end
 end
