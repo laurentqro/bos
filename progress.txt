@@ -242,43 +242,43 @@
 - [x] Task 186: Q186 — a3205 — introduced clients in reporting period by introducer residence (computed dimensional, conditional on a3501C) (2026-02-27)
 
 ### Section 3.3
-- [ ] Task 187: Q187 — Quelle est la forme juridique de votre entité ?
-- [ ] Task 188: Q188 — Veuillez indiquer le nombre total d'employés de votre entité, ainsi que les partenaires et propriétaires non salariés, à
-- [ ] Task 189: Q189 — Le titulaire de la carte professionnelle exerçant des activités d'agent immobilier est-il une personne morale ?
-- [ ] Task 190: Q190 — Veuillez indiquer le nombre d'actionnaires détenant une participation de 25 % ou plus, ventilé par nationalité primaire 
-- [ ] Task 191: Q191 — Veuillez indiquer le nombre de bénéficiaires effectifs détenant, soit une participation de 25 % ou plus, soit contrôlant
-- [ ] Task 192: Q192 — Votre entité dispose-t-elle des succursales, des filiales ou des agences ?
-- [ ] Task 193: Q193 — Prière d'indiquer le nombre total de succursales, filiales et agences de l'entité locale autorisée, en les ventilant par
-- [ ] Task 194: Q194 — Votre entité est-elle une succursale ou une filiale d'une autre entité ?
-- [ ] Task 195: Q195 — Votre entité est-elle une succursale ou une filiale d'une entité étrangère ?
-- [ ] Task 196: Q196 — Si oui, dans quel pays opère la société mère ?
-- [ ] Task 197: Q197 — Prière d'indiquer le nombre total de succursales et de filiales étrangères (à l'extérieur de Monaco).
-- [ ] Task 198: Q198 — Au cours de la période de déclaration, votre entité a-t-elle rencontré l'un des événements suivants : Un changement de d
-- [ ] Task 199: Q199 — Veuillez renseigner l'évolution ou la modification.
-- [ ] Task 200: Q200 — Votre entité fait-elle partie d'un réseau ou d'un groupe international d'entreprises ?
-- [ ] Task 201: Q201 — Si oui, veuillez préciser lequel.
-- [ ] Task 202: Q202 — Votre entité est-elle membre d'une association ou d'une société professionnelle ?
-- [ ] Task 203: Q203 — Si oui, veuillez préciser lequel.
+- [x] Task 187: Q187 — aIR33LF — legal form of entity (settings-based, enum) (2026-02-27)
+- [x] Task 188: Q188 — aIR328 — professional card holder is legal entity (settings-based, enum) (2026-02-27)
+- [x] Task 189: Q189 — a3301 — total employee headcount (settings-based) (2026-02-27)
+- [x] Task 190: Q190 — a3302 — entity has branches/subsidiaries/agencies (settings-based, enum) (2026-02-27)
+- [x] Task 191: Q191 — a3303 — total branches by country (settings-based dimensional, conditional on a3302) (2026-02-27)
+- [x] Task 192: Q192 — a3304 — entity is branch of foreign entity (settings-based, conditional on a3304C) (2026-02-27)
+- [x] Task 193: Q193 — a3304C — entity is branch of another entity (settings-based, enum) (2026-02-27)
+- [x] Task 194: Q194 — a3305 — parent company country (settings-based, conditional on a3304) (2026-02-27)
+- [x] Task 195: Q195 — a3306 — total foreign branches count (settings-based, conditional on a3304) (2026-02-27)
+- [x] Task 196: Q196 — a3306A — shareholders 25%+ by nationality (settings-based dimensional, conditional on aIR328) (2026-02-27)
+- [x] Task 197: Q197 — a3306B — BOs 25%+ by nationality (settings-based dimensional, conditional on aIR328) (2026-02-27)
+- [x] Task 198: Q198 — a3307 — structural changes during reporting period (settings-based, enum) (2026-02-27)
+- [x] Task 199: Q199 — a3308 — describe structural changes (settings-based, conditional on a3307) (2026-02-27)
+- [x] Task 200: Q200 — a3210B — part of international business network (settings-based, enum) (2026-02-27)
+- [x] Task 201: Q201 — a3211B — specify international network (settings-based, conditional on a3210B) (2026-02-27)
+- [x] Task 202: Q202 — a3210 — member of professional association (settings-based, enum) (2026-02-27)
+- [x] Task 203: Q203 — a3211 — specify professional association (settings-based, conditional on a3210) (2026-02-27)
 
 ### Section 3.4
-- [ ] Task 204: Q204 — Chiffre d'affaires pour la période de déclaration.
-- [ ] Task 205: Q205 — Chiffre d'affaires pour la période de déclaration réalisé dans la Principauté de Monaco.
-- [ ] Task 206: Q206 — Chiffre d'affaires pour la période de déclaration réalisé en dehors de la Principauté de Monaco.
-- [ ] Task 207: Q207 — Veuillez indiquer le montant de votre dernière déclaration annuelle de TVA.
+- [x] Task 204: Q204 — a381 — revenue for reporting period (settings-based, monetaryItemType) (2026-02-27)
+- [x] Task 205: Q205 — a3802 — revenue in Monaco (settings-based, monetaryItemType) (2026-02-27)
+- [x] Task 206: Q206 — a3803 — revenue outside Monaco (settings-based, monetaryItemType) (2026-02-27)
+- [x] Task 207: Q207 — a3804 — annual VAT declaration amount (settings-based, monetaryItemType) (2026-02-27)
 
 ### Section 3.5
-- [ ] Task 208: Q208 — Prière d'indiquer le nombre total de prospects (clients potentiels) qui ont été rejetés en raison de considérations de b
-- [ ] Task 209: Q209 — Votre entité peut-elle distinguer si un prospect (client potentiel) a été rejeté en raison d'un attribut / activité / dé
-- [ ] Task 210: Q210 — Prière d'indiquer le nombre total de prospects (clients potentiels) qui ont été rejetés en raison de considérations de b
+- [x] Task 208: Q208 — a3401 — total rejected prospects count (settings-based, integerItemType) (2026-02-27)
+- [x] Task 209: Q209 — a3402 — can distinguish rejection reasons (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 210: Q210 — a3403 — rejected prospects due to client attributes (settings-based, conditional on a3402) (2026-02-27)
 
 ### Section 3.6
-- [ ] Task 211: Q211 — Prière d'indiquer le nombre total de relations clients résiliées en raison de considérations liées au blanchiment de cap
-- [ ] Task 212: Q212 — Votre entité peut-elle distinguer si une relation d'affaires a été résiliée en raison d'un attribut / activité / déficie
-- [ ] Task 213: Q213 — Prière d'indiquer le nombre total de relations d'affaires avec des clients qui ont été résiliées en raison de considérat
+- [x] Task 211: Q211 — a3414 — total terminated client relationships (settings-based, integerItemType) (2026-02-27)
+- [x] Task 212: Q212 — a3415 — can distinguish termination reasons (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 213: Q213 — a3416 — terminated relationships due to client attributes (settings-based, conditional on a3415) (2026-02-27)
 
 ### Section 3.7
-- [ ] Task 214: Q214 — Avez-vous des commentaires sur l'une des questions de cette section ?
-- [ ] Task 215: Q215 — Prière de partager vos retours et vos commentaires au sujet de cette section.
+- [x] Task 214: Q214 — a3701A — has comments on distribution risk section (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 215: Q215 — a3701 — distribution risk section comments (settings-based, conditional on a3701A) (2026-02-27)
 
 ### Section 1.1
 - [ ] Task 216: C1 — Veuillez indiquer le nombre total d'employés de votre entité, ainsi que les partenaires et propriétaires non salariés, à
