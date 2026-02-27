@@ -255,6 +255,13 @@ class Survey
         return nil unless a3304 == "Oui"
         setting_value_for("parent_company_country")
       end
+
+      # Q195 — a3306: Total foreign branches count (outside Monaco)
+      # Type: xbrli:integerItemType — settings-based, conditional on a3304
+      def a3306
+        return nil unless a3304 == "Oui"
+        setting_value_for("total_foreign_branches")
+      end
     end
   end
 end

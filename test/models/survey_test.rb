@@ -5717,4 +5717,16 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "parent_company_country", category: "entity_info", value: "France")
     assert_equal "France", @survey.a3305
   end
+
+  # Q195 — a3306: Total foreign branches count
+  test "a3306 returns nil when a3304 is not Oui" do
+    assert_nil @survey.a3306
+  end
+
+  test "a3306 returns setting value when a3304 is Oui" do
+    Setting.create!(organization: @organization, key: "is_branch_of_another_entity", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "is_branch_of_foreign_entity", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "total_foreign_branches", category: "entity_info", value: "3")
+    assert_equal "3", @survey.a3306
+  end
 end
