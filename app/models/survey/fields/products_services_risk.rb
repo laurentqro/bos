@@ -221,6 +221,21 @@ class Survey
           .where(clients: {client_type: "LEGAL_ENTITY", incorporation_country: "MC"})
           .count
       end
+
+      # Q135 — a2115AW: Cash ops with foreign legal entities > 100,000 EUR
+      # Type: xbrli:integerItemType — computed, conditional on a2113w
+      def a2115aw
+        return nil unless a2113w == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+          .where(payment_method: %w[CASH MIXED])
+          .where("cash_amount > ?", 100_000)
+          .joins(:client)
+          .where(clients: {client_type: "LEGAL_ENTITY"})
+          .where.not(clients: {incorporation_country: "MC"})
+          .count
+      end
     end
   end
 end
