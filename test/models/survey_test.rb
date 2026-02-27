@@ -4673,4 +4673,16 @@ class SurveyTest < ActiveSupport::TestCase
   test "a2110w returns nil when a2107wrp is not Oui" do
     assert_nil @survey.a2110w
   end
+
+  # Q132 — a2113W: Can entity distinguish cash ops > 100,000 EUR?
+  test "a2113w returns setting value when a2107wrp is Oui" do
+    Setting.create!(organization: @organization, key: "accepts_cash_operations", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "had_cash_operations_in_period", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "can_distinguish_cash_over_100k", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a2113w
+  end
+
+  test "a2113w returns nil when a2107wrp is not Oui" do
+    assert_nil @survey.a2113w
+  end
 end

@@ -186,6 +186,13 @@ class Survey
           .where("cash_amount >= ?", 10_000)
           .count
       end
+
+      # Q132 — a2113W: Can entity distinguish cash operations > 100,000 EUR?
+      # Type: enum (Oui/Non) — settings-based, conditional on a2107wrp
+      def a2113w
+        return nil unless a2107wrp == "Oui"
+        setting_value_for("can_distinguish_cash_over_100k")
+      end
     end
   end
 end
