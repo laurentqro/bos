@@ -5290,4 +5290,35 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "uses_local_third_party_cdd", category: "entity_info", value: "Oui")
     assert_equal "Oui", @survey.a3101
   end
+
+  # Q169 — a3102: Clients with local third-party CDD, by nationality (dimensional)
+  test "a3102 returns nil when a3101 is not Oui" do
+    assert_nil @survey.a3102
+  end
+
+  test "a3102 returns client count by nationality for local third-party CDD" do
+    Setting.create!(organization: @organization, key: "uses_local_third_party_cdd", category: "entity_info", value: "Oui")
+    baseline = @survey.a3102
+
+    # NP with local third-party CDD
+    Client.create!(organization: @organization, name: "Local CDD NP", client_type: "NATURAL_PERSON",
+      nationality: "FR", third_party_cdd: true, third_party_cdd_type: "LOCAL")
+
+    # LE with local third-party CDD
+    Client.create!(organization: @organization, name: "Local CDD LE", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SARL", incorporation_country: "IT",
+      third_party_cdd: true, third_party_cdd_type: "LOCAL")
+
+    # NP with foreign third-party CDD (should NOT count)
+    Client.create!(organization: @organization, name: "Foreign CDD NP", client_type: "NATURAL_PERSON",
+      nationality: "FR", third_party_cdd: true, third_party_cdd_type: "FOREIGN", third_party_cdd_country: "GB")
+
+    # NP without third-party CDD (should NOT count)
+    Client.create!(organization: @organization, name: "No CDD NP", client_type: "NATURAL_PERSON",
+      nationality: "FR")
+
+    result = @survey.a3102
+    assert_equal (baseline["FR"] || 0) + 1, result["FR"]
+    assert_equal (baseline["IT"] || 0) + 1, result["IT"]
+  end
 end
