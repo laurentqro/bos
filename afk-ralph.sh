@@ -1,5 +1,5 @@
 #!/bin/bash
-# AFK Ralph Loop for ImmoCRM AMSF Survey
+# AFK Ralph Loop for ImmoCRM AMSF Survey (with streaming output)
 # Usage: ./afk-ralph.sh <iterations>
 set -e
 
@@ -9,7 +9,11 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-echo "🔄 Starting AMSF Survey Ralph Loop for $1 iterations..."
+# jq filters for stream-json output
+stream_text='select(.type == "assistant").message.content[]? | select(.type == "text").text // empty | gsub("\n"; "\r\n") | . + "\r\n\n"'
+final_result='select(.type == "result").result // empty'
+
+echo "🔄 Starting AMSF Survey Ralph Loop for $1 iterations (streaming)..."
 echo ""
 
 for ((i=1; i<=$1; i++)); do
@@ -17,28 +21,33 @@ for ((i=1; i<=$1; i++)); do
   echo "🔄 Iteration $i of $1"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-  result=$(claude --dangerously-skip-permissions -p \
-    "@CLAUDE.md @progress.txt @amsf_questions.csv \
-    1. Read CLAUDE.md for project context and conventions. \
-    2. Read progress.txt to see what's completed. \
-    3. Find the next incomplete task (one single AMSF question). \
-    4. Find that question in amsf_questions.csv for context and instructions. \
-    5. Look up the field_id in questionnaire_structure.yml and check the XSD for expected type. \
-    6. Find the existing method in app/models/survey/fields/. \
-    7. Fix the method to compute real data instead of hardcoded/stubbed values. \
-    8. Write a test for this specific field. \
-    9. Run the test suite to verify everything passes. \
-    10. If Arelle is available, generate XBRL and validate this field. \
-    11. Commit with message format: [AMSF Qnum] Short description. \
-    12. Update progress.txt: mark the task as complete with today's date. \
-    ONLY WORK ON A SINGLE QUESTION. \
-    If all tasks in progress.txt are complete, output <promise>COMPLETE</promise>.")
+  tmpfile=$(mktemp)
+  trap "rm -f $tmpfile" EXIT
 
-  echo "$result"
+  claude \
+    --dangerously-skip-permissions \
+    --print \
+    --verbose \
+    --output-format stream-json \
+    "@PRD.md @progress.txt \
+    1. Read the PRD and progress file. \
+    2. Find the next incomplete task and implement it. \
+    3. If Arelle is available, generate XBRL and validate this field. \
+    4. Commit your changes with message format: [AMSF Qnum] Short description. \
+    5. Update progress.txt with what you did. \
+    ONLY WORK ON A SINGLE TASK. \
+    If all tasks in progress.txt are complete, output <promise>COMPLETE</promise>." \
+  | grep --line-buffered '^{' \
+  | tee "$tmpfile" \
+  | jq --unbuffered -rj "$stream_text"
+
+  result=$(jq -r "$final_result" "$tmpfile")
+  rm -f "$tmpfile"
+
   echo ""
 
   if [[ "$result" == *"<promise>COMPLETE</promise>"* ]]; then
-    echo "🎉 All 33 sections complete after $i iterations!"
+    echo "🎉 All tasks complete after $i iterations!"
     exit 0
   fi
 
