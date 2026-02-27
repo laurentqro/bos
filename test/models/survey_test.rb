@@ -5147,4 +5147,12 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal baseline + 1, @survey.air117
   end
+
+  # Q159 — aIR2391: Has the State of Monaco pre-empted properties for sale?
+  test "air2391 returns setting value for monaco_preempted_properties" do
+    assert_nil @survey.air2391
+
+    Setting.create!(organization: @organization, key: "monaco_preempted_properties", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.air2391
+  end
 end

@@ -442,6 +442,12 @@ class Survey
           .sum(:transaction_value)
       end
 
+      # Q159 — aIR2391: Has the State of Monaco pre-empted properties for sale?
+      # Type: enum (Oui/Non) — settings-based
+      def air2391
+        setting_value_for("monaco_preempted_properties")
+      end
+
       # Q158 — aIR117: How many purchases/sales were for investment purposes?
       # Type: xbrli:integerItemType — computed
       def air117
