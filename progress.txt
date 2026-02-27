@@ -281,41 +281,41 @@
 - [x] Task 215: Q215 — a3701 — distribution risk section comments (settings-based, conditional on a3701A) (2026-02-27)
 
 ### Section 1.1
-- [ ] Task 216: C1 — Veuillez indiquer le nombre total d'employés de votre entité, ainsi que les partenaires et propriétaires non salariés, à
-- [ ] Task 217: C2 — Veuillez fournir le nombre total d'employés équivalents temps plein, plus les partenaires et propriétaires non salariés,
-- [ ] Task 218: C3 — Approximativement combien d'heures les employés ont-ils consacré à la conformité LCB/FT-P-C par mois ?
-- [ ] Task 219: C4 — Votre entité dispose-t-elle d'un conseil d'administration et/ou d'une haute direction ?
-- [ ] Task 220: C5 — Votre entité dispose-t-elle d'un service de conformité ?
-- [ ] Task 221: C6 — Votre entité fait-elle partie d'un groupe ?
+- [x] Task 216: C1 — aC1102A — total employees at end of reporting period (settings-based, integerItemType) (2026-02-27)
+- [x] Task 217: C2 — aC1102 — FTE employees at end of reporting period (settings-based, decimalItemType) (2026-02-27)
+- [x] Task 218: C3 — aC1101Z — hours on AML/CFT compliance per month (settings-based, decimalItemType) (2026-02-27)
+- [x] Task 219: C4 — aC114 — has board/senior management (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 220: C5 — aC1106 — has compliance department (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 221: C6 — aC1518A — entity is part of a group (settings-based, enum Oui/Non) (2026-02-27)
 
 ### Section 1.2
-- [ ] Task 222: C7 — Votre entité a-t-elle préparé un ensemble de politiques et procédures de LBC/FT documenté ?
-- [ ] Task 223: C8 — Ces politiques et procédures ont-elles été approuvées par le conseil d'administration et/ou la haute direction de votre 
-- [ ] Task 224: C9 — Votre entité a-t-elle diffusé ces politiques et procédures à tous ses employés ?
-- [ ] Task 225: C10 — Votre entité a-t-elle veillé à faire connaître ces politiques et procédures à tous ses employés ?
-- [ ] Task 226: C11 — Votre entité a-t-elle mis à jour ses politiques et procédures écrites de LBC/FT au cours de l'année écoulée ?
-- [ ] Task 227: C12 — Prière d'indiquer la date de la dernière mise à jour des politiques et procédures écrites de LBC/FT de votre entité.
-- [ ] Task 228: C13 — Votre entité a-t-elle une pratique systématique de suivi et de gestion des modifications apportées aux politiques et pro
-- [ ] Task 229: C14 — Votre entité dispose-t-elle d'un programme de LBC/FT-P à l'échelle du groupe ?
-- [ ] Task 230: C15 — Votre entité a-t-elle effectué une analyse pour déterminer si le programme LBC/FT-P du groupe est conforme à la législat
-- [ ] Task 231: C16 — Qui a préparé les politiques et procédures de votre entité ?
-- [ ] Task 232: C17 — Votre entité a-t-elle procédé à une auto-évaluation de l'adéquation des procédures de LBC/FT ?
+- [x] Task 222: C7 — aC1201 — has written AML/CFT policies (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 223: C8 — aC1202 — policies approved by board (settings-based, conditional on aC114, enum Oui/Non) (2026-02-27)
+- [x] Task 224: C9 — aC1203 — policies disseminated to employees (settings-based, conditional on aC1201, enum Oui/Non) (2026-02-27)
+- [x] Task 225: C10 — aC1204 — employees aware of policies (settings-based, conditional on aC1201, enum Oui/Non) (2026-02-27)
+- [x] Task 226: C11 — aC1205 — policies updated past year (settings-based, conditional on aC1201, enum Oui/Non) (2026-02-27)
+- [x] Task 227: C12 — aC1206 — last policy update date (settings-based, conditional on aC1201, dateItemType) (2026-02-27)
+- [x] Task 228: C13 — aC1207 — systematic policy change tracking (settings-based, conditional on aC1201, enum Oui/Non) (2026-02-27)
+- [x] Task 229: C14 — aC1209B — has group-wide AML program (settings-based, conditional on aC1518A, enum Oui/Non) (2026-02-27)
+- [x] Task 230: C15 — aC1209C — group program compliance analyzed (settings-based, conditional on aC1209B, enum Oui/Non) (2026-02-27)
+- [x] Task 231: C16 — aC1208 — who prepared the policies (settings-based, conditional on aC1201, 4-value enum) (2026-02-27)
+- [x] Task 232: C17 — aC1209 — self-assessed AML adequacy (settings-based, conditional on aC1201, enum Oui/Non) (2026-02-27)
 
 ### Section 1.3
-- [ ] Task 233: C18 — Le conseil d'administration et/ou la haute direction de votre entité démontrent-ils une responsabilité globale en matièr
-- [ ] Task 234: C19 — Le conseil d'administration et/ou la haute direction de votre entité reçoivent-ils régulièrement des rapports de LBC/FT 
-- [ ] Task 235: C20 — Le conseil d'administration et/ou la haute direction de votre entité s'assurent-ils que les lacunes en matière de LBC/FT
-- [ ] Task 236: C21 — La haute direction de votre entité valide-t-elle (donne-t-elle son approbation pour) l'acceptation des clients à haut ri
+- [x] Task 233: C18 — aC1301 — board demonstrates AML/CFT responsibility (settings-based, conditional on aC114, enum Oui/Non) (2026-02-27)
+- [x] Task 234: C19 — aC1302 — board receives regular AML/CFT reports (settings-based, conditional on aC114, enum Oui/Non) (2026-02-27)
+- [x] Task 235: C20 — aC1303 — board corrects AML/CFT shortcomings (settings-based, conditional on aC114, enum Oui/Non) (2026-02-27)
+- [x] Task 236: C21 — aC1304 — senior mgmt approves high-risk clients (settings-based, conditional on aC114, enum Oui/Non) (2026-02-27)
 
 ### Section 1.4
-- [ ] Task 237: C22 — Votre entité a-t-elle fait face à des violations liées à la LBC/FT au cours des 5 dernières années ?
-- [ ] Task 238: C23 — Prière d'indiquer le nombre total de violations liées à la LBC/FT au cours des 5 dernières années.
-- [ ] Task 239: C24 — Prière d'indiquer le nombre et le type de violations en matière de LBC/FT.
+- [x] Task 237: C22 — aC1401 — had AML/CFT violations past 5 years (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 238: C23 — aC1402 — total AML/CFT violations count (settings-based, conditional on aC1401, integerItemType) (2026-02-27)
+- [x] Task 239: C24 — aC1403 — violations description (settings-based, conditional on aC1401, stringItemType) (2026-02-27)
 
 ### Section 1.5
-- [ ] Task 240: C25 — Votre entité a-t-elle dispensé une formation en LBC/FT à ses directeurs/sa direction au cours de la période de déclarati
-- [ ] Task 241: C26 — Votre entité a-t-elle organisé une formation en LBC/FT pour ses employés du office au cours de la période de déclaration
-- [ ] Task 242: C27 — Prière d'indiquer le nombre total d'employés formés sur les questions de LBC/FT au cours du cycle de déclaration.
+- [x] Task 240: C25 — aC1501 — AML/CFT training for directors (settings-based, conditional on aC114, enum Oui/Non) (2026-02-27)
+- [x] Task 241: C26 — aC1503B — AML/CFT training for office staff (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 242: C27 — aC1506 — total employees trained on AML/CFT (settings-based, integerItemType) (2026-02-27)
 
 ### Section 1.6
 - [ ] Task 243: C28 — Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les renseignements de sa carte

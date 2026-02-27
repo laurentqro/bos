@@ -6082,4 +6082,111 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "self_assessed_aml_adequacy", category: "compliance_policies", value: "Oui")
     assert_equal "Oui", @survey.ac1209
   end
+
+  # C18 — aC1301: Board/senior management demonstrates overall AML/CFT responsibility? (conditional on aC114)
+  test "ac1301 returns nil when ac114 is not Oui" do
+    assert_nil @survey.ac1301
+  end
+
+  test "ac1301 returns setting value when ac114 is Oui" do
+    Setting.create!(organization: @organization, key: "has_board_or_senior_management", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "board_demonstrates_aml_responsibility", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1301
+  end
+
+  # C19 — aC1302: Board/senior management receives regular AML/CFT reports? (conditional on aC114)
+  test "ac1302 returns nil when ac114 is not Oui" do
+    assert_nil @survey.ac1302
+  end
+
+  test "ac1302 returns setting value when ac114 is Oui" do
+    Setting.create!(organization: @organization, key: "has_board_or_senior_management", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "board_receives_aml_reports", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1302
+  end
+
+  # C20 — aC1303: Board/senior management ensures AML/CFT shortcomings are corrected? (conditional on aC114)
+  test "ac1303 returns nil when ac114 is not Oui" do
+    assert_nil @survey.ac1303
+  end
+
+  test "ac1303 returns setting value when ac114 is Oui" do
+    Setting.create!(organization: @organization, key: "has_board_or_senior_management", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "board_corrects_aml_shortcomings", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1303
+  end
+
+  # C21 — aC1304: Senior management approves high-risk client acceptance? (conditional on aC114)
+  test "ac1304 returns nil when ac114 is not Oui" do
+    assert_nil @survey.ac1304
+  end
+
+  test "ac1304 returns setting value when ac114 is Oui" do
+    Setting.create!(organization: @organization, key: "has_board_or_senior_management", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "senior_mgmt_approves_high_risk_clients", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1304
+  end
+
+  # C22 — aC1401: Entity had AML/CFT violations in past 5 years? (enum Oui/Non, unconditional)
+  test "ac1401 returns nil when no setting exists" do
+    assert_nil @survey.ac1401
+  end
+
+  test "ac1401 returns setting value" do
+    Setting.create!(organization: @organization, key: "had_aml_violations_past_5_years", category: "compliance_policies", value: "Non")
+    assert_equal "Non", @survey.ac1401
+  end
+
+  # C23 — aC1402: Total AML/CFT violations in past 5 years (integerItemType, conditional on aC1401)
+  test "ac1402 returns nil when ac1401 is not Oui" do
+    assert_nil @survey.ac1402
+  end
+
+  test "ac1402 returns setting value when ac1401 is Oui" do
+    Setting.create!(organization: @organization, key: "had_aml_violations_past_5_years", category: "compliance_policies", value: "Oui")
+    Setting.create!(organization: @organization, key: "aml_violations_count_past_5_years", category: "compliance_policies", value: "3")
+    assert_equal "3", @survey.ac1402
+  end
+
+  # C24 — aC1403: Number and type of AML/CFT violations (stringItemType, conditional on aC1401)
+  test "ac1403 returns nil when ac1401 is not Oui" do
+    assert_nil @survey.ac1403
+  end
+
+  test "ac1403 returns setting value when ac1401 is Oui" do
+    Setting.create!(organization: @organization, key: "had_aml_violations_past_5_years", category: "compliance_policies", value: "Oui")
+    Setting.create!(organization: @organization, key: "aml_violations_description", category: "compliance_policies", value: "2 documentation gaps, 1 late filing")
+    assert_equal "2 documentation gaps, 1 late filing", @survey.ac1403
+  end
+
+  # C25 — aC1501: AML/CFT training provided to directors/management? (conditional on aC114)
+  test "ac1501 returns nil when ac114 is not Oui" do
+    assert_nil @survey.ac1501
+  end
+
+  test "ac1501 returns setting value when ac114 is Oui" do
+    Setting.create!(organization: @organization, key: "has_board_or_senior_management", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "aml_training_provided_to_directors", category: "training", value: "Oui")
+    assert_equal "Oui", @survey.ac1501
+  end
+
+  # C26 — aC1503B: AML/CFT training provided to office employees? (enum Oui/Non, unconditional)
+  test "ac1503b returns nil when no setting exists" do
+    assert_nil @survey.ac1503b
+  end
+
+  test "ac1503b returns setting value" do
+    Setting.create!(organization: @organization, key: "aml_training_provided_to_staff", category: "training", value: "Oui")
+    assert_equal "Oui", @survey.ac1503b
+  end
+
+  # C27 — aC1506: Total employees trained on AML/CFT (integerItemType, unconditional)
+  test "ac1506 returns nil when no setting exists" do
+    assert_nil @survey.ac1506
+  end
+
+  test "ac1506 returns setting value" do
+    Setting.create!(organization: @organization, key: "total_employees_trained_aml", category: "training", value: "12")
+    assert_equal "12", @survey.ac1506
+  end
 end

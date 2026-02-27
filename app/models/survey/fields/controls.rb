@@ -114,6 +114,73 @@ class Survey
         return nil unless ac1201 == "Oui"
         setting_value_for("self_assessed_aml_adequacy")
       end
+
+      # C18 — aC1301: Board/senior management demonstrates overall AML/CFT responsibility?
+      # Type: enum (Oui/Non) — settings-based, conditional on aC114
+      def ac1301
+        return nil unless ac114 == "Oui"
+        setting_value_for("board_demonstrates_aml_responsibility")
+      end
+
+      # C19 — aC1302: Board/senior management receives regular AML/CFT reports?
+      # Type: enum (Oui/Non) — settings-based, conditional on aC114
+      def ac1302
+        return nil unless ac114 == "Oui"
+        setting_value_for("board_receives_aml_reports")
+      end
+
+      # C20 — aC1303: Board/senior management ensures AML/CFT shortcomings are corrected?
+      # Type: enum (Oui/Non) — settings-based, conditional on aC114
+      def ac1303
+        return nil unless ac114 == "Oui"
+        setting_value_for("board_corrects_aml_shortcomings")
+      end
+
+      # C21 — aC1304: Senior management approves high-risk client acceptance?
+      # Type: enum (Oui/Non) — settings-based, conditional on aC114
+      def ac1304
+        return nil unless ac114 == "Oui"
+        setting_value_for("senior_mgmt_approves_high_risk_clients")
+      end
+
+      # C22 — aC1401: Entity had AML/CFT violations in past 5 years?
+      # Type: enum (Oui/Non) — settings-based
+      def ac1401
+        setting_value_for("had_aml_violations_past_5_years")
+      end
+
+      # C23 — aC1402: Total AML/CFT violations in past 5 years
+      # Type: xbrli:integerItemType — settings-based, conditional on aC1401
+      def ac1402
+        return nil unless ac1401 == "Oui"
+        setting_value_for("aml_violations_count_past_5_years")
+      end
+
+      # C24 — aC1403: Number and type of AML/CFT violations
+      # Type: xbrli:stringItemType — settings-based, conditional on aC1401
+      def ac1403
+        return nil unless ac1401 == "Oui"
+        setting_value_for("aml_violations_description")
+      end
+
+      # C25 — aC1501: AML/CFT training provided to directors/management?
+      # Type: enum (Oui/Non) — settings-based, conditional on aC114
+      def ac1501
+        return nil unless ac114 == "Oui"
+        setting_value_for("aml_training_provided_to_directors")
+      end
+
+      # C26 — aC1503B: AML/CFT training provided to office employees?
+      # Type: enum (Oui/Non) — settings-based
+      def ac1503b
+        setting_value_for("aml_training_provided_to_staff")
+      end
+
+      # C27 — aC1506: Total employees trained on AML/CFT
+      # Type: xbrli:integerItemType — settings-based
+      def ac1506
+        setting_value_for("total_employees_trained_aml")
+      end
     end
   end
 end
