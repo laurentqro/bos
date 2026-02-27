@@ -5963,4 +5963,123 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "entity_is_part_of_group", category: "entity_info", value: "Non")
     assert_equal "Non", @survey.ac1518a
   end
+
+  # C7 — aC1201: Has written AML/CFT policies and procedures?
+  test "ac1201 returns setting value for has_written_aml_policies" do
+    assert_nil @survey.ac1201
+
+    Setting.create!(organization: @organization, key: "has_written_aml_policies", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1201
+  end
+
+  # C8 — aC1202: Policies approved by board/senior management? (conditional on aC114)
+  test "ac1202 returns nil when ac114 is not Oui" do
+    assert_nil @survey.ac1202
+  end
+
+  test "ac1202 returns setting value when ac114 is Oui" do
+    Setting.create!(organization: @organization, key: "has_board_or_senior_management", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "policies_approved_by_board", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1202
+  end
+
+  # C9 — aC1203: Policies disseminated to all employees? (conditional on aC1201)
+  test "ac1203 returns nil when ac1201 is not Oui" do
+    assert_nil @survey.ac1203
+  end
+
+  test "ac1203 returns setting value when ac1201 is Oui" do
+    Setting.create!(organization: @organization, key: "has_written_aml_policies", category: "compliance_policies", value: "Oui")
+    Setting.create!(organization: @organization, key: "policies_disseminated_to_employees", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1203
+  end
+
+  # C10 — aC1204: Ensured employees know the policies? (conditional on aC1201)
+  test "ac1204 returns nil when ac1201 is not Oui" do
+    assert_nil @survey.ac1204
+  end
+
+  test "ac1204 returns setting value when ac1201 is Oui" do
+    Setting.create!(organization: @organization, key: "has_written_aml_policies", category: "compliance_policies", value: "Oui")
+    Setting.create!(organization: @organization, key: "employees_aware_of_policies", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1204
+  end
+
+  # C11 — aC1205: Updated AML/CFT policies in past year? (conditional on aC1201)
+  test "ac1205 returns nil when ac1201 is not Oui" do
+    assert_nil @survey.ac1205
+  end
+
+  test "ac1205 returns setting value when ac1201 is Oui" do
+    Setting.create!(organization: @organization, key: "has_written_aml_policies", category: "compliance_policies", value: "Oui")
+    Setting.create!(organization: @organization, key: "policies_updated_past_year", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1205
+  end
+
+  # C12 — aC1206: Date of last policy update (conditional on aC1201)
+  test "ac1206 returns nil when ac1201 is not Oui" do
+    assert_nil @survey.ac1206
+  end
+
+  test "ac1206 returns setting value when ac1201 is Oui" do
+    Setting.create!(organization: @organization, key: "has_written_aml_policies", category: "compliance_policies", value: "Oui")
+    Setting.create!(organization: @organization, key: "last_policy_update_date", category: "compliance_policies", value: "2025-06-15")
+    assert_equal "2025-06-15", @survey.ac1206
+  end
+
+  # C13 — aC1207: Systematic tracking of policy changes? (conditional on aC1201)
+  test "ac1207 returns nil when ac1201 is not Oui" do
+    assert_nil @survey.ac1207
+  end
+
+  test "ac1207 returns setting value when ac1201 is Oui" do
+    Setting.create!(organization: @organization, key: "has_written_aml_policies", category: "compliance_policies", value: "Oui")
+    Setting.create!(organization: @organization, key: "systematic_policy_change_tracking", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1207
+  end
+
+  # C14 — aC1209B: Has group-wide AML/CFT program? (conditional on aC1518A)
+  test "ac1209b returns nil when ac1518a is not Oui" do
+    assert_nil @survey.ac1209b
+  end
+
+  test "ac1209b returns setting value when ac1518a is Oui" do
+    Setting.create!(organization: @organization, key: "entity_is_part_of_group", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "has_group_aml_program", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1209b
+  end
+
+  # C15 — aC1209C: Analyzed group AML program for local compliance? (conditional on aC1209B)
+  test "ac1209c returns nil when ac1209b is not Oui" do
+    assert_nil @survey.ac1209c
+  end
+
+  test "ac1209c returns setting value when ac1209b is Oui" do
+    Setting.create!(organization: @organization, key: "entity_is_part_of_group", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "has_group_aml_program", category: "compliance_policies", value: "Oui")
+    Setting.create!(organization: @organization, key: "group_aml_program_compliance_analyzed", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1209c
+  end
+
+  # C16 — aC1208: Who prepared the policies? (conditional on aC1201)
+  test "ac1208 returns nil when ac1201 is not Oui" do
+    assert_nil @survey.ac1208
+  end
+
+  test "ac1208 returns setting value when ac1201 is Oui" do
+    Setting.create!(organization: @organization, key: "has_written_aml_policies", category: "compliance_policies", value: "Oui")
+    Setting.create!(organization: @organization, key: "policy_preparer", category: "compliance_policies", value: "Par l'entité")
+    assert_equal "Par l'entité", @survey.ac1208
+  end
+
+  # C17 — aC1209: Has self-assessed AML/CFT procedures adequacy? (conditional on aC1201)
+  test "ac1209 returns nil when ac1201 is not Oui" do
+    assert_nil @survey.ac1209
+  end
+
+  test "ac1209 returns setting value when ac1201 is Oui" do
+    Setting.create!(organization: @organization, key: "has_written_aml_policies", category: "compliance_policies", value: "Oui")
+    Setting.create!(organization: @organization, key: "self_assessed_aml_adequacy", category: "compliance_policies", value: "Oui")
+    assert_equal "Oui", @survey.ac1209
+  end
 end
