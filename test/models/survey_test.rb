@@ -4934,4 +4934,12 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "plans_to_accept_virtual_currencies", category: "entity_info", value: "Oui")
     assert_equal "Oui", @survey.a2201d
   end
+
+  # Q147 — a2202: Does entity have business relations with virtual asset platforms?
+  test "a2202 returns setting value" do
+    assert_nil @survey.a2202
+
+    Setting.create!(organization: @organization, key: "has_virtual_asset_platform_relations", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a2202
+  end
 end

@@ -349,6 +349,12 @@ class Survey
       def a2201d
         setting_value_for("plans_to_accept_virtual_currencies")
       end
+
+      # Q147 — a2202: Does entity have business relations with virtual asset platforms?
+      # Type: enum (Oui/Non) — settings-based
+      def a2202
+        setting_value_for("has_virtual_asset_platform_relations")
+      end
     end
   end
 end
