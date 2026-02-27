@@ -5513,4 +5513,17 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "accepts_clients_through_introducers", category: "entity_info", value: "Oui")
     assert_equal "Oui", @survey.a3201
   end
+
+  # Q181 — a3501B: Can entity provide nationality info for introduced clients?
+  test "a3501b returns nil when a3201 is not Oui" do
+    assert_nil @survey.a3501b
+  end
+
+  test "a3501b returns setting value when a3201 is Oui" do
+    Setting.create!(organization: @organization, key: "accepts_clients_through_introducers", category: "entity_info", value: "Oui")
+    assert_nil @survey.a3501b
+
+    Setting.create!(organization: @organization, key: "can_provide_introducer_client_nationality", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a3501b
+  end
 end

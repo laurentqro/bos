@@ -126,6 +126,13 @@ class Survey
       def a3201
         setting_value_for("accepts_clients_through_introducers")
       end
+
+      # Q181 — a3501B: Can entity provide nationality info for introduced clients?
+      # Type: enum (Oui/Non) — settings-based, conditional on a3201
+      def a3501b
+        return nil unless a3201 == "Oui"
+        setting_value_for("can_provide_introducer_client_nationality")
+      end
     end
   end
 end
