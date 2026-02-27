@@ -193,6 +193,20 @@ class Survey
         return nil unless a2107wrp == "Oui"
         setting_value_for("can_distinguish_cash_over_100k")
       end
+
+      # Q133 — a2113AW: Cash ops with natural persons > 100,000 EUR
+      # Type: xbrli:integerItemType — computed, conditional on a2113w
+      def a2113aw
+        return nil unless a2113w == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+          .where(payment_method: %w[CASH MIXED])
+          .where("cash_amount > ?", 100_000)
+          .joins(:client)
+          .where(clients: {client_type: "NATURAL_PERSON"})
+          .count
+      end
     end
   end
 end

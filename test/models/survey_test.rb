@@ -4685,4 +4685,32 @@ class SurveyTest < ActiveSupport::TestCase
   test "a2113w returns nil when a2107wrp is not Oui" do
     assert_nil @survey.a2113w
   end
+
+  # Q133 — a2113AW: Cash ops with natural persons > 100,000 EUR
+  test "a2113aw returns count of NP cash ops > 100000 when a2113w is Oui" do
+    Setting.create!(organization: @organization, key: "accepts_cash_operations", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "had_cash_operations_in_period", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "can_distinguish_cash_over_100k", category: "entity_info", value: "Oui")
+    baseline = @survey.a2113aw || 0
+
+    np_client = Client.create!(organization: @organization, client_type: "NATURAL_PERSON", name: "NP Cash", nationality: "FR")
+    le_client = Client.create!(organization: @organization, client_type: "LEGAL_ENTITY", name: "LE Cash",
+      nationality: "FR", legal_entity_type: "SCI", incorporation_country: "MC")
+
+    # NP cash > 100k — should count
+    Transaction.create!(organization: @organization, client: np_client, transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 3, 1), transaction_value: 200_000, payment_method: "CASH", cash_amount: 150_000)
+    # NP cash <= 100k — should NOT count
+    Transaction.create!(organization: @organization, client: np_client, transaction_type: "SALE",
+      transaction_date: Date.new(@year, 6, 1), transaction_value: 100_000, payment_method: "CASH", cash_amount: 100_000)
+    # LE cash > 100k — should NOT count (wrong client type)
+    Transaction.create!(organization: @organization, client: le_client, transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 7, 1), transaction_value: 300_000, payment_method: "CASH", cash_amount: 200_000)
+
+    assert_equal baseline + 1, @survey.a2113aw
+  end
+
+  test "a2113aw returns nil when a2113w is not Oui" do
+    assert_nil @survey.a2113aw
+  end
 end
