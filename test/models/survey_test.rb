@@ -4310,4 +4310,25 @@ class SurveyTest < ActiveSupport::TestCase
       assert_nil survey.send(method)
     end
   end
+
+  # === Section 1.12: Comments ===
+
+  test "a14801 returns setting value for has comments on section" do
+    Setting.create!(organization: @organization, key: "has_inherent_risk_comments", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a14801
+  end
+
+  test "a14801 returns nil when setting is not set" do
+    assert_nil @survey.a14801
+  end
+
+  test "a14001 returns comment text when a14801 is Oui" do
+    Setting.create!(organization: @organization, key: "has_inherent_risk_comments", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "inherent_risk_comments", category: "entity_info", value: "Some feedback")
+    assert_equal "Some feedback", @survey.a14001
+  end
+
+  test "a14001 returns nil when a14801 is not Oui" do
+    assert_nil @survey.a14001
+  end
 end
