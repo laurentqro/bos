@@ -343,6 +343,12 @@ class Survey
       def a2201a
         setting_value_for("accepts_cryptocurrency_operations")
       end
+
+      # Q146 — a2201D: Plans to accept virtual currency payments next year?
+      # Type: enum (Oui/Non) — settings-based
+      def a2201d
+        setting_value_for("plans_to_accept_virtual_currencies")
+      end
     end
   end
 end

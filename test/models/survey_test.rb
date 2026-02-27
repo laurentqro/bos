@@ -4926,4 +4926,12 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "accepts_cryptocurrency_operations", category: "entity_info", value: "Oui")
     assert_equal "Oui", @survey.a2201a
   end
+
+  # Q146 — a2201D: Plans to accept virtual currency payments next year?
+  test "a2201d returns setting value" do
+    assert_nil @survey.a2201d
+
+    Setting.create!(organization: @organization, key: "plans_to_accept_virtual_currencies", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a2201d
+  end
 end
