@@ -50,7 +50,7 @@
 - [x] Task 32: Q32 — aIR1210 — count of residence-purpose purchases in reporting period (computed, conditional on air129) (2026-02-27)
 
 ### Section 1.6
-- [ ] Task 33: Q33 — Veuillez indiquer le nombre total de clients uniques qui sont des personnes morales, ventilé selon le pays du siège ou d
+- [x] Task 33: Q33 — a1501 — total unique legal entity clients (excl. trusts) by incorporation country for purchase/sale (2026-02-27)
 - [ ] Task 34: Q34 — Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des personnes morales pour l'achat et
 - [ ] Task 35: Q35 — Veuillez indiquer la valeur totale des fonds transférés par les clients qui sont des personnes morales pour l'achat et l
 - [ ] Task 36: Q36 — Votre entité distingue-t-elle si les clients sont des personnes morales monégasques et le type de personne morale ?

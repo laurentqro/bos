@@ -379,6 +379,21 @@ class Survey
           .count
       end
 
+      # Q33 — a1501: Total unique legal entity clients (excl. trusts)
+      # by incorporation country, for purchase and sale of real estate
+      # Type: xbrli:integerItemType — dimensional by country (hash of counts)
+      def a1501
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE])
+          .joins(:client)
+          .where(clients: {client_type: "LEGAL_ENTITY"})
+          .where.not(clients: {legal_entity_type: "TRUST"})
+          .where.not(clients: {incorporation_country: nil})
+          .distinct
+          .group("clients.incorporation_country")
+          .count("clients.id")
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)

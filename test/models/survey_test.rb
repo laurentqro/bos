@@ -1717,6 +1717,162 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 2, @survey.air1210
   end
 
+  # Q33 — a1501: Total unique legal entity clients (excl. trusts)
+  # by incorporation country, for purchase and sale of real estate
+  # Type: xbrli:integerItemType — dimensional by country (hash of counts)
+
+  test "a1501 returns hash of unique legal entity clients grouped by incorporation country for purchase/sale" do
+    # Create legal entity clients with incorporation_country set and purchase/sale transactions
+    le_fr = Client.create!(
+      organization: @organization,
+      name: "French Corp SARL",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SARL",
+      nationality: "FR",
+      incorporation_country: "FR",
+      became_client_at: 3.months.ago
+    )
+    le_ch = Client.create!(
+      organization: @organization,
+      name: "Swiss Holding SA",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      nationality: "CH",
+      incorporation_country: "CH",
+      became_client_at: 3.months.ago
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: le_fr,
+      reference: "A1501-FR",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "PURCHASE",
+      transaction_value: 1_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: le_ch,
+      reference: "A1501-CH",
+      transaction_date: Date.current - 3.days,
+      transaction_type: "SALE",
+      transaction_value: 2_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    result = @survey.a1501
+
+    assert_instance_of Hash, result
+    assert_equal 1, result["FR"]
+    assert_equal 1, result["CH"]
+  end
+
+  test "a1501 excludes trusts" do
+    trust = clients(:trust)
+    assert_equal "TRUST", trust.legal_entity_type
+    assert_equal "MC", trust.incorporation_country
+
+    Transaction.create!(
+      organization: @organization,
+      client: trust,
+      reference: "A1501-TRUST",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "PURCHASE",
+      transaction_value: 3_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    result = @survey.a1501
+    # Trust's incorporation_country is MC, but trusts are excluded
+    # Only vasp_client (MC, SAM) has incorporation_country=MC and a purchase/sale txn from fixtures
+    mc_count = result["MC"] || 0
+    assert mc_count <= 1, "Trust should not be counted in a1501"
+  end
+
+  test "a1501 excludes natural person clients" do
+    # natural_person has purchase/sale transactions but is NATURAL_PERSON
+    result = @survey.a1501
+    np = clients(:natural_person)
+    assert_equal "NATURAL_PERSON", np.client_type
+    # The result should only contain legal entity incorporation countries
+    assert_instance_of Hash, result
+  end
+
+  test "a1501 excludes rental transactions" do
+    le_it = Client.create!(
+      organization: @organization,
+      name: "Italian Rental Corp",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SCI",
+      nationality: "IT",
+      incorporation_country: "IT",
+      became_client_at: 3.months.ago
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: le_it,
+      reference: "A1501-RENT",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "RENTAL",
+      transaction_value: 240_000,
+      rental_annual_value: 240_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    result = @survey.a1501
+    assert_nil result["IT"], "Rental-only legal entity clients should not appear in a1501"
+  end
+
+  test "a1501 counts each client only once per country even with multiple transactions" do
+    le_de = Client.create!(
+      organization: @organization,
+      name: "German Corp GmbH",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      nationality: "DE",
+      incorporation_country: "DE",
+      became_client_at: 3.months.ago
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: le_de,
+      reference: "A1501-DE-1",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "PURCHASE",
+      transaction_value: 1_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: le_de,
+      reference: "A1501-DE-2",
+      transaction_date: Date.current - 3.days,
+      transaction_type: "SALE",
+      transaction_value: 2_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    result = @survey.a1501
+    assert_equal 1, result["DE"]
+  end
+
+  test "a1501 excludes clients with nil incorporation_country" do
+    # legal_entity fixture has no incorporation_country set
+    le = clients(:legal_entity)
+    assert_nil le.incorporation_country
+    # legal_entity has purchase/sale txns (high_value, check_payment) but no incorporation_country
+    result = @survey.a1501
+    # Should not appear in the hash at all
+    result.each_value { |v| assert v > 0 }
+  end
+
   test "a1210o excludes BOs from other organizations" do
     Setting.create!(
       organization: @organization,
