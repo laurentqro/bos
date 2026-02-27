@@ -200,6 +200,12 @@ class Survey
           .group(:introducer_country)
           .count
       end
+
+      # Q187 — aIR33LF: Legal form of entity
+      # Type: enum (various legal forms) — settings-based
+      def air33lf
+        setting_value_for("entity_legal_form")
+      end
     end
   end
 end

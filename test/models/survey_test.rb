@@ -5642,4 +5642,12 @@ class SurveyTest < ActiveSupport::TestCase
     result = @survey.a3205
     assert_equal (baseline["MC"] || 0) + 1, result["MC"]
   end
+
+  # Q187 — aIR33LF: Legal form of entity
+  test "air33lf returns setting value for entity_legal_form" do
+    assert_nil @survey.air33lf
+
+    Setting.create!(organization: @organization, key: "entity_legal_form", category: "entity_info", value: "13. Sociétés à responsabilité limitée")
+    assert_equal "13. Sociétés à responsabilité limitée", @survey.air33lf
+  end
 end
