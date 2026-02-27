@@ -3918,4 +3918,49 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal 2, @survey.a13603db
   end
+
+  # Q72 — a13604DB: Total value of funds transferred by other-services PSAV clients
+  # for purchase, sale, and rental of real estate
+  # Type: xbrli:monetaryItemType
+  # Conditional: only when a13601other == "Oui"
+
+  test "a13604db returns nil when a13601other is not Oui" do
+    assert_nil @survey.a13604db
+  end
+
+  test "a13604db sums transaction values by other-services VASP clients" do
+    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
+
+    vasp_client = Client.create!(
+      organization: @organization,
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      name: "OtherVASP Services Ltd",
+      is_vasp: true,
+      vasp_type: "OTHER",
+      vasp_other_service_type: "DeFi Lending"
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: vasp_client,
+      reference: "VASP-OTHV-1",
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 3, 15),
+      transaction_value: 500_000
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: vasp_client,
+      reference: "VASP-OTHV-2",
+      transaction_type: "SALE",
+      transaction_date: Date.new(@year, 7, 10),
+      transaction_value: 750_000
+    )
+
+    assert_equal 1_250_000, @survey.a13604db
+  end
 end
