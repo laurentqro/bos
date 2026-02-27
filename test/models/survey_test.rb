@@ -5729,4 +5729,15 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "total_foreign_branches", category: "entity_info", value: "3")
     assert_equal "3", @survey.a3306
   end
+
+  # Q196 — a3306A: Shareholders 25%+ by nationality (dimensional)
+  test "a3306a returns nil when air328 is not Oui" do
+    assert_nil @survey.a3306a
+  end
+
+  test "a3306a returns parsed JSON hash when air328 is Oui" do
+    Setting.create!(organization: @organization, key: "card_holder_is_legal_entity", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "shareholders_25pct_by_nationality", category: "entity_info", value: '{"MC":2,"FR":1}')
+    assert_equal({"MC" => 2, "FR" => 1}, @survey.a3306a)
+  end
 end

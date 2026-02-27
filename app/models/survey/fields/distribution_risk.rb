@@ -262,6 +262,17 @@ class Survey
         return nil unless a3304 == "Oui"
         setting_value_for("total_foreign_branches")
       end
+
+      # Q196 — a3306A: Shareholders with 25%+ by nationality (dimensional)
+      # Type: xbrli:integerItemType (maxInclusive=4) — settings-based dimensional, conditional on aIR328
+      def a3306a
+        return nil unless air328 == "Oui"
+
+        json = setting_value_for("shareholders_25pct_by_nationality")
+        return nil if json.nil?
+
+        JSON.parse(json)
+      end
     end
   end
 end
