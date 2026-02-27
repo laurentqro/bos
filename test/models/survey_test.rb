@@ -5402,4 +5402,26 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal baseline + 1, @survey.ab3206
   end
+
+  # Q174 — aB3207: New legal entity clients (excl. trusts) onboarded during reporting period
+  test "ab3207 counts new legal entity clients excl trusts onboarded in reporting year" do
+    baseline = @survey.ab3207
+
+    # LE (non-trust) onboarded in reporting year (counts)
+    Client.create!(organization: @organization, name: "New LE", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SARL", incorporation_country: "MC",
+      became_client_at: Date.new(@year, 3, 1))
+
+    # Trust onboarded in reporting year (does NOT count — trust is separate)
+    Client.create!(organization: @organization, name: "New Trust", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST", incorporation_country: "JE",
+      became_client_at: Date.new(@year, 6, 1))
+
+    # LE onboarded in previous year (does NOT count)
+    Client.create!(organization: @organization, name: "Old LE", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA", incorporation_country: "FR",
+      became_client_at: Date.new(@year - 1, 12, 1))
+
+    assert_equal baseline + 1, @survey.ab3207
+  end
 end

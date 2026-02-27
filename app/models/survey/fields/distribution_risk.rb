@@ -67,6 +67,18 @@ class Survey
           .where(became_client_at: year_range)
           .count
       end
+
+      # Q174 — aB3207: New legal entity clients (excl. trusts) onboarded during reporting period
+      # Type: xbrli:integerItemType — computed
+      def ab3207
+        year_range = Date.new(year, 1, 1)..Date.new(year, 12, 31)
+
+        organization.clients.kept
+          .where(client_type: "LEGAL_ENTITY")
+          .where.not(legal_entity_type: "TRUST")
+          .where(became_client_at: year_range)
+          .count
+      end
     end
   end
 end
