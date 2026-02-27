@@ -224,6 +224,17 @@ class Survey
       def a3302
         setting_value_for("has_branches")
       end
+
+      # Q191 — a3303: Total branches by country (dimensional)
+      # Type: xbrli:integerItemType — settings-based dimensional, conditional on a3302
+      def a3303
+        return nil unless a3302 == "Oui"
+
+        json = setting_value_for("branches_by_country")
+        return nil if json.nil?
+
+        JSON.parse(json)
+      end
     end
   end
 end

@@ -5674,4 +5674,16 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "has_branches", category: "entity_info", value: "Non")
     assert_equal "Non", @survey.a3302
   end
+
+  # Q191 — a3303: Total branches by country (dimensional)
+  test "a3303 returns nil when a3302 is not Oui" do
+    assert_nil @survey.a3303
+  end
+
+  test "a3303 returns parsed JSON hash when a3302 is Oui" do
+    Setting.create!(organization: @organization, key: "has_branches", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "branches_by_country", category: "entity_info", value: '{"MC":2,"FR":1}')
+
+    assert_equal({"MC" => 2, "FR" => 1}, @survey.a3303)
+  end
 end
