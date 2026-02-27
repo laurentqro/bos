@@ -521,6 +521,29 @@ class Survey
         (purchase_sale_client_ids + rental_client_ids).uniq.count
       end
 
+      # Q42 — a1807ATOLA: Total unique Monegasque trust/legal construction clients
+      # for purchases, sales, and rentals of real estate
+      # Type: xbrli:integerItemType — conditional on a1802btola == "Oui"
+      def a1807atola
+        return nil unless a1802btola == "Oui"
+
+        txns = organization.transactions.kept.for_year(year)
+
+        purchase_sale_client_ids = txns
+          .where(transaction_type: %w[PURCHASE SALE])
+          .joins(:client)
+          .where(clients: {client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST", incorporation_country: "MC"})
+          .pluck(:client_id)
+
+        rental_client_ids = txns
+          .where(transaction_type: "RENTAL")
+          .joins(:client)
+          .where(clients: {client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST", incorporation_country: "MC"})
+          .pluck(:client_id)
+
+        (purchase_sale_client_ids + rental_client_ids).uniq.count
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)

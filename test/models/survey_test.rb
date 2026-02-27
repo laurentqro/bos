@@ -2674,6 +2674,116 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 1, @survey.a1802tola
   end
 
+  # Q42 — a1807ATOLA: Total unique Monegasque trust/legal construction clients
+  # for purchases, sales, and rentals of real estate
+  # Type: xbrli:integerItemType — conditional on a1802btola == "Oui"
+  test "a1807atola returns nil when a1802btola is not Oui" do
+    assert_nil @survey.a1807atola
+  end
+
+  test "a1807atola counts only Monegasque trust clients" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_trust_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    mc_trust = Client.create!(
+      organization: @organization,
+      name: "MC Trust",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST",
+      incorporation_country: "MC",
+      became_client_at: 6.months.ago
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: mc_trust,
+      reference: "A1807-MC",
+      transaction_date: Date.current - 1.month,
+      transaction_type: "PURCHASE",
+      transaction_value: 1_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    fr_trust = Client.create!(
+      organization: @organization,
+      name: "FR Trust",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST",
+      incorporation_country: "FR",
+      became_client_at: 3.months.ago
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: fr_trust,
+      reference: "A1807-FR",
+      transaction_date: Date.current - 1.week,
+      transaction_type: "SALE",
+      transaction_value: 500_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    assert_equal 1, @survey.a1807atola
+  end
+
+  test "a1807atola counts across purchase, sale, and rental transactions" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_trust_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    mc_trust_ps = Client.create!(
+      organization: @organization,
+      name: "MC Trust PS",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST",
+      incorporation_country: "MC",
+      became_client_at: 6.months.ago
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: mc_trust_ps,
+      reference: "A1807-PS",
+      transaction_date: Date.current - 1.month,
+      transaction_type: "PURCHASE",
+      transaction_value: 1_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    mc_trust_rental = Client.create!(
+      organization: @organization,
+      name: "MC Trust Rental",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST",
+      incorporation_country: "MC",
+      became_client_at: 3.months.ago
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: mc_trust_rental,
+      reference: "A1807-RENTAL",
+      transaction_date: Date.current - 1.week,
+      transaction_type: "RENTAL",
+      transaction_value: 180_000,
+      rental_annual_value: 180_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    assert_equal 2, @survey.a1807atola
+  end
+
   test "a1802tola counts each unique trust client only once even with multiple transactions" do
     Setting.create!(
       organization: @organization,
