@@ -148,6 +148,24 @@ class Survey
           .group(Arel.sql(country_sql))
           .count
       end
+
+      # Q183 — a3204: Introduced clients in reporting period by primary nationality (dimensional)
+      # Type: xbrli:integerItemType — computed, dimensional by country, conditional on a3501B
+      def a3204
+        return nil unless a3501b == "Oui"
+
+        country_sql = "CASE WHEN clients.client_type = 'NATURAL_PERSON' " \
+          "THEN clients.nationality ELSE clients.incorporation_country END"
+
+        year_range = Date.new(year, 1, 1)..Date.new(year, 12, 31)
+
+        organization.clients.kept
+          .where(introduced_by_third_party: true)
+          .where(became_client_at: year_range)
+          .where("#{country_sql} IS NOT NULL")
+          .group(Arel.sql(country_sql))
+          .count
+      end
     end
   end
 end

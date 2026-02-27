@@ -5554,4 +5554,28 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal (baseline["FR"] || 0) + 1, result["FR"]
     assert_equal (baseline["LU"] || 0) + 1, result["LU"]
   end
+
+  # Q183 — a3204: Introduced clients in reporting period by primary nationality (dimensional)
+  test "a3204 returns nil when a3501b is not Oui" do
+    assert_nil @survey.a3204
+  end
+
+  test "a3204 returns introduced clients in reporting period grouped by country" do
+    Setting.create!(organization: @organization, key: "accepts_clients_through_introducers", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "can_provide_introducer_client_nationality", category: "entity_info", value: "Oui")
+    baseline = @survey.a3204
+
+    # Introduced NP in reporting year (counts)
+    Client.create!(organization: @organization, name: "New Intro NP", client_type: "NATURAL_PERSON",
+      nationality: "IT", introduced_by_third_party: true, introducer_country: "MC",
+      became_client_at: Date.new(@year, 3, 1))
+
+    # Introduced NP in previous year (does NOT count)
+    Client.create!(organization: @organization, name: "Old Intro NP", client_type: "NATURAL_PERSON",
+      nationality: "IT", introduced_by_third_party: true, introducer_country: "MC",
+      became_client_at: Date.new(@year - 1, 6, 1))
+
+    result = @survey.a3204
+    assert_equal (baseline["IT"] || 0) + 1, result["IT"]
+  end
 end
