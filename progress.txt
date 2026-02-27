@@ -63,8 +63,8 @@
 - [x] Task 41: Q41 — a1802TOLA — total unique trust/legal construction clients for purchase/sale/rental (conditional on a1802btola) (2026-02-27)
 - [x] Task 42: Q42 — a1807ATOLA — total unique Monegasque trust/legal construction clients (computed, conditional) (2026-02-27)
 - [x] Task 43: Q43 — a1808 — professional trustees by primary nationality (dimensional, conditional on a1802btola) (2026-02-27)
-- [ ] Task 44: Q44 — Veuillez indiquer le nombre total de personnes physiques qui sont des trustees à titre professionnel, ventilé par pays d
-- [ ] Task 45: Q45 — Votre entité dispose-t-elle d'informations sur le nombre et la valeur de leurs opérations ?
+- [x] Task 44: Q44 — a1809 — professional trustees by trust incorporation country (dimensional, conditional on a1802btola) (2026-02-27)
+- [x] Task 45: Q45 — a11001BTOLA — entity has info on number/value of trust client transactions (settings-based, conditional on a1802btola) (2026-02-27)
 - [ ] Task 46: Q46 — Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des trusts et d'autres constructions 
 - [ ] Task 47: Q47 — Veuillez indiquer la valeur totale des fonds transférés par les clients qui sont des trusts et d'autres constructions ju
 - [ ] Task 48: Q48 — Veuillez préciser le type d'autres constructions juridiques non mentionnées dans les questions précédentes que votre ent

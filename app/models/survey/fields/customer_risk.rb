@@ -588,6 +588,15 @@ class Survey
           .count
       end
 
+      # Q45 — a11001BTOLA: Does entity have information on the number and value
+      # of trust/legal construction clients' transactions?
+      # Type: stringItemType enum ("Oui" / "Non")
+      # Conditional: only present when a1802btola == "Oui"
+      def a11001btola
+        return nil unless a1802btola == "Oui"
+        setting_value_for("trust_clients_transaction_info_available")
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)

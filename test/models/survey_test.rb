@@ -3001,4 +3001,37 @@ class SurveyTest < ActiveSupport::TestCase
     # trust_nil excluded (no incorporation_country), trust_no_txn excluded (no txn in year)
     assert_equal({"MC" => 2, "FR" => 1}, result)
   end
+
+  # Q45 — a11001BTOLA: Does entity have info on number and value of trust clients' transactions?
+  test "a11001btola returns nil when a1802btola is not Oui" do
+    assert_nil @survey.a11001btola
+  end
+
+  test "a11001btola returns setting value when a1802btola is Oui" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_trust_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+    Setting.create!(
+      organization: @organization,
+      key: "trust_clients_transaction_info_available",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    assert_equal "Oui", @survey.a11001btola
+  end
+
+  test "a11001btola returns nil when setting is not set but a1802btola is Oui" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_trust_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    assert_nil @survey.a11001btola
+  end
 end
