@@ -341,6 +341,12 @@ class Survey
       def a3803
         setting_value_for("revenue_outside_monaco")
       end
+
+      # Q207 — a3804: Annual VAT declaration amount
+      # Type: xbrli:monetaryItemType (iso4217:EUR) — settings-based
+      def a3804
+        setting_value_for("annual_vat_declaration_amount")
+      end
     end
   end
 end

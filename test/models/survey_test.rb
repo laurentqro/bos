@@ -5832,4 +5832,12 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "revenue_outside_monaco", category: "entity_info", value: "300000.00")
     assert_equal "300000.00", @survey.a3803
   end
+
+  # Q207 — a3804: Annual VAT declaration amount (monetaryItemType)
+  test "a3804 returns setting value for annual VAT declaration" do
+    assert_nil @survey.a3804
+
+    Setting.create!(organization: @organization, key: "annual_vat_declaration_amount", category: "entity_info", value: "75000.00")
+    assert_equal "75000.00", @survey.a3804
+  end
 end
