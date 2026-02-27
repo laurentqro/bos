@@ -318,50 +318,50 @@
 - [x] Task 242: C27 — aC1506 — total employees trained on AML/CFT (settings-based, integerItemType) (2026-02-27)
 
 ### Section 1.6
-- [ ] Task 243: C28 — Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les renseignements de sa carte
-- [ ] Task 244: C29 — Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les renseignements de son pass
-- [ ] Task 245: C30 — Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les renseignements de sa carte
-- [ ] Task 246: C31 — Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle les renseignements de son just
-- [ ] Task 247: C32 — Lorsque l'opération du client est effectuée par un individu, votre entité consigne-t-elle d'autres renseignements liés à
-- [ ] Task 248: C33 — Prière de préciser quelles autres informations sont incluses dans votre base de données clients.
-- [ ] Task 249: C34 — Est-ce que tous les éléments suivants sont conservé dans le dossier du client : • Prénom • Nom • date de naissance • lie
-- [ ] Task 250: C35 — Prière de préciser quels éléments ne sont pas recueillis ?
-- [ ] Task 251: C36 — Lorsque l'opération du client est effectuée par une personne morale / construction juridique, votre entité enregistre-t-
-- [ ] Task 252: C37 — Lorsque l'opération avec le client est effectuée par une personne morale ou une construction juridique, votre entité enr
-- [ ] Task 253: C38 — Lorsque l'opération du client est effectuée par une personne morale ou une construction juridique, votre entité enregist
-- [ ] Task 254: C39 — Lorsque l'opération est effectuée par une personne morale ou une construction juridique, votre entité enregistre-t-elle 
-- [ ] Task 255: C40 — Lorsque l'opération avec le client est effectuée par une personne morale ou une construction juridique, votre entité enr
-- [ ] Task 256: C41 — Veuillez préciser les autres données des personnes morales/constructions juridiques enregistrées.
-- [ ] Task 257: C42 — Les données concernant les anciennes relations clients sont-elles accessibles sur demande par l'AMSF ?
-- [ ] Task 258: C43 — Tous ces documents sont-ils conservés systématiquement ?
-- [ ] Task 259: C44 — Votre entité conserve-t-elle des documents récapitulatifs de tous les renseignements ci-dessus ?
-- [ ] Task 260: C45 — Ces informations sont-elles dans une base de données ?
-- [ ] Task 261: C46 — Votre entité utilise-t-elle des outils pour établir la connaissance du client (CDD) ?
-- [ ] Task 262: C47 — Quels outils ?
-- [ ] Task 263: C48 — Les résultats de l'outil CDD (connaissance du client) sont-ils systématiquement stockés ?
-- [ ] Task 264: C49 — Votre entité applique-t-elle une approche fondée sur le risque pour les mesures de vigilance relatives à la clientèle ?
-- [ ] Task 265: C50 — Votre entité a-t-elle des politiques et des procédures qui précisent la différence dans la documentation et les exigence
-- [ ] Task 266: C51 — Veuillez indiquer le nombre total de clients uniques qui ont été actifs à un moment donné pendant la période de déclarat
-- [ ] Task 267: C52 — Votre entité a-t-elle mis en œuvre des mesures de vigilance simplifiée pour des clients au cours de la période de déclar
-- [ ] Task 268: C53 — Prière d'indiquer le nombre total de clients uniques qui font l'objet de mesures de vigilance simplifiées.
-- [ ] Task 269: C54 — Votre entité identifie-t-elle et vérifie-t-elle ses clients à l'aide d'informations fiables et indépendantes dans tous l
-- [ ] Task 270: C55 — Les politiques CDD de votre entité incluent-elles des procédures d'acceptation du client et des procédures d'identificat
-- [ ] Task 271: C56 — Votre entité fait-elle appel à des tiers pour les procédures de mesures de vigilance à l'égard de la clientèle ?
-- [ ] Task 272: C57 — Votre entité a-t-elle rencontré des difficultés pour recevoir des informations CDD de tiers en cas de besoin ?
-- [ ] Task 273: C58 — Veuillez indiquer la raison principale des difficultés (par exemple, raison juridique, raison commerciale, indisponibili
-- [ ] Task 274: C59 — Votre entité applique-t-elle une identification et une vérification renforcées de tous les clients à haut risque avant l
-- [ ] Task 275: C60 — Votre entité examine-t-elle la source du patrimoine avant l'entrée en relation ?
-- [ ] Task 276: C61 — À quelle fréquence les clients d'achats et de ventes de biens immobiliers et classés comme présentant un risque élevé de
-- [ ] Task 277: C62 — À quelle fréquence les clients de location et classés comme présentant un risque élevé de blanchiment d'argent ou de fin
-- [ ] Task 278: C63 — Votre entité prend-elle d'autres mesures pour les clients à haut risque avant leur prise en charge ?
-- [ ] Task 279: C64 — Prière de préciser les autres mesures prises pour les clients à haut risque avant leur prise en charge.
-- [ ] Task 280: C65 — Vos clients effectuent-ils des opérations d'achat, de vente ou de location de biens immobiliers avec les cryptomonnaies 
-- [ ] Task 281: C66 — Comment l'entité vérifie-t-elle les bénéficiaires effectifs des avoirs virtuels ?
+- [x] Task 243: C28 — aC1625 — records ID card info (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 244: C29 — aC1626 — records passport info (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 245: C30 — aC1627 — records residence permit info (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 246: C31 — aC168 — records proof of address (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 247: C32 — aC1629 — records other individual info (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 248: C33 — aC1630 — specify other individual info (settings-based, conditional on aC1629) (2026-02-27)
+- [x] Task 249: C34 — aC1601 — all NP elements on file (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 250: C35 — aC1602 — specify missing NP elements (settings-based, conditional on aC1601=="Non") (2026-02-27)
+- [x] Task 251: C36 — aC1631 — records commercial registry extract (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 252: C37 — aC1633 — records articles of association (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 253: C38 — aC1634 — records minutes of assembly (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 254: C39 — aC1635 — records BO identity documents (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 255: C40 — aC1636 — records other LE data (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 256: C41 — aC1637 — specify other LE data (settings-based, conditional on aC1636) (2026-02-27)
+- [x] Task 257: C42 — aC1608 — former client data accessible to AMSF (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 258: C43 — aC1635A — documents systematically retained (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 259: C44 — aC1638A — retains summary documents (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 260: C45 — aC1639A — info stored in database (settings-based, conditional on aC1638A) (2026-02-27)
+- [x] Task 261: C46 — aC1641A — uses CDD tools (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 262: C47 — aC1640A — which CDD tools (settings-based, conditional on aC1641A) (2026-02-27)
+- [x] Task 263: C48 — aC1642A — CDD results systematically stored (settings-based, conditional on aC1641A) (2026-02-27)
+- [x] Task 264: C49 — aC1609 — risk-based approach for CDD (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 265: C50 — aC1610 — policies distinguish CDD levels (settings-based, conditional on aC1609) (2026-02-27)
+- [x] Task 266: C51 — aC1611 — total unique active clients (settings-based, conditional on aC1609) (2026-02-27)
+- [x] Task 267: C52 — aC1612A — implemented simplified DD (settings-based, conditional on aC1609) (2026-02-27)
+- [x] Task 268: C53 — aC1612 — total simplified DD clients (settings-based, conditional on aC1612A) (2026-02-27)
+- [x] Task 269: C54 — aC1614 — verifies clients with reliable info (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 270: C55 — aC1615 — CDD policies include acceptance procedures (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 271: C56 — aC1622F — uses third parties for CDD (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 272: C57 — aC1622A — difficulties receiving CDD from third parties (settings-based, conditional on aC1622F) (2026-02-27)
+- [x] Task 273: C58 — aC1622B — CDD difficulties reason (settings-based, conditional on aC1622A) (2026-02-27)
+- [x] Task 274: C59 — aC1620 — enhanced ID for high-risk clients (settings-based, conditional on aC1609) (2026-02-27)
+- [x] Task 275: C60 — aC1617 — examines source of wealth (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 276: C61 — aC1616B — high-risk purchase/sale review frequency (settings-based, conditional on aC1609, 5-value enum) (2026-02-27)
+- [x] Task 277: C62 — aC1616A — high-risk rental review frequency (settings-based, conditional on aC1609, 5-value enum) (2026-02-27)
+- [x] Task 278: C63 — aC1618 — other measures for high-risk clients (settings-based, conditional on aC1609) (2026-02-27)
+- [x] Task 279: C64 — aC1619 — specify other high-risk measures (settings-based, conditional on aC1618) (2026-02-27)
+- [x] Task 280: C65 — aC1616C — clients use crypto for real estate (settings-based, enum Oui/Non) (2026-02-27)
+- [x] Task 281: C66 — aC1621 — virtual asset BO verification method (settings-based, conditional on aC1616C) (2026-02-27)
 
 ### Section 1.7
-- [ ] Task 282: C67 — Prière d'indiquer le nombre total de clients uniques pour lesquels une vigilance renforcée a été appliquée lors de leur 
-- [ ] Task 283: C68 — Prière d'indiquer le nombre total de clients uniques pour lesquels une vigilance renforcée a été appliquée dans le cadre
-- [ ] Task 284: C69 — Prière d'indiquer le pourcentage de clients uniques qui ont fait l'objet d'une vigilance renforcée.
+- [x] Task 282: C67 — aC1701 — total EDD clients at onboarding (settings-based, conditional on aC1609) (2026-02-27)
+- [x] Task 283: C68 — aC1702 — total EDD clients ongoing (settings-based, conditional on aC1609) (2026-02-27)
+- [x] Task 284: C69 — aC1703 — percentage of EDD clients (settings-based, conditional on aC1609, pureItemType) (2026-02-27)
 
 ### Section 1.8
 - [ ] Task 285: C70 — Votre entité applique-t-elle à ses clients des notations de risque en matière de LBC/FT ?

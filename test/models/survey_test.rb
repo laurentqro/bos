@@ -6189,4 +6189,457 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "total_employees_trained_aml", category: "training", value: "12")
     assert_equal "12", @survey.ac1506
   end
+
+  # ============================================================
+  # Section 1.6 — CDD (C28–C66)
+  # ============================================================
+
+  # C28 — aC1625: Records ID card info for NP clients? (enum Oui/Non)
+  test "ac1625 returns nil when no setting exists" do
+    assert_nil @survey.ac1625
+  end
+
+  test "ac1625 returns setting value" do
+    Setting.create!(organization: @organization, key: "records_id_card_info", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1625
+  end
+
+  # C29 — aC1626: Records passport info? (enum Oui/Non)
+  test "ac1626 returns nil when no setting exists" do
+    assert_nil @survey.ac1626
+  end
+
+  test "ac1626 returns setting value" do
+    Setting.create!(organization: @organization, key: "records_passport_info", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1626
+  end
+
+  # C30 — aC1627: Records residence permit info? (enum Oui/Non)
+  test "ac1627 returns nil when no setting exists" do
+    assert_nil @survey.ac1627
+  end
+
+  test "ac1627 returns setting value" do
+    Setting.create!(organization: @organization, key: "records_residence_permit_info", category: "kyc_procedures", value: "Non")
+    assert_equal "Non", @survey.ac1627
+  end
+
+  # C31 — aC168: Records proof of address? (enum Oui/Non)
+  test "ac168 returns nil when no setting exists" do
+    assert_nil @survey.ac168
+  end
+
+  test "ac168 returns setting value" do
+    Setting.create!(organization: @organization, key: "records_proof_of_address", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac168
+  end
+
+  # C32 — aC1629: Records other individual info? (enum Oui/Non)
+  test "ac1629 returns nil when no setting exists" do
+    assert_nil @survey.ac1629
+  end
+
+  test "ac1629 returns setting value" do
+    Setting.create!(organization: @organization, key: "records_other_individual_info", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1629
+  end
+
+  # C33 — aC1630: Specify other individual info (free text, conditional on aC1629)
+  test "ac1630 returns nil when ac1629 is not Oui" do
+    assert_nil @survey.ac1630
+  end
+
+  test "ac1630 returns setting value when ac1629 is Oui" do
+    Setting.create!(organization: @organization, key: "records_other_individual_info", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "other_individual_info_details", category: "kyc_procedures", value: "Tax ID number")
+    assert_equal "Tax ID number", @survey.ac1630
+  end
+
+  # C34 — aC1601: All required NP elements kept on file? (enum Oui/Non)
+  test "ac1601 returns nil when no setting exists" do
+    assert_nil @survey.ac1601
+  end
+
+  test "ac1601 returns setting value" do
+    Setting.create!(organization: @organization, key: "all_np_elements_on_file", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1601
+  end
+
+  # C35 — aC1602: Specify which elements are not collected (free text, conditional on aC1601 == "Non")
+  test "ac1602 returns nil when ac1601 is not Non" do
+    assert_nil @survey.ac1602
+  end
+
+  test "ac1602 returns nil when ac1601 is Oui" do
+    Setting.create!(organization: @organization, key: "all_np_elements_on_file", category: "kyc_procedures", value: "Oui")
+    assert_nil @survey.ac1602
+  end
+
+  test "ac1602 returns setting value when ac1601 is Non" do
+    Setting.create!(organization: @organization, key: "all_np_elements_on_file", category: "kyc_procedures", value: "Non")
+    Setting.create!(organization: @organization, key: "missing_np_elements_description", category: "kyc_procedures", value: "Place of birth")
+    assert_equal "Place of birth", @survey.ac1602
+  end
+
+  # C36 — aC1631: Records commercial registry extract for LE? (enum Oui/Non)
+  test "ac1631 returns nil when no setting exists" do
+    assert_nil @survey.ac1631
+  end
+
+  test "ac1631 returns setting value" do
+    Setting.create!(organization: @organization, key: "records_commercial_registry_extract", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1631
+  end
+
+  # C37 — aC1633: Records articles of association for LE? (enum Oui/Non)
+  test "ac1633 returns nil when no setting exists" do
+    assert_nil @survey.ac1633
+  end
+
+  test "ac1633 returns setting value" do
+    Setting.create!(organization: @organization, key: "records_articles_of_association", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1633
+  end
+
+  # C38 — aC1634: Records minutes of general assembly for LE? (enum Oui/Non)
+  test "ac1634 returns nil when no setting exists" do
+    assert_nil @survey.ac1634
+  end
+
+  test "ac1634 returns setting value" do
+    Setting.create!(organization: @organization, key: "records_minutes_of_assembly", category: "kyc_procedures", value: "Non")
+    assert_equal "Non", @survey.ac1634
+  end
+
+  # C39 — aC1635: Records BO identity documents for LE? (enum Oui/Non)
+  test "ac1635 returns nil when no setting exists" do
+    assert_nil @survey.ac1635
+  end
+
+  test "ac1635 returns setting value" do
+    Setting.create!(organization: @organization, key: "records_bo_identity_documents", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1635
+  end
+
+  # C40 — aC1636: Records other LE/construction data? (enum Oui/Non)
+  # Fixture already has records_other_le_data: "Oui" for org :one
+  test "ac1636 returns setting value from fixture" do
+    assert_equal "Oui", @survey.ac1636
+  end
+
+  # C41 — aC1637: Specify other LE data (free text, conditional on aC1636)
+  test "ac1637 returns nil when ac1636 is not Oui" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.ac1637
+  end
+
+  test "ac1637 returns setting value when ac1636 is Oui from fixture" do
+    # Fixture: records_other_le_data = "Oui", other_le_data_details = "Numéro RCI, ..."
+    assert_match(/Numéro RCI/, @survey.ac1637)
+  end
+
+  # C42 — aC1608: Former client data accessible to AMSF on request? (enum Oui/Non)
+  test "ac1608 returns nil when no setting exists" do
+    assert_nil @survey.ac1608
+  end
+
+  test "ac1608 returns setting value" do
+    Setting.create!(organization: @organization, key: "former_client_data_accessible_to_amsf", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1608
+  end
+
+  # C43 — aC1635A: All documents systematically retained? (enum Oui/Non)
+  test "ac1635a returns nil when no setting exists" do
+    assert_nil @survey.ac1635a
+  end
+
+  test "ac1635a returns setting value" do
+    Setting.create!(organization: @organization, key: "documents_systematically_retained", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1635a
+  end
+
+  # C44 — aC1638A: Retains summary documents? (enum Oui/Non)
+  test "ac1638a returns nil when no setting exists" do
+    assert_nil @survey.ac1638a
+  end
+
+  test "ac1638a returns setting value" do
+    Setting.create!(organization: @organization, key: "retains_summary_documents", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1638a
+  end
+
+  # C45 — aC1639A: Info stored in database? (enum Oui/Non, conditional on aC1638A)
+  test "ac1639a returns nil when ac1638a is not Oui" do
+    assert_nil @survey.ac1639a
+  end
+
+  test "ac1639a returns setting value when ac1638a is Oui" do
+    Setting.create!(organization: @organization, key: "retains_summary_documents", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "info_stored_in_database", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1639a
+  end
+
+  # C46 — aC1641A: Uses CDD tools? (enum Oui/Non)
+  test "ac1641a returns nil when no setting exists" do
+    assert_nil @survey.ac1641a
+  end
+
+  test "ac1641a returns setting value" do
+    Setting.create!(organization: @organization, key: "uses_cdd_tools", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1641a
+  end
+
+  # C47 — aC1640A: Which CDD tools? (free text, conditional on aC1641A)
+  test "ac1640a returns nil when ac1641a is not Oui" do
+    assert_nil @survey.ac1640a
+  end
+
+  test "ac1640a returns setting value when ac1641a is Oui" do
+    Setting.create!(organization: @organization, key: "uses_cdd_tools", category: "kyc_procedures", value: "Oui")
+    # Fixture already has cdd_tools_description for org :one
+    assert_match(/immobilière/, @survey.ac1640a)
+  end
+
+  # C48 — aC1642A: CDD tool results systematically stored? (enum Oui/Non, conditional on aC1641A)
+  test "ac1642a returns nil when ac1641a is not Oui" do
+    assert_nil @survey.ac1642a
+  end
+
+  test "ac1642a returns setting value when ac1641a is Oui" do
+    Setting.create!(organization: @organization, key: "uses_cdd_tools", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "cdd_results_systematically_stored", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1642a
+  end
+
+  # C49 — aC1609: Risk-based approach for CDD? (enum Oui/Non)
+  test "ac1609 returns nil when no setting exists" do
+    assert_nil @survey.ac1609
+  end
+
+  test "ac1609 returns setting value" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1609
+  end
+
+  # C50 — aC1610: Policies distinguish CDD levels? (enum Oui/Non, conditional on aC1609)
+  test "ac1610 returns nil when ac1609 is not Oui" do
+    assert_nil @survey.ac1610
+  end
+
+  test "ac1610 returns setting value when ac1609 is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "policies_distinguish_cdd_levels", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1610
+  end
+
+  # C51 — aC1611: Total unique active clients (integerItemType, conditional on aC1609)
+  test "ac1611 returns nil when ac1609 is not Oui" do
+    assert_nil @survey.ac1611
+  end
+
+  test "ac1611 returns setting value when ac1609 is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "total_unique_active_clients_cdd", category: "kyc_procedures", value: "150")
+    assert_equal "150", @survey.ac1611
+  end
+
+  # C52 — aC1612A: Implemented simplified DD? (enum Oui/Non, conditional on aC1609)
+  test "ac1612a returns nil when ac1609 is not Oui" do
+    assert_nil @survey.ac1612a
+  end
+
+  test "ac1612a returns setting value when ac1609 is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "implemented_simplified_dd", category: "kyc_procedures", value: "Non")
+    assert_equal "Non", @survey.ac1612a
+  end
+
+  # C53 — aC1612: Total clients with simplified DD (integerItemType, conditional on aC1612A)
+  test "ac1612 returns nil when ac1612a is not Oui" do
+    assert_nil @survey.ac1612
+  end
+
+  test "ac1612 returns setting value when ac1612a is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "implemented_simplified_dd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "simplified_dd_client_count", category: "kyc_procedures", value: "5")
+    assert_equal "5", @survey.ac1612
+  end
+
+  # C54 — aC1614: Identifies/verifies clients using reliable independent info? (enum Oui/Non)
+  test "ac1614 returns nil when no setting exists" do
+    assert_nil @survey.ac1614
+  end
+
+  test "ac1614 returns setting value" do
+    Setting.create!(organization: @organization, key: "verifies_clients_with_reliable_info", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1614
+  end
+
+  # C55 — aC1615: CDD policies include client acceptance/identification procedures? (enum Oui/Non)
+  test "ac1615 returns nil when no setting exists" do
+    assert_nil @survey.ac1615
+  end
+
+  test "ac1615 returns setting value" do
+    Setting.create!(organization: @organization, key: "cdd_policies_include_acceptance_procedures", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1615
+  end
+
+  # C56 — aC1622F: Uses third parties for CDD? (enum Oui/Non)
+  test "ac1622f returns nil when no setting exists" do
+    assert_nil @survey.ac1622f
+  end
+
+  test "ac1622f returns setting value" do
+    Setting.create!(organization: @organization, key: "uses_third_parties_for_cdd", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1622f
+  end
+
+  # C57 — aC1622A: Difficulties receiving CDD info from third parties? (conditional on aC1622F)
+  test "ac1622a returns nil when ac1622f is not Oui" do
+    assert_nil @survey.ac1622a
+  end
+
+  test "ac1622a returns setting value when ac1622f is Oui" do
+    Setting.create!(organization: @organization, key: "uses_third_parties_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "difficulties_receiving_cdd_from_third_parties", category: "kyc_procedures", value: "Non")
+    assert_equal "Non", @survey.ac1622a
+  end
+
+  # C58 — aC1622B: Main reason for difficulties (free text, conditional on aC1622A)
+  test "ac1622b returns nil when ac1622a is not Oui" do
+    assert_nil @survey.ac1622b
+  end
+
+  test "ac1622b returns setting value when ac1622a is Oui" do
+    Setting.create!(organization: @organization, key: "uses_third_parties_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "difficulties_receiving_cdd_from_third_parties", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "cdd_difficulties_reason", category: "kyc_procedures", value: "Legal restrictions in jurisdiction")
+    assert_equal "Legal restrictions in jurisdiction", @survey.ac1622b
+  end
+
+  # C59 — aC1620: Enhanced identification for high-risk clients? (conditional on aC1609)
+  test "ac1620 returns nil when ac1609 is not Oui" do
+    assert_nil @survey.ac1620
+  end
+
+  test "ac1620 returns setting value when ac1609 is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "enhanced_id_for_high_risk_clients", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1620
+  end
+
+  # C60 — aC1617: Examines source of wealth before relationship? (enum Oui/Non)
+  test "ac1617 returns nil when no setting exists" do
+    assert_nil @survey.ac1617
+  end
+
+  test "ac1617 returns setting value" do
+    Setting.create!(organization: @organization, key: "examines_source_of_wealth", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1617
+  end
+
+  # C61 — aC1616B: Frequency of high-risk purchase/sale client review (frequency enum, conditional on aC1609)
+  test "ac1616b returns nil when ac1609 is not Oui" do
+    assert_nil @survey.ac1616b
+  end
+
+  test "ac1616b returns setting value when ac1609 is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "high_risk_purchase_sale_review_frequency", category: "kyc_procedures", value: "< Annuel")
+    assert_equal "< Annuel", @survey.ac1616b
+  end
+
+  # C62 — aC1616A: Frequency of high-risk rental client review (frequency enum, conditional on aC1609)
+  test "ac1616a returns nil when ac1609 is not Oui" do
+    assert_nil @survey.ac1616a
+  end
+
+  test "ac1616a returns setting value when ac1609 is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "high_risk_rental_review_frequency", category: "kyc_procedures", value: "< Annuel")
+    assert_equal "< Annuel", @survey.ac1616a
+  end
+
+  # C63 — aC1618: Other measures for high-risk clients? (conditional on aC1609)
+  test "ac1618 returns nil when ac1609 is not Oui" do
+    assert_nil @survey.ac1618
+  end
+
+  test "ac1618 returns setting value when ac1609 is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "other_measures_for_high_risk_clients", category: "kyc_procedures", value: "Oui")
+    assert_equal "Oui", @survey.ac1618
+  end
+
+  # C64 — aC1619: Specify other measures (free text, conditional on aC1618)
+  test "ac1619 returns nil when ac1618 is not Oui" do
+    assert_nil @survey.ac1619
+  end
+
+  test "ac1619 returns setting value when ac1618 is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "other_measures_for_high_risk_clients", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "other_high_risk_measures_description", category: "kyc_procedures", value: "Enhanced monitoring")
+    assert_equal "Enhanced monitoring", @survey.ac1619
+  end
+
+  # C65 — aC1616C: Clients use cryptocurrency for real estate? (enum Oui/Non)
+  test "ac1616c returns nil when no setting exists" do
+    assert_nil @survey.ac1616c
+  end
+
+  test "ac1616c returns setting value" do
+    Setting.create!(organization: @organization, key: "clients_use_crypto_for_real_estate", category: "kyc_procedures", value: "Non")
+    assert_equal "Non", @survey.ac1616c
+  end
+
+  # C66 — aC1621: How entity verifies virtual asset BOs (free text, conditional on aC1616C)
+  test "ac1621 returns nil when ac1616c is not Oui" do
+    assert_nil @survey.ac1621
+  end
+
+  test "ac1621 returns setting value when ac1616c is Oui" do
+    Setting.create!(organization: @organization, key: "clients_use_crypto_for_real_estate", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "virtual_asset_bo_verification_method", category: "kyc_procedures", value: "Blockchain analysis tools")
+    assert_equal "Blockchain analysis tools", @survey.ac1621
+  end
+
+  # ============================================================
+  # Section 1.7 — EDD (C67–C69)
+  # ============================================================
+
+  # C67 — aC1701: Total EDD clients at onboarding (integerItemType, conditional on aC1609)
+  test "ac1701 returns nil when ac1609 is not Oui" do
+    assert_nil @survey.ac1701
+  end
+
+  test "ac1701 returns setting value when ac1609 is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "edd_clients_at_onboarding_count", category: "controls", value: "8")
+    assert_equal "8", @survey.ac1701
+  end
+
+  # C68 — aC1702: Total EDD clients during ongoing relationship (integerItemType, conditional on aC1609)
+  test "ac1702 returns nil when ac1609 is not Oui" do
+    assert_nil @survey.ac1702
+  end
+
+  test "ac1702 returns setting value when ac1609 is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "edd_clients_ongoing_count", category: "controls", value: "12")
+    assert_equal "12", @survey.ac1702
+  end
+
+  # C69 — aC1703: Percentage of EDD clients (pureItemType 0-100, conditional on aC1609)
+  test "ac1703 returns nil when ac1609 is not Oui" do
+    assert_nil @survey.ac1703
+  end
+
+  test "ac1703 returns setting value when ac1609 is Oui" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    Setting.create!(organization: @organization, key: "edd_clients_percentage", category: "controls", value: "15.5")
+    assert_equal "15.5", @survey.ac1703
+  end
 end
