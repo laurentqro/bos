@@ -4953,4 +4953,34 @@ class SurveyTest < ActiveSupport::TestCase
   test "a2203 returns nil when a2202 is not Oui" do
     assert_nil @survey.a2203
   end
+
+  # === Section 2.8: Services Offered, Agent for Purchases & Sales (Q149-Q161) ===
+
+  # Q149 — aIR233: Total unique clients by country for purchase/sale (dimensional)
+  test "air233 returns unique client counts grouped by country" do
+    baseline = @survey.air233
+
+    np_fr = Client.create!(organization: @organization, name: "NP FR", client_type: "NATURAL_PERSON", nationality: "FR")
+    np_fr2 = Client.create!(organization: @organization, name: "NP FR2", client_type: "NATURAL_PERSON", nationality: "FR")
+    np_it = Client.create!(organization: @organization, name: "NP IT", client_type: "NATURAL_PERSON", nationality: "IT")
+    le_ch = Client.create!(organization: @organization, name: "LE CH", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SCI", incorporation_country: "CH")
+
+    Transaction.create!(organization: @organization, client: np_fr, transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 1, 1), transaction_value: 100_000, payment_method: "WIRE")
+    Transaction.create!(organization: @organization, client: np_fr, transaction_type: "SALE",
+      transaction_date: Date.new(@year, 2, 1), transaction_value: 200_000, payment_method: "WIRE")
+    Transaction.create!(organization: @organization, client: np_fr2, transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 3, 1), transaction_value: 150_000, payment_method: "WIRE")
+    Transaction.create!(organization: @organization, client: np_it, transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 4, 1), transaction_value: 300_000, payment_method: "WIRE")
+    Transaction.create!(organization: @organization, client: le_ch, transaction_type: "SALE",
+      transaction_date: Date.new(@year, 5, 1), transaction_value: 500_000, payment_method: "WIRE")
+
+    result = @survey.air233
+    assert_instance_of Hash, result
+    assert_equal (baseline["FR"] || 0) + 2, result["FR"]  # 2 new unique FR clients
+    assert_equal (baseline["IT"] || 0) + 1, result["IT"]  # 1 new unique IT client
+    assert_equal (baseline["CH"] || 0) + 1, result["CH"]  # 1 new unique CH LE
+  end
 end

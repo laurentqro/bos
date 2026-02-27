@@ -362,6 +362,21 @@ class Survey
         return nil unless a2202 == "Oui"
         setting_value_for("virtual_asset_platform_names")
       end
+
+      # Q149 — aIR233: Total unique clients by country for purchase/sale (dimensional)
+      # Type: xbrli:integerItemType — dimensional by country
+      def air233
+        country_sql = "CASE WHEN clients.client_type = 'NATURAL_PERSON' " \
+          "THEN clients.nationality ELSE clients.incorporation_country END"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE])
+          .joins(:client)
+          .where("#{country_sql} IS NOT NULL")
+          .group(Arel.sql(country_sql))
+          .distinct
+          .count(:client_id)
+      end
     end
   end
 end
