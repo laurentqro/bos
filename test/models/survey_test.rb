@@ -2022,4 +2022,195 @@ class SurveyTest < ActiveSupport::TestCase
     assert_nil result["ES"]
     assert_equal 1, result["GB"]
   end
+
+  # Q37 — aMLES: Number of Monegasque legal entity clients, broken down by type
+  # Type: xbrli:integerItemType — dimensional by legal_entity_type
+  # Scope: Purchase/Sale only, Monegasque (incorporation_country == "MC"), excludes trusts
+  # Conditional: only when a155 == "Oui"
+
+  test "amles returns nil when a155 is not Oui" do
+    assert_nil @survey.amles
+  end
+
+  test "amles returns hash of Monegasque legal entity clients grouped by legal_entity_type" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_monegasque_legal_entity_type",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    # Create Monegasque SAM client with a purchase transaction
+    sam_client = Client.create!(
+      organization: @organization,
+      name: "Monaco SAM Corp",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SAM",
+      incorporation_country: "MC",
+      became_client_at: 3.months.ago
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: sam_client,
+      reference: "AMLES-SAM",
+      transaction_date: Date.current - 10.days,
+      transaction_type: "PURCHASE",
+      transaction_value: 2_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    # Create Monegasque SCI client with a sale transaction
+    sci_client = Client.create!(
+      organization: @organization,
+      name: "Monaco SCI Immo",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SCI",
+      incorporation_country: "MC",
+      became_client_at: 2.months.ago
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: sci_client,
+      reference: "AMLES-SCI",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "SALE",
+      transaction_value: 1_500_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    result = @survey.amles
+
+    assert_instance_of Hash, result
+    # vasp_client fixture is also SAM with incorporation_country MC and a PURCHASE txn
+    assert_equal 2, result["SAM"]
+    assert_equal 1, result["SCI"]
+  end
+
+  test "amles excludes trusts" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_monegasque_legal_entity_type",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    trust = clients(:trust)
+    assert_equal "TRUST", trust.legal_entity_type
+    assert_equal "MC", trust.incorporation_country
+
+    Transaction.create!(
+      organization: @organization,
+      client: trust,
+      reference: "AMLES-TRUST",
+      transaction_date: Date.current - 3.days,
+      transaction_type: "PURCHASE",
+      transaction_value: 5_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    result = @survey.amles
+    assert_nil result["TRUST"]
+  end
+
+  test "amles excludes non-Monegasque legal entities" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_monegasque_legal_entity_type",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    foreign_le = Client.create!(
+      organization: @organization,
+      name: "French SARL Corp",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SARL",
+      incorporation_country: "FR",
+      became_client_at: 3.months.ago
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: foreign_le,
+      reference: "AMLES-FR",
+      transaction_date: Date.current - 10.days,
+      transaction_type: "PURCHASE",
+      transaction_value: 1_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    result = @survey.amles
+    # The SARL count should not include the French SARL
+    # Only vasp_client (SAM, MC) from fixtures should appear, no SARL from MC
+    assert_nil result["SARL"]
+  end
+
+  test "amles excludes rental transactions" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_monegasque_legal_entity_type",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    rental_le = Client.create!(
+      organization: @organization,
+      name: "Monaco Rental SCI",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SCI",
+      incorporation_country: "MC",
+      became_client_at: 2.months.ago
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: rental_le,
+      reference: "AMLES-RENTAL",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "RENTAL",
+      transaction_value: 240_000,
+      rental_annual_value: 240_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    result = @survey.amles
+    assert_nil result["SCI"]
+  end
+
+  test "amles counts each client only once even with multiple transactions" do
+    Setting.create!(
+      organization: @organization,
+      key: "can_distinguish_monegasque_legal_entity_type",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    sam_client = Client.create!(
+      organization: @organization,
+      name: "Multi-Txn SAM",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SAM",
+      incorporation_country: "MC",
+      became_client_at: 3.months.ago
+    )
+    2.times do |i|
+      Transaction.create!(
+        organization: @organization,
+        client: sam_client,
+        reference: "AMLES-MULTI-#{i}",
+        transaction_date: Date.current - (i + 1).days,
+        transaction_type: "PURCHASE",
+        transaction_value: 1_000_000,
+        property_country: "MC",
+        payment_method: "WIRE"
+      )
+    end
+
+    result = @survey.amles
+    # vasp_client (SAM, MC) + sam_client = 2 SAMs
+    assert_equal 2, result["SAM"]
+  end
 end

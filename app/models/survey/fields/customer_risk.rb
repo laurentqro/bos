@@ -425,6 +425,24 @@ class Survey
         setting_value_for("can_distinguish_monegasque_legal_entity_type")
       end
 
+      # Q37 — aMLES: Number of Monegasque legal entity clients, broken down by type
+      # Type: xbrli:integerItemType — dimensional by legal_entity_type
+      # Scope: Purchase/Sale, incorporation_country == "MC", excludes trusts
+      # Conditional: only when a155 == "Oui"
+      def amles
+        return nil unless a155 == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE])
+          .joins(:client)
+          .where(clients: {client_type: "LEGAL_ENTITY", incorporation_country: "MC"})
+          .where.not(clients: {legal_entity_type: "TRUST"})
+          .where.not(clients: {legal_entity_type: nil})
+          .distinct
+          .group("clients.legal_entity_type")
+          .count("clients.id")
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)

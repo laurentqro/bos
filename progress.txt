@@ -53,8 +53,8 @@
 - [x] Task 33: Q33 — a1501 — total unique legal entity clients (excl. trusts) by incorporation country for purchase/sale (2026-02-27)
 - [x] Task 34: Q34 — a1502B — total transactions by legal entity clients (excl. trusts) for purchase/sale (2026-02-27)
 - [x] Task 35: Q35 — a1503B — total value of funds transferred by legal entity clients (excl. trusts) for purchase/sale (2026-02-27)
-- [ ] Task 36: Q36 — Votre entité distingue-t-elle si les clients sont des personnes morales monégasques et le type de personne morale ?
-- [ ] Task 37: Q37 — Veuillez indiquer le nombre de clients qui sont des personnes morales monégasques, ventilé par type.
+- [x] Task 36: Q36 — a155 — entity distinguishes Monegasque legal entity types (settings-based) (2026-02-27)
+- [x] Task 37: Q37 — aMLES — Monegasque legal entity clients by type (dimensional, conditional on a155) (2026-02-27)
 - [ ] Task 38: Q38 — Veuillez indiquer le nombre total de clients bénéficiaires effectifs uniques de personnes morales qui sont des particuli
 - [ ] Task 39: Q39 — Veuillez indiquer le nombre total de clients bénéficiaires effectifs uniques de personnes morales et qui sont des partic
 
