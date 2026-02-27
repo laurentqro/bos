@@ -5759,4 +5759,53 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "structural_changes_during_period", category: "entity_info", value: "Oui")
     assert_equal "Oui", @survey.a3307
   end
+
+  # Q199 — a3308: Describe structural changes
+  test "a3308 returns nil when a3307 is not Oui" do
+    assert_nil @survey.a3308
+  end
+
+  test "a3308 returns setting value when a3307 is Oui" do
+    Setting.create!(organization: @organization, key: "structural_changes_during_period", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "structural_changes_description", category: "entity_info", value: "New director appointed")
+    assert_equal "New director appointed", @survey.a3308
+  end
+
+  # Q200 — a3210B: Part of international business network?
+  test "a3210b returns setting value for part_of_international_network" do
+    assert_nil @survey.a3210b
+
+    Setting.create!(organization: @organization, key: "part_of_international_network", category: "entity_info", value: "Non")
+    assert_equal "Non", @survey.a3210b
+  end
+
+  # Q201 — a3211B: Specify international network
+  test "a3211b returns nil when a3210b is not Oui" do
+    assert_nil @survey.a3211b
+  end
+
+  test "a3211b returns setting value when a3210b is Oui" do
+    Setting.create!(organization: @organization, key: "part_of_international_network", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "international_network_name", category: "entity_info", value: "Sotheby's International Realty")
+    assert_equal "Sotheby's International Realty", @survey.a3211b
+  end
+
+  # Q202 — a3210: Member of professional association?
+  test "a3210 returns setting value for member_of_professional_association" do
+    assert_nil @survey.a3210
+
+    Setting.create!(organization: @organization, key: "member_of_professional_association", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a3210
+  end
+
+  # Q203 — a3211: Specify professional association
+  test "a3211 returns nil when a3210 is not Oui" do
+    assert_nil @survey.a3211
+  end
+
+  test "a3211 returns setting value when a3210 is Oui" do
+    Setting.create!(organization: @organization, key: "member_of_professional_association", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "professional_association_name", category: "entity_info", value: "Chambre Immobilière Monégasque")
+    assert_equal "Chambre Immobilière Monégasque", @survey.a3211
+  end
 end

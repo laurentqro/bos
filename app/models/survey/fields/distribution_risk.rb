@@ -290,6 +290,39 @@ class Survey
       def a3307
         setting_value_for("structural_changes_during_period")
       end
+
+      # Q199 — a3308: Describe structural changes
+      # Type: xbrli:stringItemType — settings-based, conditional on a3307
+      def a3308
+        return nil unless a3307 == "Oui"
+        setting_value_for("structural_changes_description")
+      end
+
+      # Q200 — a3210B: Part of international business network?
+      # Type: enum (Oui/Non) — settings-based
+      def a3210b
+        setting_value_for("part_of_international_network")
+      end
+
+      # Q201 — a3211B: Specify international network
+      # Type: xbrli:stringItemType — settings-based, conditional on a3210B
+      def a3211b
+        return nil unless a3210b == "Oui"
+        setting_value_for("international_network_name")
+      end
+
+      # Q202 — a3210: Member of professional association?
+      # Type: enum (Oui/Non) — settings-based
+      def a3210
+        setting_value_for("member_of_professional_association")
+      end
+
+      # Q203 — a3211: Specify professional association
+      # Type: xbrli:stringItemType — settings-based, conditional on a3210
+      def a3211
+        return nil unless a3210 == "Oui"
+        setting_value_for("professional_association_name")
+      end
     end
   end
 end
