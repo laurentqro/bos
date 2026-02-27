@@ -235,6 +235,12 @@ class Survey
 
         JSON.parse(json)
       end
+
+      # Q193 — a3304C: Is entity a branch or subsidiary of another entity?
+      # Type: enum (Oui/Non) — settings-based
+      def a3304c
+        setting_value_for("is_branch_of_another_entity")
+      end
     end
   end
 end

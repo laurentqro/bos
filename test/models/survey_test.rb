@@ -5686,4 +5686,12 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal({"MC" => 2, "FR" => 1}, @survey.a3303)
   end
+
+  # Q193 — a3304C: Is entity a branch or subsidiary of another entity?
+  test "a3304c returns setting value for is_branch_of_another_entity" do
+    assert_nil @survey.a3304c
+
+    Setting.create!(organization: @organization, key: "is_branch_of_another_entity", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a3304c
+  end
 end
