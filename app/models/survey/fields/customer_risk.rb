@@ -1124,11 +1124,92 @@ class Survey
           .exists? ? "Oui" : "Non"
       end
 
-      # Q81 — a11502B: Total unique Monegasque clients who are lawyers or other legal professionals
-      # Type: xbrli:integerItemType — computed, conditional on aC171
-      def a11502b
-        mc_clients_by_sector("LEGAL_SERVICES")
-      end
+      # Q81 — a11502B: Monegasque lawyers/legal professionals
+      def a11502b = mc_clients_by_sector("LEGAL_SERVICES")
+
+      # Q82 — a11602B: Monegasque auditors/accountants
+      def a11602b = mc_clients_by_sector("ACCOUNTING")
+
+      # Q83 — a11702B: Monegasque nominee shareholders/directors
+      def a11702b = mc_clients_by_sector("NOMINEE_SHAREHOLDER")
+
+      # Q84 — a11802B: Monegasque bearer shares/instruments
+      def a11802b = mc_clients_by_sector("BEARER_INSTRUMENTS")
+
+      # Q85 — a12002B: Monegasque real estate agents
+      def a12002b = mc_clients_by_sector("REAL_ESTATE")
+
+      # Q86 — a12102B: Monegasque NMPPP
+      def a12102b = mc_clients_by_sector("NMPPP")
+
+      # Q87 — a12202B: Monegasque trust/company service providers
+      def a12202b = mc_clients_by_sector("TCSP")
+
+      # Q88 — a12302B: Monegasque Multi-Family Offices
+      def a12302b = mc_clients_by_sector("MULTI_FAMILY_OFFICE")
+
+      # Q89 — a12302C: Monegasque Single-Family Offices
+      def a12302c = mc_clients_by_sector("SINGLE_FAMILY_OFFICE")
+
+      # Q90 — a12402B: Monegasque complex ownership structures
+      def a12402b = mc_clients_by_sector("COMPLEX_STRUCTURES")
+
+      # Q91 — a12502B: Monegasque cash-intensive businesses
+      def a12502b = mc_clients_by_sector("CASH_INTENSIVE")
+
+      # Q92 — a12602B: Monegasque prepaid/anonymous card users
+      def a12602b = mc_clients_by_sector("PREPAID_CARDS")
+
+      # Q93 — a12702B: Monegasque art & antiquities
+      def a12702b = mc_clients_by_sector("ART_ANTIQUITIES")
+
+      # Q94 — a12802B: Monegasque import/export
+      def a12802b = mc_clients_by_sector("IMPORT_EXPORT")
+
+      # Q95 — a12902B: Monegasque high-value goods dealers
+      def a12902b = mc_clients_by_sector("HIGH_VALUE_GOODS")
+
+      # Q96 — a13002B: Monegasque non-profit organizations
+      def a13002b = mc_clients_by_sector("NPO")
+
+      # Q97 — a13202B: Monegasque casino/gambling
+      def a13202b = mc_clients_by_sector("GAMBLING")
+
+      # Q98 — a13302B: Monegasque construction/property development
+      def a13302b = mc_clients_by_sector("CONSTRUCTION")
+
+      # Q99 — a13402B: Monegasque extractive industries
+      def a13402b = mc_clients_by_sector("EXTRACTIVE")
+
+      # Q100 — a13702B: Monegasque defense/weapons
+      def a13702b = mc_clients_by_sector("DEFENSE_WEAPONS")
+
+      # Q101 — a13802B: Monegasque yachting/pleasure navigation
+      def a13802b = mc_clients_by_sector("YACHTING")
+
+      # Q102 — a13902B: Monegasque sports agents/intermediaries
+      def a13902b = mc_clients_by_sector("SPORTS_AGENTS")
+
+      # Q103 — a14102B: Monegasque fund management
+      def a14102b = mc_clients_by_sector("FUND_MANAGEMENT")
+
+      # Q104 — a14202B: Monegasque holding companies
+      def a14202b = mc_clients_by_sector("HOLDING_COMPANY")
+
+      # Q105 — a14302B: Monegasque auctioneers
+      def a14302b = mc_clients_by_sector("AUCTIONEERS")
+
+      # Q106 — a14402B: Monegasque car dealers
+      def a14402b = mc_clients_by_sector("CAR_DEALERS")
+
+      # Q107 — a14502B: Monegasque government/public sector
+      def a14502b = mc_clients_by_sector("GOVERNMENT")
+
+      # Q108 — a14602B: Monegasque aircraft/private jet charter
+      def a14602b = mc_clients_by_sector("AIRCRAFT_JETS")
+
+      # Q109 — a14702B: Monegasque transport
+      def a14702b = mc_clients_by_sector("TRANSPORT")
 
       private
 

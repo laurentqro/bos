@@ -4251,4 +4251,63 @@ class SurveyTest < ActiveSupport::TestCase
     survey = Survey.new(organization: organizations(:company), year: @year)
     assert_nil survey.a11502b
   end
+
+  # Q82-Q109: All Monegasque client sector methods follow the same pattern.
+  # Test each delegates to mc_clients_by_sector correctly.
+  {
+    a11602b: "ACCOUNTING",
+    a11702b: "NOMINEE_SHAREHOLDER",
+    a11802b: "BEARER_INSTRUMENTS",
+    a12002b: "REAL_ESTATE",
+    a12102b: "NMPPP",
+    a12202b: "TCSP",
+    a12302b: "MULTI_FAMILY_OFFICE",
+    a12302c: "SINGLE_FAMILY_OFFICE",
+    a12402b: "COMPLEX_STRUCTURES",
+    a12502b: "CASH_INTENSIVE",
+    a12602b: "PREPAID_CARDS",
+    a12702b: "ART_ANTIQUITIES",
+    a12802b: "IMPORT_EXPORT",
+    a12902b: "HIGH_VALUE_GOODS",
+    a13002b: "NPO",
+    a13202b: "GAMBLING",
+    a13302b: "CONSTRUCTION",
+    a13402b: "EXTRACTIVE",
+    a13702b: "DEFENSE_WEAPONS",
+    a13802b: "YACHTING",
+    a13902b: "SPORTS_AGENTS",
+    a14102b: "FUND_MANAGEMENT",
+    a14202b: "HOLDING_COMPANY",
+    a14302b: "AUCTIONEERS",
+    a14402b: "CAR_DEALERS",
+    a14502b: "GOVERNMENT",
+    a14602b: "AIRCRAFT_JETS",
+    a14702b: "TRANSPORT"
+  }.each do |method, sector|
+    test "#{method} returns count of MC clients in #{sector} sector" do
+      baseline = @survey.send(method) || 0
+
+      client = Client.create!(
+        organization: @organization,
+        client_type: "NATURAL_PERSON",
+        name: "MC #{sector} Client",
+        nationality: "MC",
+        business_sector: sector
+      )
+      Transaction.create!(
+        organization: @organization,
+        client: client,
+        transaction_type: "PURCHASE",
+        transaction_date: Date.new(@year, 5, 1),
+        transaction_value: 500_000
+      )
+
+      assert_equal baseline + 1, @survey.send(method)
+    end
+
+    test "#{method} returns nil when ac171 is not Oui" do
+      survey = Survey.new(organization: organizations(:company), year: @year)
+      assert_nil survey.send(method)
+    end
+  end
 end
