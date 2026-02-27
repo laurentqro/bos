@@ -152,6 +152,17 @@ class Survey
           .where(payment_method: %w[CASH MIXED])
           .count
       end
+
+      # Q129 — a2109W: Total value of cash operations with clients
+      # Type: xbrli:monetaryItemType — computed, conditional on a2107wrp
+      def a2109w
+        return nil unless a2107wrp == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+          .where(payment_method: %w[CASH MIXED])
+          .sum(:cash_amount)
+      end
     end
   end
 end
