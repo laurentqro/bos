@@ -525,6 +525,14 @@ class Survey
           .where("monthly_rent >= ?", 10_000)
           .count
       end
+
+      # Q165 — aIR2316: Unique rental properties < 10,000 EUR/month active in reporting period
+      # Type: xbrli:integerItemType — computed
+      def air2316
+        organization.managed_properties.active_in_year(year)
+          .where("monthly_rent < ?", 10_000)
+          .count
+      end
     end
   end
 end

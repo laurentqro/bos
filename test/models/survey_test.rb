@@ -5241,4 +5241,26 @@ class SurveyTest < ActiveSupport::TestCase
 
     assert_equal baseline + 2, @survey.air2313
   end
+
+  # Q165 — aIR2316: Unique rental properties < 10,000 EUR/month
+  test "air2316 counts managed properties with monthly rent < 10000 active in year" do
+    baseline = @survey.air2316 || 0
+
+    client = Client.create!(organization: @organization, name: "Landlord", client_type: "NATURAL_PERSON", nationality: "MC")
+
+    # < 10k (should count)
+    ManagedProperty.create!(organization: @organization, client: client,
+      property_address: "1 Rue Low", management_start_date: Date.new(@year, 1, 1),
+      monthly_rent: 5_000, management_fee_percent: 5, property_type: "RESIDENTIAL")
+    # >= 10k (should not count)
+    ManagedProperty.create!(organization: @organization, client: client,
+      property_address: "2 Rue High", management_start_date: Date.new(@year, 3, 1),
+      monthly_rent: 15_000, management_fee_percent: 5, property_type: "RESIDENTIAL")
+    # Exactly 10k (should not count — boundary is strict <)
+    ManagedProperty.create!(organization: @organization, client: client,
+      property_address: "3 Rue Threshold", management_start_date: Date.new(@year, 6, 1),
+      monthly_rent: 10_000, management_fee_percent: 5, property_type: "COMMERCIAL")
+
+    assert_equal baseline + 1, @survey.air2316
+  end
 end
