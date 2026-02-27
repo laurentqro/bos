@@ -4916,4 +4916,14 @@ class SurveyTest < ActiveSupport::TestCase
   test "a2115ab returns nil when a2113b is not Oui" do
     assert_nil @survey.a2115ab
   end
+
+  # === Section 2.7: Virtual Currencies (Q145-Q148) ===
+
+  # Q145 — a2201A: Does entity accept/conduct cryptocurrency operations with clients?
+  test "a2201a returns setting value" do
+    assert_nil @survey.a2201a
+
+    Setting.create!(organization: @organization, key: "accepts_cryptocurrency_operations", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a2201a
+  end
 end

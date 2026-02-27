@@ -337,6 +337,12 @@ class Survey
           .where.not(clients: {incorporation_country: "MC"})
           .count
       end
+
+      # Q145 — a2201A: Does entity accept or conduct cryptocurrency operations with clients?
+      # Type: enum (Oui/Non) — settings-based
+      def a2201a
+        setting_value_for("accepts_cryptocurrency_operations")
+      end
     end
   end
 end
