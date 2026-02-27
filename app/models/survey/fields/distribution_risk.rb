@@ -120,6 +120,12 @@ class Survey
         return nil unless a1802btola == "Oui"
         setting_value_for("non_face_to_face_trust_onboarded_count")
       end
+
+      # Q180 — a3201: Entity accepts clients through introducers
+      # Type: enum (Oui/Non) — settings-based
+      def a3201
+        setting_value_for("accepts_clients_through_introducers")
+      end
     end
   end
 end

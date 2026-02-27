@@ -5505,4 +5505,12 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "non_face_to_face_trust_onboarded_count", category: "entity_info", value: "2")
     assert_equal "2", @survey.a3212ctola
   end
+
+  # Q180 — a3201: Entity accepts clients through introducers
+  test "a3201 returns setting value for accepts_clients_through_introducers" do
+    assert_nil @survey.a3201
+
+    Setting.create!(organization: @organization, key: "accepts_clients_through_introducers", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a3201
+  end
 end
