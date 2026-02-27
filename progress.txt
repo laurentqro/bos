@@ -67,12 +67,12 @@
 - [x] Task 45: Q45 — a11001BTOLA — entity has info on number/value of trust client transactions (settings-based, conditional on a1802btola) (2026-02-27)
 - [x] Task 46: Q46 — a1806TOLA — total transactions by trust/legal construction clients for purchase/sale (computed, conditional on a11001btola) (2026-02-27)
 - [x] Task 47: Q47 — a1807TOLA — total value of funds transferred by trust/legal construction clients for purchase/sale (computed, conditional on a11001btola) (2026-02-27)
-- [ ] Task 48: Q48 — Veuillez préciser le type d'autres constructions juridiques non mentionnées dans les questions précédentes que votre ent
+- [x] Task 48: Q48 — a11006 — other legal construction types (computed, conditional on a1802btola) (2026-02-27)
 
 ### Section 1.8
-- [ ] Task 49: Q49 — Votre entité compte-t-elle parmi ses clients des personnes politiquement exposées (PPE) ?
-- [ ] Task 50: Q50 — Veuillez indiquer le nombre total de clients uniques qui sont des PPE, ventilé selon le lieu de résidence des PPE (y com
-- [ ] Task 51: Q51 — Veuillez indiquer le nombre total de clients uniques qui sont des PPE, ventilé selon la nationalité primaire de la PPE (
+- [x] Task 49: Q49 — a11301 — entity has PEP clients (computed) (2026-02-27)
+- [x] Task 50: Q50 — a11302RES — total unique PEP clients by residence country (dimensional, conditional on a11301) (2026-02-27)
+- [x] Task 51: Q51 — a11302 — PEP clients by primary nationality (dimensional, conditional on a11301) (2026-02-27)
 - [ ] Task 52: Q52 — Veuillez indiquer le nombre total d'opérations effectuées par des clients qui sont des PPE pour l'achat et la vente de b
 - [ ] Task 53: Q53 — Veuillez indiquer la valeur totale en euros des fonds transférés par des clients qui sont des PPE, pour l'achat et la ve
 - [ ] Task 54: Q54 — Veuillez indiquer le nombre total de clients qui sont les bénéficiaires effectifs uniques de personnes morales/trusts et
