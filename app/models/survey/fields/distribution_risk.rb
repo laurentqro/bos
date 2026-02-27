@@ -185,6 +185,21 @@ class Survey
           .group(:introducer_country)
           .count
       end
+
+      # Q186 — a3205: Introduced clients in reporting period by introducer residence (dimensional)
+      # Type: xbrli:integerItemType — computed, dimensional by country, conditional on a3501C
+      def a3205
+        return nil unless a3501c == "Oui"
+
+        year_range = Date.new(year, 1, 1)..Date.new(year, 12, 31)
+
+        organization.clients.kept
+          .where(introduced_by_third_party: true)
+          .where(became_client_at: year_range)
+          .where.not(introducer_country: nil)
+          .group(:introducer_country)
+          .count
+      end
     end
   end
 end

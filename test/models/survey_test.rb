@@ -5618,4 +5618,28 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal (baseline["MC"] || 0) + 1, result["MC"]
     assert_equal (baseline["FR"] || 0) + 1, result["FR"]
   end
+
+  # Q186 — a3205: Introduced clients in reporting period by introducer residence (dimensional)
+  test "a3205 returns nil when a3501c is not Oui" do
+    assert_nil @survey.a3205
+  end
+
+  test "a3205 returns introduced clients in reporting period grouped by introducer country" do
+    Setting.create!(organization: @organization, key: "accepts_clients_through_introducers", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "can_provide_introducer_residence", category: "entity_info", value: "Oui")
+    baseline = @survey.a3205
+
+    # Introduced in reporting year by MC-based introducer (counts)
+    Client.create!(organization: @organization, name: "New Intro 1", client_type: "NATURAL_PERSON",
+      nationality: "FR", introduced_by_third_party: true, introducer_country: "MC",
+      became_client_at: Date.new(@year, 5, 1))
+
+    # Introduced in previous year (does NOT count)
+    Client.create!(organization: @organization, name: "Old Intro 1", client_type: "NATURAL_PERSON",
+      nationality: "IT", introduced_by_third_party: true, introducer_country: "MC",
+      became_client_at: Date.new(@year - 1, 5, 1))
+
+    result = @survey.a3205
+    assert_equal (baseline["MC"] || 0) + 1, result["MC"]
+  end
 end
