@@ -359,6 +359,45 @@ class Survey
       def a3402
         setting_value_for("can_distinguish_rejection_reasons")
       end
+
+      # Q210 — a3403: Rejected prospects due to client attributes/activities/deficiencies
+      # Type: xbrli:integerItemType — settings-based, conditional on a3402
+      def a3403
+        return nil unless a3402 == "Oui"
+        setting_value_for("rejected_prospects_client_attribute_count")
+      end
+
+      # Q211 — a3414: Total terminated client relationships due to AML/CFT considerations
+      # Type: xbrli:integerItemType — settings-based
+      def a3414
+        setting_value_for("terminated_relationships_count")
+      end
+
+      # Q212 — a3415: Can entity distinguish termination reasons?
+      # Type: enum (Oui/Non) — settings-based
+      def a3415
+        setting_value_for("can_distinguish_termination_reasons")
+      end
+
+      # Q213 — a3416: Terminated relationships due to client attributes/activities/deficiencies
+      # Type: xbrli:integerItemType — settings-based, conditional on a3415
+      def a3416
+        return nil unless a3415 == "Oui"
+        setting_value_for("terminated_relationships_client_attribute_count")
+      end
+
+      # Q214 — a3701A: Has comments on distribution risk section?
+      # Type: enum (Oui/Non) — settings-based
+      def a3701a
+        setting_value_for("has_distribution_risk_comments")
+      end
+
+      # Q215 — a3701: Distribution risk section comments
+      # Type: xbrli:stringItemType — settings-based, conditional on a3701A
+      def a3701
+        return nil unless a3701a == "Oui"
+        setting_value_for("distribution_risk_comments")
+      end
     end
   end
 end

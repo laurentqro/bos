@@ -5856,4 +5856,61 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "can_distinguish_rejection_reasons", category: "entity_info", value: "Oui")
     assert_equal "Oui", @survey.a3402
   end
+
+  # Q210 — a3403: Rejected prospects due to client attributes (conditional on a3402)
+  test "a3403 returns nil when a3402 is not Oui" do
+    assert_nil @survey.a3403
+  end
+
+  test "a3403 returns setting value when a3402 is Oui" do
+    Setting.create!(organization: @organization, key: "can_distinguish_rejection_reasons", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "rejected_prospects_client_attribute_count", category: "entity_info", value: "2")
+    assert_equal "2", @survey.a3403
+  end
+
+  # Q211 — a3414: Total terminated client relationships
+  test "a3414 returns setting value for terminated relationships" do
+    assert_nil @survey.a3414
+
+    Setting.create!(organization: @organization, key: "terminated_relationships_count", category: "entity_info", value: "1")
+    assert_equal "1", @survey.a3414
+  end
+
+  # Q212 — a3415: Can entity distinguish termination reasons?
+  test "a3415 returns setting value for can_distinguish_termination_reasons" do
+    assert_nil @survey.a3415
+
+    Setting.create!(organization: @organization, key: "can_distinguish_termination_reasons", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a3415
+  end
+
+  # Q213 — a3416: Terminated relationships due to client attributes (conditional on a3415)
+  test "a3416 returns nil when a3415 is not Oui" do
+    assert_nil @survey.a3416
+  end
+
+  test "a3416 returns setting value when a3415 is Oui" do
+    Setting.create!(organization: @organization, key: "can_distinguish_termination_reasons", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "terminated_relationships_client_attribute_count", category: "entity_info", value: "1")
+    assert_equal "1", @survey.a3416
+  end
+
+  # Q214 — a3701A: Has comments on distribution risk section?
+  test "a3701a returns setting value for has_distribution_risk_comments" do
+    assert_nil @survey.a3701a
+
+    Setting.create!(organization: @organization, key: "has_distribution_risk_comments", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a3701a
+  end
+
+  # Q215 — a3701: Distribution risk section comments (conditional on a3701A)
+  test "a3701 returns nil when a3701a is not Oui" do
+    assert_nil @survey.a3701
+  end
+
+  test "a3701 returns setting value when a3701a is Oui" do
+    Setting.create!(organization: @organization, key: "has_distribution_risk_comments", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "distribution_risk_comments", category: "entity_info", value: "No additional comments.")
+    assert_equal "No additional comments.", @survey.a3701
+  end
 end
