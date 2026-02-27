@@ -284,6 +284,12 @@ class Survey
 
         JSON.parse(json)
       end
+
+      # Q198 — a3307: Changes in structure during reporting period?
+      # Type: enum (Oui/Non) — settings-based
+      def a3307
+        setting_value_for("structural_changes_during_period")
+      end
     end
   end
 end

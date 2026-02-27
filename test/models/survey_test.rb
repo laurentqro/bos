@@ -5751,4 +5751,12 @@ class SurveyTest < ActiveSupport::TestCase
     Setting.create!(organization: @organization, key: "bos_25pct_by_nationality", category: "entity_info", value: '{"MC":1,"IT":2}')
     assert_equal({"MC" => 1, "IT" => 2}, @survey.a3306b)
   end
+
+  # Q198 — a3307: Changes in structure during reporting period?
+  test "a3307 returns setting value for structural_changes_during_period" do
+    assert_nil @survey.a3307
+
+    Setting.create!(organization: @organization, key: "structural_changes_during_period", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.a3307
+  end
 end
