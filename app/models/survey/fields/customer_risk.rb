@@ -873,6 +873,20 @@ class Survey
         setting_value_for("has_exchange_provider_clients")
       end
 
+      # Q63 — a13603AB: Total transactions by virtual currency exchange provider PSAV clients
+      # for purchase, sale, and rental of real estate
+      # Type: xbrli:integerItemType
+      # Conditional: only when a13601ep == "Oui"
+      def a13603ab
+        return nil unless a13601ep == "Oui"
+
+        organization.transactions.kept.for_year(year)
+          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+          .joins(:client)
+          .where(clients: {is_vasp: true, vasp_type: "EXCHANGE"})
+          .count
+      end
+
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
       # Type: xbrli:pureItemType (percentage, max 100) — dimensional by country
       # Includes all BOs (all ownership levels, direct/indirect control, representatives)
