@@ -2213,4 +2213,194 @@ class SurveyTest < ActiveSupport::TestCase
     # vasp_client (SAM, MC) + sam_client = 2 SAMs
     assert_equal 2, result["SAM"]
   end
+
+  # Q38 — a11206B: Total unique HNWI beneficial owners of legal entity clients,
+  # broken down by primary nationality of the HNWI
+  # Type: xbrli:integerItemType — dimensional by country (hash of counts)
+  # Scope: Purchase/Sale only, legal entity clients (excl. trusts)
+  # Conditional: only when a11201bcd == "Oui"
+
+  test "a11206b returns nil when a11201bcd is not Oui" do
+    assert_nil @survey.a11206b
+  end
+
+  test "a11206b returns hash of HNWI BOs grouped by nationality" do
+    Setting.create!(
+      organization: @organization,
+      key: "identifies_records_hnwi_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    # Create a legal entity client with a purchase transaction
+    le_client = Client.create!(
+      organization: @organization,
+      name: "HNWI BO Test Corp",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SARL",
+      became_client_at: 3.months.ago
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: le_client,
+      reference: "A11206B-1",
+      transaction_date: Date.current - 10.days,
+      transaction_type: "PURCHASE",
+      transaction_value: 3_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    # Create an HNWI beneficial owner (net worth > 5M)
+    BeneficialOwner.create!(
+      client: le_client,
+      name: "Rich Owner DE",
+      nationality: "DE",
+      net_worth_eur: 10_000_000,
+      control_type: "DIRECT",
+      is_pep: false
+    )
+
+    # Create another HNWI BO with different nationality
+    BeneficialOwner.create!(
+      client: le_client,
+      name: "Rich Owner BE",
+      nationality: "BE",
+      net_worth_eur: 8_000_000,
+      control_type: "DIRECT",
+      is_pep: false
+    )
+
+    # Create a non-HNWI BO (should not appear)
+    BeneficialOwner.create!(
+      client: le_client,
+      name: "Normal Owner ES",
+      nationality: "ES",
+      net_worth_eur: 1_000_000,
+      control_type: "DIRECT",
+      is_pep: false
+    )
+
+    result = @survey.a11206b
+
+    assert_instance_of Hash, result
+    # Our test data: DE and BE BOs are HNWI, ES is not
+    assert_equal 1, result["DE"]
+    assert_equal 1, result["BE"]
+    assert_nil result["ES"]
+  end
+
+  test "a11206b excludes BOs of trust clients" do
+    Setting.create!(
+      organization: @organization,
+      key: "identifies_records_hnwi_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    trust = clients(:trust)
+    Transaction.create!(
+      organization: @organization,
+      client: trust,
+      reference: "A11206B-TRUST",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "PURCHASE",
+      transaction_value: 5_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    BeneficialOwner.create!(
+      client: trust,
+      name: "Trust HNWI Owner",
+      nationality: "JP",
+      net_worth_eur: 20_000_000,
+      control_type: "DIRECT",
+      is_pep: false
+    )
+
+    result = @survey.a11206b
+    assert_nil result["JP"]
+  end
+
+  test "a11206b excludes BOs of clients with only rental transactions" do
+    Setting.create!(
+      organization: @organization,
+      key: "identifies_records_hnwi_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    rental_le = Client.create!(
+      organization: @organization,
+      name: "Rental Only Corp",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SCI",
+      became_client_at: 2.months.ago
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: rental_le,
+      reference: "A11206B-RENTAL",
+      transaction_date: Date.current - 5.days,
+      transaction_type: "RENTAL",
+      transaction_value: 240_000,
+      rental_annual_value: 240_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    BeneficialOwner.create!(
+      client: rental_le,
+      name: "Rental HNWI Owner",
+      nationality: "SE",
+      net_worth_eur: 15_000_000,
+      control_type: "DIRECT",
+      is_pep: false
+    )
+
+    result = @survey.a11206b
+    assert_nil result["SE"]
+  end
+
+  test "a11206b does not double-count a BO even with multiple transactions on the client" do
+    Setting.create!(
+      organization: @organization,
+      key: "identifies_records_hnwi_clients",
+      category: "entity_info",
+      value: "Oui"
+    )
+
+    le_client = Client.create!(
+      organization: @organization,
+      name: "Multi-Txn HNWI Corp",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      became_client_at: 3.months.ago
+    )
+    2.times do |i|
+      Transaction.create!(
+        organization: @organization,
+        client: le_client,
+        reference: "A11206B-MULTI-#{i}",
+        transaction_date: Date.current - (i + 1).days,
+        transaction_type: "PURCHASE",
+        transaction_value: 2_000_000,
+        property_country: "MC",
+        payment_method: "WIRE"
+      )
+    end
+
+    BeneficialOwner.create!(
+      client: le_client,
+      name: "Single HNWI NL",
+      nationality: "NL",
+      net_worth_eur: 12_000_000,
+      control_type: "DIRECT",
+      is_pep: false
+    )
+
+    result = @survey.a11206b
+    assert_equal 1, result["NL"]
+  end
 end

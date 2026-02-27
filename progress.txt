@@ -55,7 +55,7 @@
 - [x] Task 35: Q35 — a1503B — total value of funds transferred by legal entity clients (excl. trusts) for purchase/sale (2026-02-27)
 - [x] Task 36: Q36 — a155 — entity distinguishes Monegasque legal entity types (settings-based) (2026-02-27)
 - [x] Task 37: Q37 — aMLES — Monegasque legal entity clients by type (dimensional, conditional on a155) (2026-02-27)
-- [ ] Task 38: Q38 — Veuillez indiquer le nombre total de clients bénéficiaires effectifs uniques de personnes morales qui sont des particuli
+- [x] Task 38: Q38 — a11206B — total unique HNWI BOs of legal entity clients by nationality (dimensional, conditional on a11201bcd) (2026-02-27)
 - [ ] Task 39: Q39 — Veuillez indiquer le nombre total de clients bénéficiaires effectifs uniques de personnes morales et qui sont des partic
 
 ### Section 1.7
