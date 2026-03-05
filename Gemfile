@@ -96,6 +96,6 @@ eval_gemfile "Gemfile.jumpstart"
 # Bos dependencies
 gem "discard", "~> 1.3" # Soft deletes for compliance retention
 
-# AMSF Survey XBRL Generation (local development - will be published gems)
-gem "amsf_survey", path: "../amsf_survey/amsf_survey"
-gem "amsf_survey-real_estate", path: "../amsf_survey/amsf_survey-real_estate"
+# AMSF Survey XBRL Generation
+gem "amsf_survey", github: "laurentqro/amsf_survey", branch: "master", glob: "amsf_survey/*.gemspec"
+gem "amsf_survey-real_estate", github: "laurentqro/amsf_survey", branch: "master", glob: "amsf_survey-real_estate/*.gemspec"
