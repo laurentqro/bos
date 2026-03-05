@@ -10,7 +10,7 @@ class JumpstartComponent
     end
   end
 
-  def self.renders_many(name)
+  def self.renders_many(name, _type = nil)
     attr_writer name
 
     define_method name do
