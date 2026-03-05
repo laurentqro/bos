@@ -1,6 +1,6 @@
-service: immo-crm
+service: bos
 
-image: ghcr.io/laurentqro/immo-crm
+image: ghcr.io/laurentqro/bos
 
 servers:
   web:
@@ -31,7 +31,7 @@ aliases:
   dbc: app exec --interactive --reuse "bin/rails dbconsole"
 
 volumes:
-  - "immo_crm_storage:/rails/storage"
+  - "bos_storage:/rails/storage"
 
 asset_path: /rails/public/assets
 
@@ -48,8 +48,8 @@ accessories:
     port: 5432
     env:
       clear:
-        POSTGRES_USER: immo_crm
-        POSTGRES_DB: immo_crm_production
+        POSTGRES_USER: bos
+        POSTGRES_DB: bos_production
       secret:
         - POSTGRES_PASSWORD
     directories:

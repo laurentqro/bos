@@ -1,14 +1,14 @@
-# ImmoCRM AMSF Survey — Ralph Loop Agent Instructions
+# Bos AMSF Survey — Ralph Loop Agent Instructions
 
 ## What is this?
 
-ImmoCRM is a compliance SaaS for Monaco real estate agencies. The AMSF (Autorité Monégasque de Sécurité Financière) requires agencies to complete an annual AML/CFT survey of 323 questions (including attestation), submitted as XBRL.
+Bos is a compliance SaaS for Monaco real estate agencies. The AMSF (Autorité Monégasque de Sécurité Financière) requires agencies to complete an annual AML/CFT survey of 323 questions (including attestation), submitted as XBRL.
 
 ## Experiment: Clean Rebuild
 
 You are on a **fresh branch** (`ralph-amsf-experiment`). The field modules in `app/models/survey/fields/` have been emptied — only the module structure and `include` statements remain. Your job is to **rebuild every field method from scratch** using the XBRL taxonomy as the spec.
 
-You have access to the full ImmoCRM data layer (Client, Transaction, Organization, Setting models) but NO legacy field implementations. Build each method correctly from the start.
+You have access to the full Bos data layer (Client, Transaction, Organization, Setting models) but NO legacy field implementations. Build each method correctly from the start.
 
 ### Before starting
 Verify you're on the right branch:
@@ -57,12 +57,12 @@ Use the XSD to check expected types (xbrli:integerItemType, xbrli:decimalItemTyp
 
 - Defines the questionnaire structure: `amsf_survey-real_estate/taxonomies/2025/questionnaire_structure.yml`
 - Maps field_ids to XBRL taxonomy elements
-- Handles XBRL generation from the field values ImmoCRM provides
-- **DO NOT modify the gem** — only modify ImmoCRM's field implementations
+- Handles XBRL generation from the field values Bos provides
+- **DO NOT modify the gem** — only modify Bos's field implementations
 
 ## What "done" means for each field
 
-1. **Implemented from scratch** — The method computes real data from the ImmoCRM models (Client, Transaction, Organization, Setting)
+1. **Implemented from scratch** — The method computes real data from the Bos models (Client, Transaction, Organization, Setting)
 2. **Correct return type** — Matches the XSD type: xbrli:integerItemType, xbrli:decimalItemType, xbrli:booleanItemType, enum, or string
 3. **Correct scope** — Uses the right data filters (year, transaction type, client type, nationality, etc.) as described in the question instructions
 4. **Tested** — Each field has a test verifying it returns the correct value for known test data
@@ -181,7 +181,7 @@ If Arelle is not running, skip validation but note it in the commit message: `[A
 2. Find the question in `amsf_questions.csv` — read the question text AND instructions carefully
 3. Look up the field_id in `questionnaire_structure.yml` — note the expected type from the XSD
 4. Determine the category (computed, settings, conditional, or country breakdown)
-5. Explore the ImmoCRM models to understand available data (Client, Transaction, Organization scopes)
+5. Explore the Bos models to understand available data (Client, Transaction, Organization scopes)
 6. Implement the method in the correct field module
 7. Write a test for this field
 8. Run tests: `bin/rails test`

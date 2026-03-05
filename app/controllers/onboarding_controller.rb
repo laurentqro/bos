@@ -23,7 +23,7 @@ class OnboardingController < ApplicationController
 
     if @organization.save
       clear_onboarding_session
-      redirect_to dashboard_path, notice: "Organization setup complete! Welcome to Immo CRM."
+      redirect_to dashboard_path, notice: "Organization setup complete! Welcome to Bos."
     else
       render :entity_info, status: :unprocessable_entity
     end
@@ -75,7 +75,7 @@ class OnboardingController < ApplicationController
     if @organization.save
       # TODO: Create initial settings when Setting model is implemented (US4)
       clear_onboarding_session
-      redirect_to dashboard_path, notice: "Organization setup complete! Welcome to Immo CRM."
+      redirect_to dashboard_path, notice: "Organization setup complete! Welcome to Bos."
     else
       render :policies, status: :unprocessable_entity
     end

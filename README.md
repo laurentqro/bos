@@ -1,6 +1,6 @@
-# Immo CRM
+# Bos
 
-AML/KYC compliance CRM for Luxembourg real estate professionals. Manages client onboarding, transaction monitoring, beneficial owner tracking, and annual AMSF regulatory survey submissions.
+AML/KYC compliance CRM for Monaco real estate professionals. Manages client onboarding, transaction monitoring, beneficial owner tracking, and annual AMSF regulatory survey submissions.
 
 Built on Jumpstart Pro Rails 8 with Hotwire.
 

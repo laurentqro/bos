@@ -3,7 +3,7 @@
 # Seeds for development/testing environment
 # Run with: bin/rails db:seed
 #
-# Creates test data for the Immo CRM application including:
+# Creates test data for the Bos application including:
 # - A test user and account
 # - An organization (Monaco real estate agency)
 # - Sample clients (natural persons, legal entities, trusts)

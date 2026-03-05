@@ -93,7 +93,7 @@ eval_gemfile "Gemfile.jumpstart"
 # We recommend using strong migrations when your app is in production
 # gem "strong_migrations"
 
-# Immo CRM dependencies
+# Bos dependencies
 gem "discard", "~> 1.3" # Soft deletes for compliance retention
 
 # AMSF Survey XBRL Generation (local development - will be published gems)

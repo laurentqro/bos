@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# CRM routes for Immo CRM MVP
+# CRM routes for Bos
 # All routes require authentication via Devise's authenticate block
 #
 # NOTE: Routes are defined for the full MVP scope. Controllers will be
