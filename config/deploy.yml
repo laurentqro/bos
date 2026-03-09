@@ -44,7 +44,7 @@ builder:
 accessories:
   db:
     image: postgres:17
-    host: 178.104.30.228
+    host: 10.0.0.3
     port: 5432
     env:
       clear:
