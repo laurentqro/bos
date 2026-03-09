@@ -60,7 +60,7 @@ class BeneficialOwnersControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
 
     get client_beneficial_owners_path(@legal_entity),
-        headers: {"Turbo-Frame" => "beneficial_owners"}
+      headers: {"Turbo-Frame" => "beneficial_owners"}
     assert_response :success
   end
 
@@ -78,7 +78,7 @@ class BeneficialOwnersControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
 
     get new_client_beneficial_owner_path(@legal_entity),
-        headers: {"Turbo-Frame" => "new_beneficial_owner"}
+      headers: {"Turbo-Frame" => "new_beneficial_owner"}
     assert_response :success
   end
 
@@ -252,7 +252,7 @@ class BeneficialOwnersControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
 
     delete beneficial_owner_path(@beneficial_owner),
-           headers: {"Accept" => "text/vnd.turbo-stream.html"}
+      headers: {"Accept" => "text/vnd.turbo-stream.html"}
     assert_response :success
     assert_includes response.media_type, "turbo-stream"
   end

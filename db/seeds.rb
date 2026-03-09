@@ -85,10 +85,10 @@ puts "Creating clients..."
 15.times do |i|
   is_pep = i < 3 # First 3 are PEPs
   risk = case i
-         when 0..2 then "HIGH"
-         when 3..5 then "MEDIUM"
-         else "LOW"
-         end
+  when 0..2 then "HIGH"
+  when 3..5 then "MEDIUM"
+  else "LOW"
+  end
 
   # ~20% of clients are introduced by third parties (indices 0, 5, 10)
   is_introduced = i % 5 == 0
@@ -108,7 +108,7 @@ puts "Creating clients..."
     is_pep: is_pep,
     pep_type: is_pep ? %w[DOMESTIC FOREIGN INTL_ORG].sample : nil,
     became_client_at: Faker::Date.between(from: 5.years.ago, to: Date.today),
-    notes: i < 5 ? Faker::Lorem.paragraph(sentence_count: 2) : nil,
+    notes: (i < 5) ? Faker::Lorem.paragraph(sentence_count: 2) : nil,
     introduced_by_third_party: is_introduced,
     introducer_country: is_introduced ? INTRODUCER_COUNTRIES.sample : nil,
     third_party_cdd: has_third_party_cdd,
@@ -117,8 +117,12 @@ puts "Creating clients..."
   )
 
   intro_tag = client.introduced_by_third_party? ? ", introduced from #{client.introducer_country}" : ""
-  cdd_tag = client.third_party_cdd? ? ", 3rd-party CDD (#{client.third_party_cdd_type}#{client.third_party_cdd_country ? " - #{client.third_party_cdd_country}" : ""})" : ""
-  puts "  - Created natural person: #{client.name} (#{client.risk_level} risk#{', PEP' if client.is_pep?}#{intro_tag}#{cdd_tag})"
+  cdd_tag = if client.third_party_cdd?
+    ", 3rd-party CDD (#{client.third_party_cdd_type}#{client.third_party_cdd_country ? " - #{client.third_party_cdd_country}" : ""})"
+  else
+    ""
+  end
+  puts "  - Created natural person: #{client.name} (#{client.risk_level} risk#{", PEP" if client.is_pep?}#{intro_tag}#{cdd_tag})"
 end
 
 # Countries of incorporation for legal entities (mix of Monaco and common offshore/EU)
@@ -128,10 +132,10 @@ INCORPORATION_COUNTRIES = %w[MC FR LU CH GB JE GG LI].freeze
 10.times do |i|
   is_pep = i < 2 # First 2 have PEP beneficial owners (we'll add them below)
   risk = case i
-         when 0..1 then "HIGH"
-         when 2..4 then "MEDIUM"
-         else "LOW"
-         end
+  when 0..1 then "HIGH"
+  when 2..4 then "MEDIUM"
+  else "LOW"
+  end
 
   legal_type = %w[SCI SARL SAM SA].sample
 
@@ -144,7 +148,7 @@ INCORPORATION_COUNTRIES = %w[MC FR LU CH GB JE GG LI].freeze
   third_party_cdd_country = (has_third_party_cdd && third_party_cdd_type == "FOREIGN") ? THIRD_PARTY_CDD_COUNTRIES.sample : nil
 
   # Incorporation country - first 3 are Monaco, rest are mixed
-  incorporation_country = i < 3 ? "MC" : INCORPORATION_COUNTRIES.sample
+  incorporation_country = (i < 3) ? "MC" : INCORPORATION_COUNTRIES.sample
 
   client = Client.create!(
     organization: organization,
@@ -184,7 +188,7 @@ INCORPORATION_COUNTRIES = %w[MC FR LU CH GB JE GG LI].freeze
   end
 
   owner_count = client.beneficial_owners.count
-  puts "  - Created legal entity: #{client.name} (#{owner_count} beneficial owner#{'s' if owner_count > 1})"
+  puts "  - Created legal entity: #{client.name} (#{owner_count} beneficial owner#{"s" if owner_count > 1})"
 end
 
 # Create trusts (5 clients) — trusts are legal entities with legal_entity_type "TRUST"
@@ -192,7 +196,7 @@ end
 TRUSTEE_NATIONALITIES = %w[CH GB JE GG LI MC].freeze
 
 5.times do |i|
-  risk = i < 2 ? "HIGH" : "MEDIUM"
+  risk = (i < 2) ? "HIGH" : "MEDIUM"
   is_professional = i < 3 # First 3 trusts have professional trustees
 
   # ~20% of clients are introduced by third parties (index 0)
@@ -204,7 +208,7 @@ TRUSTEE_NATIONALITIES = %w[CH GB JE GG LI MC].freeze
   third_party_cdd_country = (has_third_party_cdd && third_party_cdd_type == "FOREIGN") ? THIRD_PARTY_CDD_COUNTRIES.sample : nil
 
   # Incorporation country for trusts - typically offshore jurisdictions
-  trust_incorporation_country = i < 2 ? "MC" : %w[JE GG CH LI].sample
+  trust_incorporation_country = (i < 2) ? "MC" : %w[JE GG CH LI].sample
 
   client = Client.create!(
     organization: organization,
@@ -246,7 +250,7 @@ TRUSTEE_NATIONALITIES = %w[CH GB JE GG LI MC].freeze
 
   owner_count = client.beneficial_owners.count
   trustee_count = client.trustees.count
-  puts "  - Created trust: #{client.name} (#{trustee_count} trustee#{'s' if trustee_count > 1}, #{owner_count} beneficial owners)"
+  puts "  - Created trust: #{client.name} (#{trustee_count} trustee#{"s" if trustee_count > 1}, #{owner_count} beneficial owners)"
 end
 
 # Create one ended client relationship
@@ -287,23 +291,23 @@ MONACO_DISTRICTS = %w[Monte-Carlo Fontvieille La\ Condamine Monaco-Ville Larvott
 
 # Get clients who can be landlords (legal entities and wealthy individuals)
 potential_landlords = Client.where(client_type: "LEGAL_ENTITY")
-                            .or(Client.where(client_type: "NATURAL_PERSON", risk_level: %w[HIGH MEDIUM]))
-                            .to_a
+  .or(Client.where(client_type: "NATURAL_PERSON", risk_level: %w[HIGH MEDIUM]))
+  .to_a
 
-current_year = Date.current.year
+Date.current.year
 
 # Create 12 active managed properties
 12.times do |i|
   landlord = potential_landlords.sample
-  property_type = i < 9 ? "RESIDENTIAL" : "COMMERCIAL"
+  property_type = (i < 9) ? "RESIDENTIAL" : "COMMERCIAL"
 
   # Monaco rental values
   monthly_rent = case property_type
-                 when "RESIDENTIAL"
-                   [3500, 5000, 6500, 8000, 12000, 18000, 25000, 35000].sample
-                 when "COMMERCIAL"
-                   [8000, 12000, 20000, 35000, 50000].sample
-                 end
+  when "RESIDENTIAL"
+    [3500, 5000, 6500, 8000, 12000, 18000, 25000, 35000].sample
+  when "COMMERCIAL"
+    [8000, 12000, 20000, 35000, 50000].sample
+  end
 
   # Fee structure: either percentage (8-12%) or fixed
   use_percentage = rand < 0.7
@@ -312,7 +316,7 @@ current_year = Date.current.year
 
   street = MONACO_STREETS.sample
   building_number = rand(1..100)
-  apartment = property_type == "RESIDENTIAL" ? ", Apt #{rand(1..50)}" : ""
+  apartment = (property_type == "RESIDENTIAL") ? ", Apt #{rand(1..50)}" : ""
 
   # Start date between 3 years ago and 6 months ago
   start_date = Faker::Date.between(from: 3.years.ago, to: 6.months.ago)
@@ -328,7 +332,7 @@ current_year = Date.current.year
     management_fee_fixed: fee_fixed,
     tenant_type: %w[NATURAL_PERSON LEGAL_ENTITY].sample,
     tenant_country: COUNTRIES.sample,
-    notes: rand < 0.3 ? Faker::Lorem.sentence : nil
+    notes: (rand < 0.3) ? Faker::Lorem.sentence : nil
   )
 
   puts "  - #{property.property_type.downcase.capitalize}: #{property.property_address[0..40]}... (€#{property.monthly_rent}/month)"
@@ -395,29 +399,27 @@ transaction_count = 0
 
   # Determine value based on transaction type
   value = case transaction_type
-          when "PURCHASE", "SALE"
-            PROPERTY_VALUES[:purchase][:typical].sample + rand(-100_000..100_000)
-          when "RENTAL"
-            # Monthly rental * 12 for annual value
-            PROPERTY_VALUES[:rental][:typical].sample * 12
-          end
+  when "PURCHASE", "SALE"
+    PROPERTY_VALUES[:purchase][:typical].sample + rand(-100_000..100_000)
+  when "RENTAL"
+    # Monthly rental * 12 for annual value
+    PROPERTY_VALUES[:rental][:typical].sample * 12
+  end
 
   # Payment method - more cash for smaller transactions
   payment_method = if value < 1_000_000 && rand < 0.3
-                     %w[CASH MIXED].sample
-                   else
-                     %w[WIRE CHECK].sample
-                   end
+    %w[CASH MIXED].sample
+  else
+    %w[WIRE CHECK].sample
+  end
 
   # Cash amount for CASH or MIXED payments
   cash_amount = case payment_method
-                when "CASH"
-                  value
-                when "MIXED"
-                  [10_000, 15_000, 20_000, 50_000].sample
-                else
-                  nil
-                end
+  when "CASH"
+    value
+  when "MIXED"
+    [10_000, 15_000, 20_000, 50_000].sample
+  end
 
   # Commission is typically 3-5% of transaction value
   commission = (value * rand(0.03..0.05)).round(2) if transaction_type != "RENTAL"
@@ -426,7 +428,7 @@ transaction_count = 0
   agency_role = %w[BUYER_AGENT SELLER_AGENT DUAL_AGENT].sample
 
   # Purchase purpose (only for purchases)
-  purchase_purpose = transaction_type == "PURCHASE" ? %w[RESIDENCE INVESTMENT].sample : nil
+  purchase_purpose = (transaction_type == "PURCHASE") ? %w[RESIDENCE INVESTMENT].sample : nil
 
   # Random date within current year
   transaction_date = Faker::Date.between(
@@ -446,8 +448,8 @@ transaction_count = 0
     purchase_purpose: purchase_purpose,
     commission_amount: commission,
     property_country: "MC",
-    reference: "TXN-#{current_year}-#{(i + 1).to_s.rjust(4, '0')}",
-    notes: rand < 0.3 ? Faker::Lorem.sentence : nil
+    reference: "TXN-#{current_year}-#{(i + 1).to_s.rjust(4, "0")}",
+    notes: (rand < 0.3) ? Faker::Lorem.sentence : nil
   )
 
   transaction_count += 1
@@ -461,14 +463,18 @@ previous_year = current_year - 1
   transaction_type = %w[PURCHASE SALE RENTAL].sample
 
   value = case transaction_type
-          when "PURCHASE", "SALE"
-            PROPERTY_VALUES[:purchase][:typical].sample + rand(-100_000..100_000)
-          when "RENTAL"
-            PROPERTY_VALUES[:rental][:typical].sample * 12
-          end
+  when "PURCHASE", "SALE"
+    PROPERTY_VALUES[:purchase][:typical].sample + rand(-100_000..100_000)
+  when "RENTAL"
+    PROPERTY_VALUES[:rental][:typical].sample * 12
+  end
 
-  payment_method = value < 1_000_000 && rand < 0.3 ? %w[CASH MIXED].sample : %w[WIRE CHECK].sample
-  cash_amount = payment_method == "CASH" ? value : (payment_method == "MIXED" ? [10_000, 15_000, 20_000].sample : nil)
+  payment_method = (value < 1_000_000 && rand < 0.3) ? %w[CASH MIXED].sample : %w[WIRE CHECK].sample
+  cash_amount = if payment_method == "CASH"
+    value
+  else
+    ((payment_method == "MIXED") ? [10_000, 15_000, 20_000].sample : nil)
+  end
   commission = (value * rand(0.03..0.05)).round(2) if transaction_type != "RENTAL"
 
   transaction_date = Faker::Date.between(
@@ -485,16 +491,16 @@ previous_year = current_year - 1
     payment_method: payment_method,
     cash_amount: cash_amount,
     agency_role: %w[BUYER_AGENT SELLER_AGENT DUAL_AGENT].sample,
-    purchase_purpose: transaction_type == "PURCHASE" ? %w[RESIDENCE INVESTMENT].sample : nil,
+    purchase_purpose: (transaction_type == "PURCHASE") ? %w[RESIDENCE INVESTMENT].sample : nil,
     commission_amount: commission,
     property_country: "MC",
-    reference: "TXN-#{previous_year}-#{(i + 1).to_s.rjust(4, '0')}"
+    reference: "TXN-#{previous_year}-#{(i + 1).to_s.rjust(4, "0")}"
   )
 
   transaction_count += 1
 end
 
-puts "  - Created #{15} transactions for #{previous_year}"
+puts "  - Created 15 transactions for #{previous_year}"
 
 # ============================================
 # STR Reports
@@ -507,8 +513,8 @@ str_count = 0
 
 # Find transactions with cash payments for STR reports
 cash_transactions = Transaction.where(payment_method: %w[CASH MIXED])
-                               .where.not(cash_amount: nil)
-                               .limit(3)
+  .where.not(cash_amount: nil)
+  .limit(3)
 
 cash_transactions.each do |txn|
   StrReport.create!(
@@ -575,18 +581,18 @@ current_year_trainings = rand(4..6)
 current_year_trainings.times do |i|
   # First training of year is often a refresher, others vary
   training_type = if i == 0
-                    "REFRESHER"
-                  else
-                    %w[REFRESHER SPECIALIZED].sample
-                  end
+    "REFRESHER"
+  else
+    %w[REFRESHER SPECIALIZED].sample
+  end
 
   # More internal trainings than external
   provider = case rand(10)
-             when 0..5 then "INTERNAL"
-             when 6..7 then "EXTERNAL"
-             when 8 then "AMSF"
-             else "ONLINE"
-             end
+  when 0..5 then "INTERNAL"
+  when 6..7 then "EXTERNAL"
+  when 8 then "AMSF"
+  else "ONLINE"
+  end
 
   training_date = Faker::Date.between(
     from: Date.new(current_year, 1, 1),
@@ -601,20 +607,20 @@ current_year_trainings.times do |i|
     provider: provider,
     staff_count: rand(3..8),
     duration_hours: [1.0, 1.5, 2.0, 2.5, 3.0, 4.0].sample,
-    notes: rand < 0.3 ? Faker::Lorem.sentence : nil
+    notes: (rand < 0.3) ? Faker::Lorem.sentence : nil
   )
 
-  puts "  - #{training.training_date.strftime('%b %Y')}: #{training.topic_label} (#{training.training_type_label})"
+  puts "  - #{training.training_date.strftime("%b %Y")}: #{training.topic_label} (#{training.training_type_label})"
 end
 
 # Previous year trainings (3-5 sessions)
 previous_year_trainings = rand(3..5)
 previous_year_trainings.times do |i|
   training_type = if i == 0
-                    "REFRESHER"
-                  else
-                    %w[REFRESHER SPECIALIZED INITIAL].sample
-                  end
+    "REFRESHER"
+  else
+    %w[REFRESHER SPECIALIZED INITIAL].sample
+  end
 
   provider = %w[INTERNAL INTERNAL INTERNAL EXTERNAL AMSF ONLINE].sample
 
@@ -734,9 +740,9 @@ puts "    - #{current_year}: #{Training.for_year(current_year).count} sessions"
 puts "    - #{previous_year}: #{Training.for_year(previous_year).count} sessions"
 puts ""
 puts "Risk distribution:"
-puts "  - HIGH: #{Client.where(risk_level: 'HIGH').count}"
-puts "  - MEDIUM: #{Client.where(risk_level: 'MEDIUM').count}"
-puts "  - LOW: #{Client.where(risk_level: 'LOW').count}"
+puts "  - HIGH: #{Client.where(risk_level: "HIGH").count}"
+puts "  - MEDIUM: #{Client.where(risk_level: "MEDIUM").count}"
+puts "  - LOW: #{Client.where(risk_level: "LOW").count}"
 puts ""
 puts "PEP clients: #{Client.peps.count}"
 puts "Introduced clients: #{Client.introduced.count}"

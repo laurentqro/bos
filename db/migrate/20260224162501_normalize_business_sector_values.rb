@@ -43,7 +43,7 @@ class NormalizeBusinessSectorValues < ActiveRecord::Migration[8.1]
   def up
     MAPPING.each do |old_value, new_value|
       execute <<~SQL.squish
-        UPDATE clients SET business_sector = #{new_value ? quote(new_value) : 'NULL'}
+        UPDATE clients SET business_sector = #{new_value ? quote(new_value) : "NULL"}
         WHERE business_sector = #{quote(old_value)}
       SQL
     end

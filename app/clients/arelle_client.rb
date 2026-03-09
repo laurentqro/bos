@@ -41,7 +41,9 @@ class ArelleClient < ApplicationClient
 
   # Timeouts to prevent slow/hanging Arelle service from tying up Rails workers
   def open_timeout = 5   # 5 seconds to establish connection
+
   def read_timeout = 30  # 30 seconds for validation (can be slow for large documents)
+
   def write_timeout = 10 # 10 seconds to send XBRL content
 
   def content_type = "application/xml"

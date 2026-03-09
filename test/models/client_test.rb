@@ -347,7 +347,6 @@ class ClientTest < ActiveSupport::TestCase
     end
   end
 
-
   test "incorporation_country must be ISO 3166-1 alpha-2 format when present" do
     client = Client.new(
       organization: @organization,

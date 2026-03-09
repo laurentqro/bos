@@ -37,7 +37,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "only shows submissions from current organization" do
-    other_org_submission = submissions(:other_org_submission)
+    submissions(:other_org_submission)
     sign_in @user
 
     get submissions_path
@@ -186,9 +186,9 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:two)
 
     get download_submission_path(validated_submission)
-    assert_response(:success, "Download failed: #{response.body.gsub(/<[^>]+>/, ' ').squeeze(' ')[0..1000]}")
+    assert_response(:success, "Download failed: #{response.body.gsub(/<[^>]+>/, " ").squeeze(" ")[0..1000]}")
     assert_equal "application/xml", response.media_type
-    assert_match /attachment/, response.headers["Content-Disposition"]
+    assert_match(/attachment/, response.headers["Content-Disposition"])
   end
 
   test "download includes correct filename" do
@@ -196,8 +196,8 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:two)
 
     get download_submission_path(validated_submission)
-    assert_match /amsf.*#{validated_submission.year}.*#{organizations(:two).rci_number}.*\.xml/,
-                 response.headers["Content-Disposition"]
+    assert_match(/amsf.*#{validated_submission.year}.*#{organizations(:two).rci_number}.*\.xml/,
+      response.headers["Content-Disposition"])
   end
 
   test "allows download of unvalidated submission with warning flag" do
@@ -419,7 +419,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_match /valid/i, flash[:notice]
+    assert_match(/valid/i, flash[:notice])
   end
 
   test "validate action handles connection error gracefully" do
@@ -472,5 +472,4 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     log = AuditLog.last
     assert_equal "download", log.action
   end
-
 end

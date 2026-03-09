@@ -59,7 +59,7 @@ class SubmissionsController < ApplicationController
     survey = Survey.new(organization: current_organization, year: @submission.year)
     xml_content = survey.to_xbrl
 
-    filename = "amsf_#{@submission.year}_#{current_organization.rci_number}_#{Time.current.strftime('%Y%m%d_%H%M%S')}.xml"
+    filename = "amsf_#{@submission.year}_#{current_organization.rci_number}_#{Time.current.strftime("%Y%m%d_%H%M%S")}.xml"
 
     AuditLog.create!(
       organization: current_organization,

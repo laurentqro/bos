@@ -61,7 +61,7 @@ class AuditLog < ApplicationRecord
     invalid_keys = metadata.keys - ALLOWED_METADATA_KEYS
     return if invalid_keys.empty?
 
-    errors.add(:metadata, "contains invalid keys: #{invalid_keys.join(', ')}")
+    errors.add(:metadata, "contains invalid keys: #{invalid_keys.join(", ")}")
   end
 
   def validate_metadata_values

@@ -22,7 +22,7 @@ module SettingsHelper
     priority, rest = ISO3166::Country.all
       .map { |c| ["#{c.iso_short_name} (#{c.alpha2})", c.alpha2] }
       .partition { |_, code| %w[MC FR].include?(code) }
-    priority.sort_by! { |_, code| code == "MC" ? 0 : 1 }
+    priority.sort_by! { |_, code| (code == "MC") ? 0 : 1 }
     rest.sort_by! { |name, _| name.unicode_normalize(:nfkd).gsub(/\p{Mn}/, "") }
     separator = [["───────────", "", {disabled: true}]]
     priority + separator + rest

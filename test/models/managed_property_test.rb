@@ -311,7 +311,7 @@ class ManagedPropertyTest < ActiveSupport::TestCase
   # === Client Organization Validation ===
 
   test "client must belong to same organization" do
-    other_org = organizations(:two)
+    organizations(:two)
     other_org_client = clients(:other_org_client)
 
     property = ManagedProperty.new(

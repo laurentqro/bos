@@ -30,13 +30,13 @@ class SettingsController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { redirect_to settings_path, notice: "#{updated_count} #{'setting'.pluralize(updated_count)} saved successfully." }
-      format.turbo_stream { flash.now[:notice] = "#{updated_count} #{'setting'.pluralize(updated_count)} saved successfully." }
+      format.html { redirect_to settings_path, notice: "#{updated_count} #{"setting".pluralize(updated_count)} saved successfully." }
+      format.turbo_stream { flash.now[:notice] = "#{updated_count} #{"setting".pluralize(updated_count)} saved successfully." }
     end
   rescue ActiveRecord::RecordInvalid => e
     respond_to do |format|
-      format.html { redirect_to settings_path, alert: "Failed to save settings: #{e.record.errors.full_messages.join(', ')}" }
-      format.turbo_stream { flash.now[:alert] = "Failed to save settings: #{e.record.errors.full_messages.join(', ')}" }
+      format.html { redirect_to settings_path, alert: "Failed to save settings: #{e.record.errors.full_messages.join(", ")}" }
+      format.turbo_stream { flash.now[:alert] = "Failed to save settings: #{e.record.errors.full_messages.join(", ")}" }
     end
   end
 

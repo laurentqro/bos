@@ -16,7 +16,7 @@ module ApplicationHelper
       country = ISO3166::Country[code]
       {
         flag: country_flag_emoji(code),
-        name: (country&.common_name || country&.iso_short_name || code),
+        name: country&.common_name || country&.iso_short_name || code,
         value: value.is_a?(Float) ? "#{value}%" : value.to_s
       }
     end

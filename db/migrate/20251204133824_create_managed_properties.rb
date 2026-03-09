@@ -20,7 +20,7 @@ class CreateManagedProperties < ActiveRecord::Migration[8.1]
     end
 
     add_index :managed_properties, [:organization_id, :management_end_date],
-              name: "idx_managed_props_org_active"
+      name: "idx_managed_props_org_active"
     add_index :managed_properties, :management_start_date
   end
 end
