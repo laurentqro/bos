@@ -38,6 +38,56 @@
         overflow-x: hidden;
       }
 
+      /* ---- Navbar ---- */
+      .landing-nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--gray-200);
+        padding: 0 2rem;
+      }
+
+      .landing-nav-inner {
+        max-width: 68rem;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 3.5rem;
+      }
+
+      .landing-nav-logo {
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--navy);
+        text-decoration: none;
+        letter-spacing: -0.02em;
+      }
+
+      .landing-nav-logo span {
+        font-family: Monaco, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+        font-weight: 400;
+        color: var(--accent);
+      }
+
+      .landing-nav-link {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--gray-500);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: color 0.2s;
+      }
+
+      .landing-nav-link:hover {
+        color: var(--navy);
+      }
+
       /* ---- Reveal animation ---- */
       @keyframes reveal {
         from { opacity: 0; transform: translateY(24px); }
@@ -87,7 +137,7 @@
       /* ---- Hero ---- */
       .hero {
         position: relative;
-        padding: 10rem 2rem 8rem;
+        padding: 8rem 2rem 7rem;
         text-align: center;
         overflow: hidden;
       }
@@ -485,7 +535,7 @@
       /* ---- Responsive ---- */
       @media (max-width: 768px) {
         .hero {
-          padding: 6rem 1.5rem 5rem;
+          padding: 5rem 1.5rem 4rem;
         }
         .hero-wordmark {
           font-size: 3rem;
