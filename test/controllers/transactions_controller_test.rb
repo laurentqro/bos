@@ -396,7 +396,7 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
     assert Transaction.last.is_new_construction
   end
 
-  test "creates rental with rental_duration_years" do
+  test "creates rental with rental_start_date and rental_end_date" do
     sign_in @user
 
     post transactions_path, params: {
@@ -404,12 +404,14 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
         client_id: @client.id,
         transaction_date: Date.current,
         transaction_type: "RENTAL",
-        rental_duration_years: 3
+        rental_start_date: Date.new(2025, 1, 1),
+        rental_end_date: Date.new(2028, 1, 1)
       }
     }
 
     assert_response :redirect
-    assert_equal 3, Transaction.last.rental_duration_years
+    assert_equal Date.new(2025, 1, 1), Transaction.last.rental_start_date
+    assert_equal Date.new(2028, 1, 1), Transaction.last.rental_end_date
   end
 
   test "creates rental with rental_annual_value" do

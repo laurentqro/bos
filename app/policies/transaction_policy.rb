@@ -55,7 +55,8 @@ class TransactionPolicy < ApplicationPolicy
       :counterparty_country,
       :counterparty_is_pep,
       :is_new_construction,
-      :rental_duration_years,
+      :rental_start_date,
+      :rental_end_date,
       :rental_annual_value,
       :rental_tenant_type,
       :notes

@@ -53,6 +53,12 @@ class Transaction < ApplicationRecord
     where(transaction_date: Date.new(year, 1, 1)..Date.new(year, 12, 31))
   }
 
+  # Rentals whose period overlaps with the given year
+  scope :rentals_active_in_year, ->(year) {
+    where(transaction_type: "RENTAL")
+      .where("rental_start_date <= ? AND rental_end_date >= ?", Date.new(year, 12, 31), Date.new(year, 1, 1))
+  }
+
   # Payment method scopes
   scope :with_cash, -> { where(payment_method: %w[CASH MIXED]).where.not(cash_amount: [nil, 0]) }
   scope :by_payment_method, ->(method) { where(payment_method: method) }
@@ -93,6 +99,29 @@ class Transaction < ApplicationRecord
 
   def has_cash?
     cash_amount.present? && cash_amount > 0
+  end
+
+  def transaction_count_in_year(year)
+    return 1 unless rental?
+    return 0 if rental_start_date.blank? || rental_end_date.blank?
+
+    year_start = Date.new(year, 1, 1)
+    year_end = Date.new(year, 12, 31)
+
+    return 0 if rental_start_date > year_end || rental_end_date < year_start
+
+    effective_start = [rental_start_date, year_start].max
+    effective_end = [rental_end_date, year_end].min
+
+    months = ((effective_end.year - effective_start.year) * 12) +
+      (effective_end.month - effective_start.month) + 1
+    months.clamp(0, 12)
+  end
+
+  def monthly_value
+    return transaction_value unless rental?
+    return 0 if rental_annual_value.blank?
+    rental_annual_value / 12.0
   end
 
   # For display purposes

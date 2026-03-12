@@ -25,10 +25,7 @@ class Survey
       def a2102w
         return nil unless a2101wrp == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: "CHECK")
-          .count
+        operations_count { |scope| scope.where(payment_method: "CHECK") }
       end
 
       # Q115 — a2102BW: Total value of cheque operations (incoming and outgoing) with clients
@@ -36,10 +33,7 @@ class Survey
       def a2102bw
         return nil unless a2101wrp == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: "CHECK")
-          .sum(:transaction_value)
+        operations_value { |scope| scope.where(payment_method: "CHECK") }
       end
 
       # Q116 — a2101B: Did clients accept or perform cheque operations during reporting period?
@@ -56,10 +50,7 @@ class Survey
       def a2102b
         return nil unless a2101b == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: "CHECK")
-          .count
+        operations_count { |scope| scope.where(payment_method: "CHECK") }
       end
 
       # Q118 — a2102BB: Total value of cheque operations (incoming and outgoing) by clients
@@ -67,10 +58,7 @@ class Survey
       def a2102bb
         return nil unless a2101b == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: "CHECK")
-          .sum(:transaction_value)
+        operations_value { |scope| scope.where(payment_method: "CHECK") }
       end
 
       # Q119 — a2104W: Does entity accept or make electronic wire transfers with clients?
@@ -91,10 +79,7 @@ class Survey
       def a2105w
         return nil unless a2104wrp == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: "WIRE")
-          .count
+        operations_count { |scope| scope.where(payment_method: "WIRE") }
       end
 
       # Q122 — a2105BW: Total value of electronic wire transfers with clients
@@ -102,10 +87,7 @@ class Survey
       def a2105bw
         return nil unless a2104wrp == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: "WIRE")
-          .sum(:transaction_value)
+        operations_value { |scope| scope.where(payment_method: "WIRE") }
       end
 
       # Q123 — a2104B: Did clients accept or make electronic wire transfers in period?
@@ -119,10 +101,7 @@ class Survey
       def a2105b
         return nil unless a2104b == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: "WIRE")
-          .count
+        operations_count { |scope| scope.where(payment_method: "WIRE") }
       end
 
       # Q125 — a2105BB: Total value of electronic wire transfers by clients
@@ -130,10 +109,7 @@ class Survey
       def a2105bb
         return nil unless a2104b == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: "WIRE")
-          .sum(:transaction_value)
+        operations_value { |scope| scope.where(payment_method: "WIRE") }
       end
 
       # Q126 — a2107W: Does entity accept or carry out cash operations with clients?
@@ -154,10 +130,7 @@ class Survey
       def a2108w
         return nil unless a2107wrp == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .count
+        operations_count { |scope| scope.where(payment_method: %w[CASH MIXED]) }
       end
 
       # Q129 — a2109W: Total value of cash operations with clients
@@ -165,10 +138,7 @@ class Survey
       def a2109w
         return nil unless a2107wrp == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .sum(:cash_amount)
+        operations_cash_value(:cash_amount) { |scope| scope.where(payment_method: %w[CASH MIXED]) }
       end
 
       # Q130 — aG24010W: Total value of cash in foreign currencies with clients
@@ -176,10 +146,7 @@ class Survey
       def ag24010w
         return nil unless a2107wrp == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .sum(:foreign_currency_cash_amount)
+        operations_cash_value(:foreign_currency_cash_amount) { |scope| scope.where(payment_method: %w[CASH MIXED]) }
       end
 
       # Q131 — a2110W: Cash operations >= 10,000 EUR with clients
@@ -187,11 +154,7 @@ class Survey
       def a2110w
         return nil unless a2107wrp == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .where("cash_amount >= ?", 10_000)
-          .count
+        operations_count { |scope| scope.where(payment_method: %w[CASH MIXED]).where("cash_amount >= ?", 10_000) }
       end
 
       # Q132 — a2113W: Can entity distinguish cash operations > 100,000 EUR?
@@ -206,13 +169,12 @@ class Survey
       def a2113aw
         return nil unless a2113w == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .where("cash_amount > ?", 100_000)
-          .joins(:client)
-          .where(clients: {client_type: "NATURAL_PERSON"})
-          .count
+        operations_count do |scope|
+          scope.where(payment_method: %w[CASH MIXED])
+            .where("cash_amount > ?", 100_000)
+            .joins(:client)
+            .where(clients: {client_type: "NATURAL_PERSON"})
+        end
       end
 
       # Q134 — a2114A: Cash ops with Monegasque legal entities > 100,000 EUR
@@ -220,13 +182,12 @@ class Survey
       def a2114a
         return nil unless a2113w == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .where("cash_amount > ?", 100_000)
-          .joins(:client)
-          .where(clients: {client_type: "LEGAL_ENTITY", incorporation_country: "MC"})
-          .count
+        operations_count do |scope|
+          scope.where(payment_method: %w[CASH MIXED])
+            .where("cash_amount > ?", 100_000)
+            .joins(:client)
+            .where(clients: {client_type: "LEGAL_ENTITY", incorporation_country: "MC"})
+        end
       end
 
       # Q135 — a2115AW: Cash ops with foreign legal entities > 100,000 EUR
@@ -234,14 +195,13 @@ class Survey
       def a2115aw
         return nil unless a2113w == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .where("cash_amount > ?", 100_000)
-          .joins(:client)
-          .where(clients: {client_type: "LEGAL_ENTITY"})
-          .where.not(clients: {incorporation_country: "MC"})
-          .count
+        operations_count do |scope|
+          scope.where(payment_method: %w[CASH MIXED])
+            .where("cash_amount > ?", 100_000)
+            .joins(:client)
+            .where(clients: {client_type: "LEGAL_ENTITY"})
+            .where.not(clients: {incorporation_country: "MC"})
+        end
       end
 
       # Q136 — a2107B: Did clients perform cash operations?
@@ -255,10 +215,7 @@ class Survey
       def a2108b
         return nil unless a2107b == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .count
+        operations_count { |scope| scope.where(payment_method: %w[CASH MIXED]) }
       end
 
       # Q138 — a2109B: Total value of cash operations by clients
@@ -266,10 +223,7 @@ class Survey
       def a2109b
         return nil unless a2107b == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .sum(:cash_amount)
+        operations_cash_value(:cash_amount) { |scope| scope.where(payment_method: %w[CASH MIXED]) }
       end
 
       # Q139 — aG24010B: Total value of cash in foreign currencies by clients
@@ -277,10 +231,7 @@ class Survey
       def ag24010b
         return nil unless a2107b == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .sum(:foreign_currency_cash_amount)
+        operations_cash_value(:foreign_currency_cash_amount) { |scope| scope.where(payment_method: %w[CASH MIXED]) }
       end
 
       # Q140 — a2110B: Cash operations >= 10,000 EUR by clients
@@ -288,11 +239,7 @@ class Survey
       def a2110b
         return nil unless a2107b == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .where("cash_amount >= ?", 10_000)
-          .count
+        operations_count { |scope| scope.where(payment_method: %w[CASH MIXED]).where("cash_amount >= ?", 10_000) }
       end
 
       # Q141 — a2113B: Can entity distinguish cash ops > 100,000 EUR by clients?
@@ -307,13 +254,12 @@ class Survey
       def a2113ab
         return nil unless a2113b == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .where("cash_amount > ?", 100_000)
-          .joins(:client)
-          .where(clients: {client_type: "NATURAL_PERSON"})
-          .count
+        operations_count do |scope|
+          scope.where(payment_method: %w[CASH MIXED])
+            .where("cash_amount > ?", 100_000)
+            .joins(:client)
+            .where(clients: {client_type: "NATURAL_PERSON"})
+        end
       end
 
       # Q143 — a2114AB: Cash ops by Monegasque legal entities > 100,000 EUR
@@ -321,13 +267,12 @@ class Survey
       def a2114ab
         return nil unless a2113b == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .where("cash_amount > ?", 100_000)
-          .joins(:client)
-          .where(clients: {client_type: "LEGAL_ENTITY", incorporation_country: "MC"})
-          .count
+        operations_count do |scope|
+          scope.where(payment_method: %w[CASH MIXED])
+            .where("cash_amount > ?", 100_000)
+            .joins(:client)
+            .where(clients: {client_type: "LEGAL_ENTITY", incorporation_country: "MC"})
+        end
       end
 
       # Q144 — a2115AB: Cash ops by foreign legal entities > 100,000 EUR
@@ -335,14 +280,13 @@ class Survey
       def a2115ab
         return nil unless a2113b == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
-          .where(payment_method: %w[CASH MIXED])
-          .where("cash_amount > ?", 100_000)
-          .joins(:client)
-          .where(clients: {client_type: "LEGAL_ENTITY"})
-          .where.not(clients: {incorporation_country: "MC"})
-          .count
+        operations_count do |scope|
+          scope.where(payment_method: %w[CASH MIXED])
+            .where("cash_amount > ?", 100_000)
+            .joins(:client)
+            .where(clients: {client_type: "LEGAL_ENTITY"})
+            .where.not(clients: {incorporation_country: "MC"})
+        end
       end
 
       # Q145 — a2201A: Does entity accept or conduct cryptocurrency operations with clients?
@@ -509,9 +453,7 @@ class Survey
       # Q163 — aIR236: Total rental operations in the reporting period
       # Type: xbrli:integerItemType — computed
       def air236
-        year_transactions
-          .where(transaction_type: "RENTAL")
-          .count
+        operations_count { |scope| scope.where(transaction_type: "RENTAL") }
       end
 
       # Q164 — aIR2313: Unique rental properties >= 10,000 EUR/month active in reporting period

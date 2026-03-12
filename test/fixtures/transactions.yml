@@ -40,6 +40,8 @@ rental:
   property_country: "MC"
   payment_method: "WIRE"
   agency_role: "DUAL_AGENT"
+  rental_start_date: <%= Date.current - 10.days %>
+  rental_end_date: <%= Date.current - 10.days + 1.year %>
 
 # Transaction with cash payment
 cash_payment:

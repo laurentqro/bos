@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_130606) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_153441) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -566,7 +566,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_130606) do
     t.string "purchase_purpose"
     t.string "reference"
     t.decimal "rental_annual_value", precision: 15, scale: 2
-    t.integer "rental_duration_years"
+    t.date "rental_end_date"
+    t.date "rental_start_date"
     t.string "rental_tenant_type"
     t.date "transaction_date", null: false
     t.string "transaction_type", null: false

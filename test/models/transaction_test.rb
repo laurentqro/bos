@@ -420,6 +420,90 @@ class TransactionTest < ActiveSupport::TestCase
     assert_equal "Transaction", audit_log.auditable_type
   end
 
+  # === transaction_count_in_year ===
+
+  test "transaction_count_in_year returns 1 for a purchase transaction" do
+    transaction = Transaction.new(
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(2025, 6, 15)
+    )
+    assert_equal 1, transaction.transaction_count_in_year(2025)
+  end
+
+  test "transaction_count_in_year returns months overlapping with year for mid-year rental" do
+    # Rental Jul 1 - Jun 30 next year = Jul-Dec = 6 months in 2025
+    transaction = Transaction.new(
+      transaction_type: "RENTAL",
+      rental_start_date: Date.new(2025, 7, 1),
+      rental_end_date: Date.new(2026, 7, 1)
+    )
+    assert_equal 6, transaction.transaction_count_in_year(2025)
+  end
+
+  test "transaction_count_in_year returns 12 for rental spanning full year" do
+    transaction = Transaction.new(
+      transaction_type: "RENTAL",
+      rental_start_date: Date.new(2024, 1, 1),
+      rental_end_date: Date.new(2027, 1, 1)
+    )
+    assert_equal 12, transaction.transaction_count_in_year(2025)
+  end
+
+  test "transaction_count_in_year returns 0 for rental not overlapping with year" do
+    transaction = Transaction.new(
+      transaction_type: "RENTAL",
+      rental_start_date: Date.new(2023, 1, 1),
+      rental_end_date: Date.new(2024, 1, 1)
+    )
+    assert_equal 0, transaction.transaction_count_in_year(2025)
+  end
+
+  test "transaction_count_in_year returns 0 for rental with nil dates" do
+    transaction = Transaction.new(
+      transaction_type: "RENTAL",
+      rental_start_date: nil,
+      rental_end_date: nil
+    )
+    assert_equal 0, transaction.transaction_count_in_year(2025)
+  end
+
+  test "transaction_count_in_year returns correct months for cross-year rental" do
+    # Rental Oct 2024 - Oct 2025
+    # In 2025: Jan-Oct = 10 months
+    transaction = Transaction.new(
+      transaction_type: "RENTAL",
+      rental_start_date: Date.new(2024, 10, 1),
+      rental_end_date: Date.new(2025, 10, 1)
+    )
+    assert_equal 10, transaction.transaction_count_in_year(2025)
+  end
+
+  # === monthly_value ===
+
+  test "monthly_value returns transaction_value for purchase" do
+    transaction = Transaction.new(
+      transaction_type: "PURCHASE",
+      transaction_value: 500_000
+    )
+    assert_equal 500_000, transaction.monthly_value
+  end
+
+  test "monthly_value returns rental_annual_value / 12 for rental" do
+    transaction = Transaction.new(
+      transaction_type: "RENTAL",
+      rental_annual_value: 120_000
+    )
+    assert_equal 10_000, transaction.monthly_value
+  end
+
+  test "monthly_value returns 0 for rental with nil rental_annual_value" do
+    transaction = Transaction.new(
+      transaction_type: "RENTAL",
+      rental_annual_value: nil
+    )
+    assert_equal 0, transaction.monthly_value
+  end
+
   # === AmsfConstants ===
 
   test "includes AmsfConstants" do

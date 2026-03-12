@@ -4416,7 +4416,7 @@ class SurveyTest < ActiveSupport::TestCase
     assert_nil @survey.a2101wrp
   end
 
-  test "a2102w returns count of cheque transactions when a2101wrp is Oui" do
+  test "a2102w counts rental operations as monthly when rental dates are set" do
     Setting.create!(organization: @organization, key: "accepts_cheque_operations", category: "entity_info", value: "Oui")
 
     baseline = @survey.a2102w || 0
@@ -4427,6 +4427,7 @@ class SurveyTest < ActiveSupport::TestCase
       name: "Cheque Client",
       nationality: "FR"
     )
+    # 1 purchase = 1 operation
     Transaction.create!(
       organization: @organization,
       client: client,
@@ -4435,23 +4436,26 @@ class SurveyTest < ActiveSupport::TestCase
       transaction_value: 300_000,
       payment_method: "CHECK"
     )
+    # 1 rental Jul-Jun = 6 months in year = 6 operations
     Transaction.create!(
       organization: @organization,
       client: client,
-      transaction_type: "SALE",
+      transaction_type: "RENTAL",
       transaction_date: Date.new(@year, 7, 1),
-      transaction_value: 400_000,
+      rental_start_date: Date.new(@year, 7, 1),
+      rental_end_date: Date.new(@year + 1, 7, 1),
+      rental_annual_value: 120_000,
       payment_method: "CHECK"
     )
 
-    assert_equal baseline + 2, @survey.a2102w
+    assert_equal baseline + 7, @survey.a2102w
   end
 
   test "a2102w returns nil when a2101wrp is not Oui" do
     assert_nil @survey.a2102w
   end
 
-  test "a2102bw returns total value of cheque transactions when a2101wrp is Oui" do
+  test "a2102bw computes rental value as monthly_value * months for cheque transactions" do
     Setting.create!(organization: @organization, key: "accepts_cheque_operations", category: "entity_info", value: "Oui")
 
     baseline = @survey.a2102bw || 0
@@ -4462,6 +4466,7 @@ class SurveyTest < ActiveSupport::TestCase
       name: "Cheque Client",
       nationality: "FR"
     )
+    # Purchase: value counted as-is
     Transaction.create!(
       organization: @organization,
       client: client,
@@ -4470,8 +4475,19 @@ class SurveyTest < ActiveSupport::TestCase
       transaction_value: 300_000,
       payment_method: "CHECK"
     )
+    # Rental: 120_000/12 = 10_000/month * 6 months (Jul-Dec) = 60_000
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 7, 1),
+      rental_start_date: Date.new(@year, 7, 1),
+      rental_end_date: Date.new(@year + 1, 7, 1),
+      rental_annual_value: 120_000,
+      payment_method: "CHECK"
+    )
 
-    assert_equal baseline + 300_000, @survey.a2102bw
+    assert_equal baseline + 360_000, @survey.a2102bw
   end
 
   test "a2102bw returns nil when a2101wrp is not Oui" do
@@ -4504,7 +4520,7 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal "Non", survey.a2101b
   end
 
-  test "a2102b returns count of cheque transactions by clients when a2101b is Oui" do
+  test "a2102b counts rental cheque operations as monthly" do
     baseline = @survey.a2102b || 0
 
     client = Client.create!(
@@ -4513,6 +4529,7 @@ class SurveyTest < ActiveSupport::TestCase
       name: "Cheque Client By",
       nationality: "FR"
     )
+    # 1 sale = 1 operation
     Transaction.create!(
       organization: @organization,
       client: client,
@@ -4521,8 +4538,19 @@ class SurveyTest < ActiveSupport::TestCase
       transaction_value: 600_000,
       payment_method: "CHECK"
     )
+    # 1 rental Jul-Jun = 6 months in year = 6 operations
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 7, 1),
+      rental_start_date: Date.new(@year, 7, 1),
+      rental_end_date: Date.new(@year + 1, 7, 1),
+      rental_annual_value: 60_000,
+      payment_method: "CHECK"
+    )
 
-    assert_equal baseline + 1, @survey.a2102b
+    assert_equal baseline + 7, @survey.a2102b
   end
 
   test "a2102b returns nil when a2101b is not Oui" do
@@ -4530,7 +4558,7 @@ class SurveyTest < ActiveSupport::TestCase
     assert_nil survey.a2102b
   end
 
-  test "a2102bb returns total value of cheque transactions by clients when a2101b is Oui" do
+  test "a2102bb computes rental cheque value as monthly_value * months" do
     baseline = @survey.a2102bb || 0
 
     client = Client.create!(
@@ -4539,6 +4567,7 @@ class SurveyTest < ActiveSupport::TestCase
       name: "Cheque Client By",
       nationality: "FR"
     )
+    # Sale: value counted as-is
     Transaction.create!(
       organization: @organization,
       client: client,
@@ -4547,8 +4576,19 @@ class SurveyTest < ActiveSupport::TestCase
       transaction_value: 600_000,
       payment_method: "CHECK"
     )
+    # Rental: 120_000/12 = 10_000/month * 6 months = 60_000
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 7, 1),
+      rental_start_date: Date.new(@year, 7, 1),
+      rental_end_date: Date.new(@year + 1, 7, 1),
+      rental_annual_value: 120_000,
+      payment_method: "CHECK"
+    )
 
-    assert_equal baseline + 600_000, @survey.a2102bb
+    assert_equal baseline + 660_000, @survey.a2102bb
   end
 
   test "a2102bb returns nil when a2101b is not Oui" do
@@ -5286,20 +5326,34 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q163 — aIR236: Total rental operations in the reporting period
-  test "air236 counts rental transactions in the year" do
+  test "air236 counts rental operations as monthly" do
     baseline = @survey.air236 || 0
 
     client = Client.create!(organization: @organization, name: "Tenant", client_type: "NATURAL_PERSON", nationality: "MC")
 
+    # Rental Mar-Feb next year = Mar-Dec = 10 months in year
     Transaction.create!(organization: @organization, client: client, transaction_type: "RENTAL",
-      transaction_date: Date.new(@year, 3, 1), transaction_value: 120_000, payment_method: "WIRE")
+      transaction_date: Date.new(@year, 3, 1), rental_start_date: Date.new(@year, 3, 1), rental_end_date: Date.new(@year + 1, 3, 1), rental_annual_value: 120_000, payment_method: "WIRE")
+    # Rental Sep-Aug next year = Sep-Dec = 4 months in year
     Transaction.create!(organization: @organization, client: client, transaction_type: "RENTAL",
-      transaction_date: Date.new(@year, 9, 1), transaction_value: 60_000, payment_method: "WIRE")
+      transaction_date: Date.new(@year, 9, 1), rental_start_date: Date.new(@year, 9, 1), rental_end_date: Date.new(@year + 1, 9, 1), rental_annual_value: 60_000, payment_method: "WIRE")
     # PURCHASE should not count
     Transaction.create!(organization: @organization, client: client, transaction_type: "PURCHASE",
       transaction_date: Date.new(@year, 6, 1), transaction_value: 500_000, payment_method: "WIRE")
 
-    assert_equal baseline + 2, @survey.air236
+    assert_equal baseline + 14, @survey.air236
+  end
+
+  test "air236 includes rentals that started before the year but overlap with it" do
+    baseline = @survey.air236 || 0
+
+    client = Client.create!(organization: @organization, name: "Tenant", client_type: "NATURAL_PERSON", nationality: "MC")
+
+    # Rental Oct last year to Oct next year = active all 12 months this year
+    Transaction.create!(organization: @organization, client: client, transaction_type: "RENTAL",
+      transaction_date: Date.new(@year - 1, 10, 1), rental_start_date: Date.new(@year - 1, 10, 1), rental_end_date: Date.new(@year + 1, 10, 1), rental_annual_value: 120_000, payment_method: "WIRE")
+
+    assert_equal baseline + 12, @survey.air236
   end
 
   # Q164 — aIR2313: Unique rental properties >= 10,000 EUR/month

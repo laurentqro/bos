@@ -144,15 +144,15 @@
       <div class="border-t pt-6" style="border-color: var(--base-border-tertiary);">
         <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Rental Details</h4>
 
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <div class="form-group">
-            <%= form.label :rental_duration_years, "Rental Duration (years)" %>
-            <%= form.number_field :rental_duration_years,
-                class: "form-control",
-                min: "1",
-                max: "99",
-                step: "1",
-                placeholder: "e.g., 3" %>
+            <%= form.label :rental_start_date, "Rental Start Date" %>
+            <%= form.date_field :rental_start_date, class: "form-control" %>
+          </div>
+
+          <div class="form-group">
+            <%= form.label :rental_end_date, "Rental End Date" %>
+            <%= form.date_field :rental_end_date, class: "form-control" %>
           </div>
 
           <div class="form-group">
