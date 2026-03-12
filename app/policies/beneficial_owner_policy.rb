@@ -49,7 +49,7 @@ class BeneficialOwnerPolicy < ApplicationPolicy
       :identification_verified,
       :source_of_wealth_verified,
       :incorporation_country,
-      :net_worth_eur
+      :net_worth_range
     ]
   end
 

@@ -230,9 +230,9 @@ class Survey
       end
 
       # Q20 — a11201BCDU: Does entity identify and record client type: UHNWIs?
-      # Type: enum "Oui" / "Non" (settings-based)
+      # Type: enum "Oui" / "Non" — crm-capability-based
       def a11201bcdu
-        setting_value_for("identifies_records_uhnwi_clients")
+        "Oui"
       end
 
       # Q21 — a1801: Does entity identify/record trusts and other legal constructions?

@@ -87,7 +87,7 @@ minimal_owner:
   name: "Minimal Owner"
   is_pep: false
 
-# HNWI owner (net worth > 5M EUR but <= 50M EUR)
+# HNWI owner (EUR 5M–50M)
 hnwi_owner:
   client: legal_entity
   name: "HNWI Owner"
@@ -96,9 +96,9 @@ hnwi_owner:
   ownership_percentage: 30.0
   control_type: "DIRECT"
   is_pep: false
-  net_worth_eur: 10000000.00
+  net_worth_range: "5M_TO_50M"
 
-# UHNWI owner (net worth > 50M EUR, automatically also HNWI)
+# UHNWI owner (> EUR 50M, automatically also HNWI)
 uhnwi_owner:
   client: legal_entity
   name: "UHNWI Owner"
@@ -107,29 +107,29 @@ uhnwi_owner:
   ownership_percentage: 20.0
   control_type: "DIRECT"
   is_pep: false
-  net_worth_eur: 75000000.00
+  net_worth_range: "OVER_50M"
 
-# Owner at HNWI boundary (exactly 5M, should NOT be HNWI)
-at_hnwi_threshold:
+# Another HNWI owner (EUR 5M–50M)
+second_hnwi_owner:
   client: legal_entity
-  name: "At HNWI Threshold"
+  name: "Second HNWI Owner"
   nationality: "FR"
   residence_country: "FR"
   ownership_percentage: 25.0
   control_type: "DIRECT"
   is_pep: false
-  net_worth_eur: 5000000.00
+  net_worth_range: "5M_TO_50M"
 
-# Owner at UHNWI boundary (exactly 50M, should be HNWI but NOT UHNWI)
-at_uhnwi_threshold:
+# Another owner under EUR 5M (not HNWI)
+second_under_5m_owner:
   client: legal_entity
-  name: "At UHNWI Threshold"
+  name: "Second Under 5M Owner"
   nationality: "IT"
   residence_country: "IT"
   ownership_percentage: 25.0
   control_type: "DIRECT"
   is_pep: false
-  net_worth_eur: 50000000.00
+  net_worth_range: "UNDER_5M"
 
 # Owner with low net worth (not HNWI)
 low_net_worth_owner:
@@ -140,4 +140,4 @@ low_net_worth_owner:
   ownership_percentage: 25.0
   control_type: "DIRECT"
   is_pep: false
-  net_worth_eur: 1000000.00
+  net_worth_range: "UNDER_5M"

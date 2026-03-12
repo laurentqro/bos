@@ -60,13 +60,15 @@
     </div>
 
     <div class="form-group">
-      <%= form.label :net_worth_eur, "Net worth (EUR)" %>
-      <%= form.number_field :net_worth_eur,
-          min: 0,
-          step: 1,
-          class: "form-control",
-          placeholder: "e.g., 10000000" %>
-      <p class="form-hint">HNWI: >5M EUR | UHNWI: >50M EUR</p>
+      <%= form.label :net_worth_range, "Net worth range" %>
+      <%= form.select :net_worth_range,
+          options_for_select([
+            ["Under EUR 5M", "UNDER_5M"],
+            ["EUR 5M – 50M (HNWI)", "5M_TO_50M"],
+            ["Over EUR 50M (UHNWI)", "OVER_50M"]
+          ], beneficial_owner.net_worth_range),
+          { include_blank: "Select range..." } %>
+      <p class="form-hint">AMSF thresholds: HNWI > EUR 5M, UHNWI > EUR 50M.</p>
     </div>
 
     <%# Verification Section %>

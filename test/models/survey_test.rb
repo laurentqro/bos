@@ -664,19 +664,9 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q20 — a11201BCDU: Does entity identify and record client type: UHNWIs?
-  # Type: enum "Oui" / "Non" (settings-based)
-  test "a11201bcdu returns the setting value when set" do
-    Setting.create!(
-      organization: @organization,
-      key: "identifies_records_uhnwi_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
+  # Type: enum "Oui" / "Non" — crm-capability-based
+  test "a11201bcdu always returns Oui since CRM identifies UHNWIs" do
     assert_equal "Oui", @survey.a11201bcdu
-  end
-
-  test "a11201bcdu returns nil when setting is not set" do
-    assert_nil @survey.a11201bcdu
   end
 
   # Q21 — a1801: Does entity identify/record trusts and other legal constructions?
@@ -2113,7 +2103,7 @@ class SurveyTest < ActiveSupport::TestCase
       client: le_client,
       name: "Rich Owner DE",
       nationality: "DE",
-      net_worth_eur: 10_000_000,
+      net_worth_range: "5M_TO_50M",
       control_type: "DIRECT",
       is_pep: false
     )
@@ -2123,7 +2113,7 @@ class SurveyTest < ActiveSupport::TestCase
       client: le_client,
       name: "Rich Owner BE",
       nationality: "BE",
-      net_worth_eur: 8_000_000,
+      net_worth_range: "5M_TO_50M",
       control_type: "DIRECT",
       is_pep: false
     )
@@ -2133,7 +2123,7 @@ class SurveyTest < ActiveSupport::TestCase
       client: le_client,
       name: "Normal Owner ES",
       nationality: "ES",
-      net_worth_eur: 1_000_000,
+      net_worth_range: "UNDER_5M",
       control_type: "DIRECT",
       is_pep: false
     )
@@ -2148,13 +2138,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a11206b excludes BOs of trust clients" do
-    Setting.create!(
-      organization: @organization,
-      key: "identifies_records_hnwi_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     trust = clients(:trust)
     Transaction.create!(
       organization: @organization,
@@ -2171,7 +2154,7 @@ class SurveyTest < ActiveSupport::TestCase
       client: trust,
       name: "Trust HNWI Owner",
       nationality: "JP",
-      net_worth_eur: 20_000_000,
+      net_worth_range: "5M_TO_50M",
       control_type: "DIRECT",
       is_pep: false
     )
@@ -2181,13 +2164,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a11206b excludes BOs of clients with only rental transactions" do
-    Setting.create!(
-      organization: @organization,
-      key: "identifies_records_hnwi_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     rental_le = Client.create!(
       organization: @organization,
       name: "Rental Only Corp",
@@ -2211,7 +2187,7 @@ class SurveyTest < ActiveSupport::TestCase
       client: rental_le,
       name: "Rental HNWI Owner",
       nationality: "SE",
-      net_worth_eur: 15_000_000,
+      net_worth_range: "5M_TO_50M",
       control_type: "DIRECT",
       is_pep: false
     )
@@ -2221,13 +2197,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a11206b does not double-count a BO even with multiple transactions on the client" do
-    Setting.create!(
-      organization: @organization,
-      key: "identifies_records_hnwi_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     le_client = Client.create!(
       organization: @organization,
       name: "Multi-Txn HNWI Corp",
@@ -2252,7 +2221,7 @@ class SurveyTest < ActiveSupport::TestCase
       client: le_client,
       name: "Single HNWI NL",
       nationality: "NL",
-      net_worth_eur: 12_000_000,
+      net_worth_range: "5M_TO_50M",
       control_type: "DIRECT",
       is_pep: false
     )
@@ -2263,19 +2232,7 @@ class SurveyTest < ActiveSupport::TestCase
 
   # Q39 — a112012B: UHNWI beneficial owners of legal entity clients by nationality
 
-  test "a112012b returns nil when a11201bcdu is not Oui" do
-    result = @survey.a112012b
-    assert_nil result
-  end
-
   test "a112012b returns hash of UHNWI BOs grouped by nationality" do
-    Setting.create!(
-      organization: @organization,
-      key: "identifies_records_uhnwi_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     le_client = Client.create!(
       organization: @organization,
       name: "UHNWI LE Corp",
@@ -2299,7 +2256,7 @@ class SurveyTest < ActiveSupport::TestCase
       client: le_client,
       name: "UHNWI FR",
       nationality: "FR",
-      net_worth_eur: 60_000_000,
+      net_worth_range: "OVER_50M",
       control_type: "DIRECT",
       is_pep: false
     )
@@ -2308,7 +2265,7 @@ class SurveyTest < ActiveSupport::TestCase
       client: le_client,
       name: "UHNWI GB",
       nationality: "GB",
-      net_worth_eur: 80_000_000,
+      net_worth_range: "OVER_50M",
       control_type: "DIRECT",
       is_pep: false
     )
@@ -2317,7 +2274,7 @@ class SurveyTest < ActiveSupport::TestCase
       client: le_client,
       name: "HNWI Only DE",
       nationality: "DE",
-      net_worth_eur: 12_000_000,
+      net_worth_range: "5M_TO_50M",
       control_type: "DIRECT",
       is_pep: false
     )
@@ -2329,13 +2286,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a112012b excludes BOs of trust clients" do
-    Setting.create!(
-      organization: @organization,
-      key: "identifies_records_uhnwi_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     trust_client = Client.create!(
       organization: @organization,
       name: "Trust Client",
@@ -2357,7 +2307,7 @@ class SurveyTest < ActiveSupport::TestCase
       client: trust_client,
       name: "Trust UHNWI",
       nationality: "JP",
-      net_worth_eur: 100_000_000,
+      net_worth_range: "OVER_50M",
       control_type: "DIRECT",
       is_pep: false
     )
@@ -2367,13 +2317,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a112012b excludes BOs of clients with only rental transactions" do
-    Setting.create!(
-      organization: @organization,
-      key: "identifies_records_uhnwi_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     le_client = Client.create!(
       organization: @organization,
       name: "Rental Only LE",
@@ -2395,7 +2338,7 @@ class SurveyTest < ActiveSupport::TestCase
       client: le_client,
       name: "Rental UHNWI",
       nationality: "KR",
-      net_worth_eur: 75_000_000,
+      net_worth_range: "OVER_50M",
       control_type: "DIRECT",
       is_pep: false
     )

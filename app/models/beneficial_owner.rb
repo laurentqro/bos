@@ -8,18 +8,14 @@
 # - Control the entity through other means (indirect)
 # - Act as legal representative (representative)
 #
-# HNWI/UHNWI Classification:
-# - HNWI (High Net Worth Individual): net_worth_eur > 5,000,000 EUR
-# - UHNWI (Ultra High Net Worth Individual): net_worth_eur > 50,000,000 EUR
-# These are derived from net_worth_eur to guarantee UHNWI ⊂ HNWI (AMSF requirement).
+# HNWI/UHNWI Classification (via net_worth_range):
+# - HNWI: 5M_TO_50M or OVER_50M (> EUR 5M)
+# - UHNWI: OVER_50M (> EUR 50M)
+# UHNWI ⊂ HNWI is guaranteed by the range definitions (AMSF requirement).
 #
 class BeneficialOwner < ApplicationRecord
   include AmsfConstants
   include Auditable
-
-  # HNWI/UHNWI thresholds in EUR (from AMSF gap analysis)
-  HNWI_THRESHOLD = 5_000_000
-  UHNWI_THRESHOLD = 50_000_000
 
   # === Associations ===
   belongs_to :client
@@ -36,6 +32,7 @@ class BeneficialOwner < ApplicationRecord
     allow_nil: true
 
   validates :control_type, inclusion: {in: CONTROL_TYPES}, allow_blank: true
+  validates :net_worth_range, inclusion: {in: NET_WORTH_RANGES}, allow_blank: true
 
   # PEP validation (same as Client)
   validates :pep_type, presence: true, if: :is_pep?
@@ -54,10 +51,10 @@ class BeneficialOwner < ApplicationRecord
   scope :indirect, -> { where(control_type: "INDIRECT") }
   scope :representatives, -> { where(control_type: "REPRESENTATIVE") }
   scope :with_significant_control, -> { where("ownership_percentage >= ?", 25) }
-  # HNWI/UHNWI scopes derived from net_worth_eur
-  # This guarantees UHNWI ⊂ HNWI since anyone >50M is also >5M
-  scope :hnwis, -> { where("net_worth_eur > ?", HNWI_THRESHOLD) }
-  scope :uhnwis, -> { where("net_worth_eur > ?", UHNWI_THRESHOLD) }
+  # HNWI/UHNWI scopes derived from net_worth_range
+  # UHNWI ⊂ HNWI is guaranteed since OVER_50M is included in both
+  scope :hnwis, -> { where(net_worth_range: %w[5M_TO_50M OVER_50M]) }
+  scope :uhnwis, -> { where(net_worth_range: "OVER_50M") }
 
   # === Instance Methods ===
 
@@ -75,14 +72,12 @@ class BeneficialOwner < ApplicationRecord
     end
   end
 
-  # HNWI status derived from net_worth_eur
   def hnwi?
-    net_worth_eur.present? && net_worth_eur > HNWI_THRESHOLD
+    net_worth_range.in?(%w[5M_TO_50M OVER_50M])
   end
 
-  # UHNWI status derived from net_worth_eur
   def uhnwi?
-    net_worth_eur.present? && net_worth_eur > UHNWI_THRESHOLD
+    net_worth_range == "OVER_50M"
   end
 
   # Delegate organization access through client
