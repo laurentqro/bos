@@ -888,10 +888,9 @@ class Survey
       end
 
       # Q66 — a13601ICO: Does your entity have PSAV clients who are ICO service providers?
-      # Type: enum "Oui" / "Non" (settings-based, conditional on a13601c)
+      # Type: enum "Oui" / "Non" — computed from clients table
       def a13601ico
-        return nil unless a13601c == "Oui"
-        setting_value_for("has_ico_provider_clients")
+        clients_kept.where(is_vasp: true, vasp_type: "ICO").exists? ? "Oui" : "Non"
       end
 
       # Q67 — a13603CACB: Total transactions by ICO service provider PSAV clients

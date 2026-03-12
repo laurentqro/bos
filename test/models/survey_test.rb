@@ -3254,21 +3254,22 @@ class SurveyTest < ActiveSupport::TestCase
   # Q66 — a13601ICO: Does your entity have PSAV clients who are ICO service providers?
   # Type: enum "Oui" / "Non" (settings-based, conditional on a13601c)
 
-  test "a13601ico returns nil when a13601c is not Oui" do
-    assert_nil @survey.a13601ico
-  end
-
-  test "a13601ico returns setting value when a13601c is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_ico_providers", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_ico_provider_clients", category: "entity_info", value: "Oui")
+  # Q66 — a13601ICO: Does your entity have PSAV clients who are ICO service providers?
+  # Computed from clients table (is_vasp + vasp_type)
+  test "a13601ico returns Oui when entity has ICO provider clients" do
+    Client.create!(
+      organization: @organization,
+      name: "ICO Provider Co",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      is_vasp: true,
+      vasp_type: "ICO"
+    )
     assert_equal "Oui", @survey.a13601ico
   end
 
-  test "a13601ico returns nil when setting is not set but a13601c is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_ico_providers", category: "entity_info", value: "Oui")
-    assert_nil @survey.a13601ico
+  test "a13601ico returns Non when entity has no ICO provider clients" do
+    assert_equal "Non", @survey.a13601ico
   end
 
   # Q67 — a13603CACB: Total transactions by ICO service provider PSAV clients
