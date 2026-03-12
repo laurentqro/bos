@@ -3798,6 +3798,54 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 1_250_000, @survey.a13604db
   end
 
+  test "a13604db excludes rental transactions below 10000 EUR monthly rent" do
+    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
+    Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
+
+    other_client = Client.create!(
+      organization: @organization,
+      name: "Other VASP Services",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      is_vasp: true,
+      vasp_type: "OTHER",
+      vasp_other_service_type: "DeFi Lending",
+      incorporation_country: "JP"
+    )
+
+    # Qualifying rental
+    Transaction.create!(
+      organization: @organization,
+      client: other_client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_value: 120_000,
+      rental_annual_value: 120_000
+    )
+
+    # Non-qualifying rental
+    Transaction.create!(
+      organization: @organization,
+      client: other_client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 7, 1),
+      transaction_value: 60_000,
+      rental_annual_value: 60_000
+    )
+
+    # Purchase
+    Transaction.create!(
+      organization: @organization,
+      client: other_client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 3, 15),
+      transaction_value: 500_000
+    )
+
+    assert_equal 620_000, @survey.a13604db
+  end
+
   # Q73 — a13602B: Unique custodian wallet provider PSAV clients
   # by country of establishment, for purchase, sale, and rental
   # Type: xbrli:integerItemType — dimensional by country (hash of counts)
