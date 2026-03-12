@@ -968,10 +968,9 @@ class Survey
 
       # Q69 — a13601C2: Does your entity distinguish if PSAV clients provide other services
       # not mentioned above?
-      # Type: enum "Oui" / "Non" (settings-based, conditional on a13501b)
+      # Type: enum "Oui" / "Non" — always "Oui" since CRM captures vasp_type
       def a13601c2
-        return nil unless a13501b == "Oui"
-        setting_value_for("distinguishes_other_vasp_services")
+        "Oui"
       end
 
       # Q70 — a13601OTHER: Does your entity have PSAV clients who provide other services?

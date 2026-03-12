@@ -3625,39 +3625,22 @@ class SurveyTest < ActiveSupport::TestCase
   # not mentioned above?
   # Type: enum "Oui" / "Non" (settings-based, conditional on a13501b)
 
-  test "a13601c2 returns nil when a13501b is not Oui" do
-    assert_nil @survey.a13601c2
-  end
-
-  test "a13601c2 returns setting value when a13501b is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
+  # Q69 — a13601C2: Does your entity distinguish if PSAV clients provide other services?
+  # Always "Oui" since CRM captures vasp_type on every VASP client
+  test "a13601c2 always returns Oui" do
     assert_equal "Oui", @survey.a13601c2
-  end
-
-  test "a13601c2 returns nil when setting is not set but a13501b is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    assert_nil @survey.a13601c2
   end
 
   # Q70 — a13601OTHER: Does your entity have PSAV clients who provide other services?
   # Type: enum "Oui" / "Non" (settings-based, conditional on a13601c2)
 
-  test "a13601other returns nil when a13601c2 is not Oui" do
+  test "a13601other returns nil when setting is not set" do
     assert_nil @survey.a13601other
   end
 
-  test "a13601other returns setting value when a13601c2 is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
+  test "a13601other returns setting value" do
     Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
     assert_equal "Oui", @survey.a13601other
-  end
-
-  test "a13601other returns nil when setting is not set but a13601c2 is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
-    assert_nil @survey.a13601other
   end
 
   # Q71 — a13603DB: Total transactions by other-services PSAV clients
