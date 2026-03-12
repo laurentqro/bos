@@ -658,19 +658,9 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q19 — a11201BCD: Does entity identify and record client type: HNWIs?
-  # Type: enum "Oui" / "Non" (settings-based)
-  test "a11201bcd returns the setting value when set" do
-    Setting.create!(
-      organization: @organization,
-      key: "identifies_records_hnwi_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
+  # Type: enum "Oui" / "Non" — crm-capability-based
+  test "a11201bcd always returns Oui since CRM identifies HNWIs" do
     assert_equal "Oui", @survey.a11201bcd
-  end
-
-  test "a11201bcd returns nil when setting is not set" do
-    assert_nil @survey.a11201bcd
   end
 
   # Q20 — a11201BCDU: Does entity identify and record client type: UHNWIs?
@@ -2098,18 +2088,7 @@ class SurveyTest < ActiveSupport::TestCase
   # Scope: Purchase/Sale only, legal entity clients (excl. trusts)
   # Conditional: only when a11201bcd == "Oui"
 
-  test "a11206b returns nil when a11201bcd is not Oui" do
-    assert_nil @survey.a11206b
-  end
-
   test "a11206b returns hash of HNWI BOs grouped by nationality" do
-    Setting.create!(
-      organization: @organization,
-      key: "identifies_records_hnwi_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     # Create a legal entity client with a purchase transaction
     le_client = Client.create!(
       organization: @organization,

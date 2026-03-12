@@ -224,9 +224,9 @@ class Survey
       end
 
       # Q19 — a11201BCD: Does entity identify and record client type: HNWIs?
-      # Type: enum "Oui" / "Non" (settings-based)
+      # Type: enum "Oui" / "Non" — crm-capability-based
       def a11201bcd
-        setting_value_for("identifies_records_hnwi_clients")
+        "Oui"
       end
 
       # Q20 — a11201BCDU: Does entity identify and record client type: UHNWIs?
