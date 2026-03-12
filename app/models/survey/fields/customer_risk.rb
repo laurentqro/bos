@@ -1106,11 +1106,20 @@ class Survey
       def a13603ab
         return nil unless a13601ep == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+        txns = year_transactions
           .joins(:client)
           .where(clients: {is_vasp: true, vasp_type: "EXCHANGE"})
+
+        purchase_sale_count = txns
+          .where(transaction_type: %w[PURCHASE SALE])
           .count
+
+        rental_count = txns
+          .where(transaction_type: "RENTAL")
+          .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
+          .count
+
+        purchase_sale_count + rental_count
       end
 
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities

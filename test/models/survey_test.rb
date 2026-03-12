@@ -3286,6 +3286,51 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal baseline + 2, @survey.a13603ab
   end
 
+  test "a13603ab excludes rental transactions below 10000 EUR monthly rent" do
+    baseline = @survey.a13603ab
+
+    exchange_client = Client.create!(
+      organization: @organization,
+      name: "Exchange Provider Corp",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      is_vasp: true,
+      vasp_type: "EXCHANGE",
+      incorporation_country: "CH"
+    )
+
+    # Qualifying rental
+    Transaction.create!(
+      organization: @organization,
+      client: exchange_client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_value: 120_000,
+      rental_annual_value: 120_000
+    )
+
+    # Non-qualifying rental
+    Transaction.create!(
+      organization: @organization,
+      client: exchange_client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 7, 1),
+      transaction_value: 60_000,
+      rental_annual_value: 60_000
+    )
+
+    # Purchase
+    Transaction.create!(
+      organization: @organization,
+      client: exchange_client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 3, 15),
+      transaction_value: 500_000
+    )
+
+    assert_equal baseline + 2, @survey.a13603ab
+  end
+
   # Q64 — a13604AB: Total value of funds transferred by virtual currency exchange provider
   # PSAV clients for purchase, sale, and rental of real estate
   # Type: xbrli:monetaryItemType
