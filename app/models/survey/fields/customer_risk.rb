@@ -876,10 +876,9 @@ class Survey
 
       # Q62 — a13601EP: Does your entity have PSAV clients who are
       # virtual currency exchange providers?
-      # Type: enum "Oui" / "Non" (settings-based, conditional on a13601b)
+      # Type: enum "Oui" / "Non" — computed from clients table
       def a13601ep
-        return nil unless a13601b == "Oui"
-        setting_value_for("has_exchange_provider_clients")
+        clients_kept.where(is_vasp: true, vasp_type: "EXCHANGE").exists? ? "Oui" : "Non"
       end
 
       # Q65 — a13601C: Does your entity distinguish if PSAV clients are ICO service providers?

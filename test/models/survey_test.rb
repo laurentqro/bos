@@ -3145,21 +3145,15 @@ class SurveyTest < ActiveSupport::TestCase
   # Q62 — a13601EP: Does your entity have PSAV clients who are virtual currency exchange providers?
   # Type: enum "Oui" / "Non" (settings-based, conditional on a13601b)
 
-  test "a13601ep returns nil when a13601b is not Oui" do
-    assert_nil @survey.a13601ep
-  end
-
-  test "a13601ep returns setting value when a13601b is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_exchange_providers", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_exchange_provider_clients", category: "entity_info", value: "Oui")
+  # Q62 — a13601EP: Does your entity have PSAV clients who are exchange providers?
+  # Computed from clients table (is_vasp + vasp_type)
+  test "a13601ep returns Oui when entity has exchange provider clients" do
     assert_equal "Oui", @survey.a13601ep
   end
 
-  test "a13601ep returns nil when setting is not set but a13601b is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_exchange_providers", category: "entity_info", value: "Oui")
-    assert_nil @survey.a13601ep
+  test "a13601ep returns Non when entity has no exchange provider clients" do
+    @organization.clients.where(is_vasp: true, vasp_type: "EXCHANGE").update_all(vasp_type: "CUSTODIAN")
+    assert_equal "Non", @survey.a13601ep
   end
 
   # Q63 — a13603AB: Total transactions by virtual currency exchange provider PSAV clients
@@ -3168,14 +3162,11 @@ class SurveyTest < ActiveSupport::TestCase
   # Conditional: only when a13601ep == "Oui"
 
   test "a13603ab returns nil when a13601ep is not Oui" do
+    @organization.clients.where(is_vasp: true, vasp_type: "EXCHANGE").update_all(vasp_type: "CUSTODIAN")
     assert_nil @survey.a13603ab
   end
 
   test "a13603ab counts transactions by exchange provider VASP clients" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_exchange_providers", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_exchange_provider_clients", category: "entity_info", value: "Oui")
-
     # Fixture vasp_client (EXCHANGE) already has 1 transaction (crypto_payment)
     baseline = @survey.a13603ab
 
@@ -3214,14 +3205,11 @@ class SurveyTest < ActiveSupport::TestCase
   # Conditional: only when a13601ep == "Oui"
 
   test "a13604ab returns nil when a13601ep is not Oui" do
+    @organization.clients.where(is_vasp: true, vasp_type: "EXCHANGE").update_all(vasp_type: "CUSTODIAN")
     assert_nil @survey.a13604ab
   end
 
   test "a13604ab returns total value of transactions by exchange provider VASP clients" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_exchange_providers", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_exchange_provider_clients", category: "entity_info", value: "Oui")
-
     # Fixture vasp_client (EXCHANGE) already has a transaction
     baseline = @survey.a13604ab
 
@@ -3563,14 +3551,11 @@ class SurveyTest < ActiveSupport::TestCase
   # Conditional: only when a13601ep == "Oui"
 
   test "a13602a returns nil when a13601ep is not Oui" do
+    @organization.clients.where(is_vasp: true, vasp_type: "EXCHANGE").update_all(vasp_type: "CUSTODIAN")
     assert_nil @survey.a13602a
   end
 
   test "a13602a returns unique exchange VASP clients by incorporation country" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_exchange_providers", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_exchange_provider_clients", category: "entity_info", value: "Oui")
-
     vasp = Client.create!(
       organization: @organization,
       client_type: "LEGAL_ENTITY",
