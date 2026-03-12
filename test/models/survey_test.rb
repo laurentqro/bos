@@ -474,28 +474,14 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q14 — a1204O: Can entity distinguish BOs that hold 25% or more?
-  # Type: enum (Oui/Non), settings-based
-  test "a1204o returns the setting value when set" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_bo_25pct_or_more",
-      category: "entity_info",
-      value: "Oui"
-    )
+  # Type: enum (Oui/Non) — always Oui since the CRM tracks BO ownership
+  test "a1204o always returns Oui" do
     assert_equal "Oui", @survey.a1204o
-  end
-
-  test "a1204o returns nil when setting is not set" do
-    assert_nil @survey.a1204o
   end
 
   # Q15 — a120425O: Total number of BOs holding at least 25%,
   # broken down by primary nationality (dimensional, integer counts)
-  # Conditional on a1204o == "Oui"
-  test "a120425o returns nil when a1204o is not Oui" do
-    assert_nil @survey.a120425o
-  end
-
+  # Conditional on a1204o == "Oui" (always true since CRM tracks ownership)
   test "a120425o returns count of BOs with 25%+ ownership grouped by nationality" do
     Setting.create!(
       organization: @organization,

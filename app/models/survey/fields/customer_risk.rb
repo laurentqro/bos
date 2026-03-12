@@ -144,9 +144,9 @@ class Survey
       end
 
       # Q14 — a1204O: Can entity distinguish beneficial owners that hold 25% or more?
-      # Type: enum (Oui/Non) — settings-based
+      # Type: enum (Oui/Non) — crm-capability-based
       def a1204o
-        setting_value_for("can_distinguish_bo_25pct_or_more")
+        "Oui"
       end
 
       # Q15 — a120425O: Total number of BOs holding at least 25%,
