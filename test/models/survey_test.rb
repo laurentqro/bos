@@ -3896,6 +3896,51 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal({"MC" => 1, "FR" => 1}, result)
   end
 
+  test "a13602b excludes clients with only non-qualifying rental transactions" do
+    # Client with qualifying purchase
+    custodian_a = Client.create!(
+      organization: @organization,
+      name: "Custodian A",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      is_vasp: true,
+      vasp_type: "CUSTODIAN",
+      incorporation_country: "LU"
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: custodian_a,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 3, 15),
+      transaction_value: 500_000
+    )
+
+    # Client with only non-qualifying rental
+    custodian_b = Client.create!(
+      organization: @organization,
+      name: "Custodian B",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      is_vasp: true,
+      vasp_type: "CUSTODIAN",
+      incorporation_country: "DE"
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: custodian_b,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_value: 60_000,
+      rental_annual_value: 60_000
+    )
+
+    result = @survey.a13602b
+    assert_equal({"LU" => 1}, result)
+    assert_nil result["DE"]
+  end
+
   # Q74 — a13602A: Unique exchange provider PSAV clients
   # by country of establishment, for purchase, sale, and rental
   # Type: xbrli:integerItemType — dimensional by country (hash of counts)
