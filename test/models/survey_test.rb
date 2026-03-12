@@ -2971,14 +2971,9 @@ class SurveyTest < ActiveSupport::TestCase
   # Q57 — a13601A: Does your entity distinguish if PSAV clients are custodian wallet providers?
   # Type: enum "Oui" / "Non" (settings-based, conditional on a13501b)
   # Q57 — a13601A: Does your entity distinguish if PSAV clients are custodian wallet providers?
-  # Always "Oui" when a13501b == "Oui" since CRM captures vasp_type on every VASP client
-  test "a13601a returns Oui when entity has VASP clients" do
+  # Always "Oui" since CRM captures vasp_type on every VASP client
+  test "a13601a always returns Oui" do
     assert_equal "Oui", @survey.a13601a
-  end
-
-  test "a13601a returns Non when entity has no VASP clients" do
-    @organization.clients.where(is_vasp: true).update_all(is_vasp: false)
-    assert_equal "Non", @survey.a13601a
   end
 
   # Q58 — a13601CW: Does your entity have PSAV clients who are custodian wallet providers?
@@ -3141,19 +3136,10 @@ class SurveyTest < ActiveSupport::TestCase
   # Q61 — a13601B: Does your entity distinguish whether PSAV clients are virtual currency exchange providers?
   # Type: enum "Oui" / "Non" (settings-based, conditional on a13501b)
 
-  test "a13601b returns nil when a13501b is not Oui (no PSAV clients)" do
-    assert_nil @survey.a13601b
-  end
-
-  test "a13601b returns setting value when a13501b is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_exchange_providers", category: "entity_info", value: "Oui")
+  # Q61 — a13601B: Does your entity distinguish whether PSAV clients are exchange providers?
+  # Always "Oui" since CRM captures vasp_type on every VASP client
+  test "a13601b always returns Oui" do
     assert_equal "Oui", @survey.a13601b
-  end
-
-  test "a13601b returns nil when setting is not set but a13501b is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    assert_nil @survey.a13601b
   end
 
   # Q62 — a13601EP: Does your entity have PSAV clients who are virtual currency exchange providers?
