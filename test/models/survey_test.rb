@@ -3177,6 +3177,49 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 0, @survey.a13604bb
   end
 
+  test "a13604bb excludes rental transactions below 10000 EUR monthly rent" do
+    custodian_client = Client.create!(
+      organization: @organization,
+      name: "Custodian Wallet Provider",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      is_vasp: true,
+      vasp_type: "CUSTODIAN",
+      incorporation_country: "LU"
+    )
+
+    # Qualifying rental
+    Transaction.create!(
+      organization: @organization,
+      client: custodian_client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_value: 120_000,
+      rental_annual_value: 120_000
+    )
+
+    # Non-qualifying rental
+    Transaction.create!(
+      organization: @organization,
+      client: custodian_client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 7, 1),
+      transaction_value: 60_000,
+      rental_annual_value: 60_000
+    )
+
+    # Purchase
+    Transaction.create!(
+      organization: @organization,
+      client: custodian_client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 3, 15),
+      transaction_value: 500_000
+    )
+
+    assert_equal 620_000, @survey.a13604bb
+  end
+
   # Q61 — a13601B: Does your entity distinguish whether PSAV clients are virtual currency exchange providers?
   # Type: enum "Oui" / "Non" (settings-based, conditional on a13501b)
 

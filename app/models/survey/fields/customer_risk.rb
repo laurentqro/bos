@@ -868,11 +868,20 @@ class Survey
       def a13604bb
         return nil unless a13601cw == "Oui"
 
-        year_transactions
-          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+        txns = year_transactions
           .joins(:client)
           .where(clients: {is_vasp: true, vasp_type: "CUSTODIAN"})
+
+        ps_value = txns
+          .where(transaction_type: %w[PURCHASE SALE])
           .sum(:transaction_value)
+
+        rental_value = txns
+          .where(transaction_type: "RENTAL")
+          .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
+          .sum(:transaction_value)
+
+        ps_value + rental_value
       end
 
       # Q61 — a13601B: Does your entity distinguish whether PSAV clients are
