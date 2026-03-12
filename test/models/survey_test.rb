@@ -670,19 +670,9 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q21 — a1801: Does entity identify/record trusts and other legal constructions?
-  # Type: enum "Oui" / "Non" (settings-based)
-  test "a1801 returns the setting value when set" do
-    Setting.create!(
-      organization: @organization,
-      key: "identifies_records_trusts_legal_constructions",
-      category: "entity_info",
-      value: "Oui"
-    )
+  # Type: enum "Oui" / "Non" — crm-capability-based
+  test "a1801 always returns Oui since CRM identifies trusts" do
     assert_equal "Oui", @survey.a1801
-  end
-
-  test "a1801 returns nil when setting is not set" do
-    assert_nil @survey.a1801
   end
 
   # Q22 — a13601: Does entity have PSAV clients that provide other services?
