@@ -422,7 +422,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
 
     patch client_path(@client), params: {
-      client: { net_worth_range: "OVER_50M" }
+      client: {net_worth_range: "OVER_50M"}
     }
 
     @client.reload

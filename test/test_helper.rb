@@ -16,8 +16,9 @@ if defined?(SolidQueue)
   SolidQueue.logger.level = Logger::WARN
 end
 
-# Generate a random password so Chrome doesn't warn about passwords in data breaches
-UNIQUE_PASSWORD = Devise.friendly_token
+# Fixed test password — must be deterministic so parallel workers share the same
+# value used to generate fixture encrypted_password hashes.
+UNIQUE_PASSWORD = "test_password_for_fixtures_2025"
 
 module ActiveSupport
   class TestCase
