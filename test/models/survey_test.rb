@@ -2958,19 +2958,14 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q56 — a13501B: Does your entity have clients that are VASPs (PSAV)?
-  # Type: enum "Oui" / "Non" (settings-based)
-  test "a13501b returns the setting value when set" do
-    Setting.create!(
-      organization: @organization,
-      key: "has_vasp_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
+  # Computed from clients table (is_vasp column)
+  test "a13501b returns Oui when organization has VASP clients" do
     assert_equal "Oui", @survey.a13501b
   end
 
-  test "a13501b returns nil when setting is not set" do
-    assert_nil @survey.a13501b
+  test "a13501b returns Non when organization has no VASP clients" do
+    @organization.clients.where(is_vasp: true).update_all(is_vasp: false)
+    assert_equal "Non", @survey.a13501b
   end
 
   # Q57 — a13601A: Does your entity distinguish if PSAV clients are custodian wallet providers?

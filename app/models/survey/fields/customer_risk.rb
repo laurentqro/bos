@@ -821,9 +821,9 @@ class Survey
       # === Section 1.9: Virtual Asset Service Providers (PSAV) ===
 
       # Q56 — a13501B: Does your entity have clients that are VASPs (PSAV)?
-      # Type: enum "Oui" / "Non" (settings-based)
+      # Type: enum "Oui" / "Non" — computed from clients table
       def a13501b
-        setting_value_for("has_vasp_clients")
+        clients_kept.where(is_vasp: true).exists? ? "Oui" : "Non"
       end
 
       # Q57 — a13601A: Does your entity distinguish if PSAV clients are custodian wallet providers?
