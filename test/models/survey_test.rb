@@ -2970,19 +2970,15 @@ class SurveyTest < ActiveSupport::TestCase
 
   # Q57 — a13601A: Does your entity distinguish if PSAV clients are custodian wallet providers?
   # Type: enum "Oui" / "Non" (settings-based, conditional on a13501b)
-  test "a13601a returns nil when a13501b is not Oui (no PSAV clients)" do
-    assert_nil @survey.a13601a
-  end
-
-  test "a13601a returns setting value when a13501b is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_custodian_wallet_providers", category: "entity_info", value: "Oui")
+  # Q57 — a13601A: Does your entity distinguish if PSAV clients are custodian wallet providers?
+  # Always "Oui" when a13501b == "Oui" since CRM captures vasp_type on every VASP client
+  test "a13601a returns Oui when entity has VASP clients" do
     assert_equal "Oui", @survey.a13601a
   end
 
-  test "a13601a returns nil when setting is not set but a13501b is Oui" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    assert_nil @survey.a13601a
+  test "a13601a returns Non when entity has no VASP clients" do
+    @organization.clients.where(is_vasp: true).update_all(is_vasp: false)
+    assert_equal "Non", @survey.a13601a
   end
 
   # Q58 — a13601CW: Does your entity have PSAV clients who are custodian wallet providers?

@@ -827,10 +827,9 @@ class Survey
       end
 
       # Q57 — a13601A: Does your entity distinguish if PSAV clients are custodian wallet providers?
-      # Type: enum "Oui" / "Non" (settings-based, conditional on a13501b)
+      # Type: enum "Oui" / "Non" — always matches a13501b since CRM captures vasp_type
       def a13601a
-        return nil unless a13501b == "Oui"
-        setting_value_for("distinguishes_custodian_wallet_providers")
+        a13501b
       end
 
       # Q58 — a13601CW: Does your entity have PSAV clients who are custodian wallet providers?
