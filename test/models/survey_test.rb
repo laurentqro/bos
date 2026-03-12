@@ -1802,18 +1802,8 @@ class SurveyTest < ActiveSupport::TestCase
 
   # Q36 — a155: Does your entity distinguish if clients are Monegasque legal entities and the type?
   # Type: stringItemType with enum restriction ("Oui" / "Non") — settings-based
-  test "a155 returns the setting value when set" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_monegasque_legal_entity_type",
-      category: "entity_info",
-      value: "Oui"
-    )
+  test "a155 returns Oui (CRM captures legal entity type and incorporation country)" do
     assert_equal "Oui", @survey.a155
-  end
-
-  test "a155 returns nil when setting is not set" do
-    assert_nil @survey.a155
   end
 
   test "a1210o excludes BOs from other organizations" do
@@ -1857,18 +1847,7 @@ class SurveyTest < ActiveSupport::TestCase
   # Scope: Purchase/Sale only, Monegasque (incorporation_country == "MC"), excludes trusts
   # Conditional: only when a155 == "Oui"
 
-  test "amles returns nil when a155 is not Oui" do
-    assert_nil @survey.amles
-  end
-
   test "amles returns hash of Monegasque legal entity clients grouped by legal_entity_type" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_monegasque_legal_entity_type",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     # Create Monegasque SAM client with a purchase transaction
     sam_client = Client.create!(
       organization: @organization,
@@ -1918,13 +1897,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "amles excludes trusts" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_monegasque_legal_entity_type",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     trust = clients(:trust)
     assert_equal "TRUST", trust.legal_entity_type
     assert_equal "MC", trust.incorporation_country
@@ -1945,13 +1917,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "amles excludes non-Monegasque legal entities" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_monegasque_legal_entity_type",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     foreign_le = Client.create!(
       organization: @organization,
       name: "French SARL Corp",
@@ -1978,13 +1943,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "amles excludes rental transactions" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_monegasque_legal_entity_type",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     rental_le = Client.create!(
       organization: @organization,
       name: "Monaco Rental SCI",
@@ -2319,37 +2277,15 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q40 — a1802BTOLA: Does entity distinguish if clients are trusts or other legal constructions?
-  # Type: stringItemType with enum restriction ("Oui" / "Non") — settings-based
-  test "a1802btola returns the setting value when set" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
+  # Type: stringItemType with enum restriction ("Oui" / "Non") — crm-capability-based
+  test "a1802btola returns Oui (CRM always captures legal_entity_type including TRUST)" do
     assert_equal "Oui", @survey.a1802btola
-  end
-
-  test "a1802btola returns nil when setting is not set" do
-    assert_nil @survey.a1802btola
   end
 
   # Q41 — a1802TOLA: Total unique trust/legal construction clients
   # for purchases, sales, and rentals of real estate
   # Type: xbrli:integerItemType (scalar — NoCountryDimension)
-  # Conditional: only when a1802btola == "Oui"
-  test "a1802tola returns nil when a1802btola is not Oui" do
-    assert_nil @survey.a1802tola
-  end
-
   test "a1802tola counts unique trust clients for purchase/sale and rental" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     trust_client = Client.create!(
       organization: @organization,
       name: "Trust Alpha",
@@ -2395,13 +2331,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a1802tola excludes non-trust legal entity clients" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     trust_client = Client.create!(
       organization: @organization,
       name: "Trust Gamma",
@@ -2448,18 +2377,7 @@ class SurveyTest < ActiveSupport::TestCase
   # Q42 — a1807ATOLA: Total unique Monegasque trust/legal construction clients
   # for purchases, sales, and rentals of real estate
   # Type: xbrli:integerItemType — conditional on a1802btola == "Oui"
-  test "a1807atola returns nil when a1802btola is not Oui" do
-    assert_nil @survey.a1807atola
-  end
-
   test "a1807atola counts only Monegasque trust clients" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     mc_trust = Client.create!(
       organization: @organization,
       name: "MC Trust",
@@ -2504,13 +2422,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a1807atola counts across purchase, sale, and rental transactions" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     mc_trust_ps = Client.create!(
       organization: @organization,
       name: "MC Trust PS",
@@ -2556,13 +2467,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a1802tola counts each unique trust client only once even with multiple transactions" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     trust_client = Client.create!(
       organization: @organization,
       name: "Trust Epsilon",
@@ -2600,18 +2504,7 @@ class SurveyTest < ActiveSupport::TestCase
   # Q43 — a1808: Professional trustees by primary nationality (dimensional)
   # Conditional on a1802btola == "Oui"
 
-  test "a1808 returns nil when a1802btola is not Oui" do
-    assert_nil @survey.a1808
-  end
-
   test "a1808 counts professional trustees by nationality" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     # Trust client with MC professional trustee and FR professional trustee
     trust_1 = Client.create!(
       organization: @organization,
@@ -2676,18 +2569,7 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q44 — a1809: Professional trustees by trust's incorporation country
-  test "a1809 returns nil when a1802btola is not Oui" do
-    assert_nil @survey.a1809
-  end
-
   test "a1809 counts professional trustees by trust incorporation country" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     # Trust incorporated in MC with 2 professional trustees
     trust_mc = Client.create!(
       organization: @organization,
@@ -2774,61 +2656,16 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q45 — a11001BTOLA: Does entity have info on number and value of trust clients' transactions?
-  test "a11001btola returns nil when a1802btola is not Oui" do
-    assert_nil @survey.a11001btola
-  end
-
-  test "a11001btola returns setting value when a1802btola is Oui" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-    Setting.create!(
-      organization: @organization,
-      key: "trust_clients_transaction_info_available",
-      category: "entity_info",
-      value: "Oui"
-    )
-
+  # Always "Oui" since CRM tracks trust client transactions
+  test "a11001btola always returns Oui" do
     assert_equal "Oui", @survey.a11001btola
-  end
-
-  test "a11001btola returns nil when setting is not set but a1802btola is Oui" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
-    assert_nil @survey.a11001btola
   end
 
   # Q46 — a1806TOLA: Total number of transactions by trust/legal construction clients
   # for purchase and sale of real estate
   # Type: xbrli:integerItemType
-  # Conditional: only when a11001btola == "Oui"
-
-  test "a1806tola returns nil when a11001btola is not Oui" do
-    assert_nil @survey.a1806tola
-  end
 
   test "a1806tola counts transactions by trust clients for purchase and sale" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-    Setting.create!(
-      organization: @organization,
-      key: "trust_clients_transaction_info_available",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     trust_client = Client.create!(
       organization: @organization,
       name: "Trust Alpha",
@@ -2876,26 +2713,9 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q47 — a1807TOLA: Total value of funds transferred by trust/legal construction clients
-  # for purchase and sale of real estate (monetaryItemType, conditional on a11001btola)
-
-  test "a1807tola returns nil when a11001btola is not Oui" do
-    assert_nil @survey.a1807tola
-  end
+  # for purchase and sale of real estate (monetaryItemType)
 
   test "a1807tola sums transaction values for trust clients for purchase and sale only" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-    Setting.create!(
-      organization: @organization,
-      key: "trust_clients_transaction_info_available",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     trust_client = Client.create!(
       organization: @organization,
       name: "Trust Alpha",
@@ -2967,18 +2787,7 @@ class SurveyTest < ActiveSupport::TestCase
   # Q48 — a11006: Specify type of other legal constructions not mentioned in previous questions
   # Type: xbrli:stringItemType — computed from client data, conditional on a1802btola
 
-  test "a11006 returns nil when a1802btola is not Oui" do
-    assert_nil @survey.a11006
-  end
-
   test "a11006 returns nil when no clients have non-standard legal entity types" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     # Discard any pre-existing non-standard legal entity clients from fixtures
     @organization.clients
       .where(client_type: "LEGAL_ENTITY")
@@ -2998,13 +2807,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a11006 returns labels for non-standard legal entity types" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     Client.create!(
       organization: @organization,
       name: "Foundation Client",
@@ -3025,13 +2827,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a11006 includes free-text for OTHER legal entity type" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     Client.create!(
       organization: @organization,
       name: "Fiducie Client",
@@ -3045,13 +2840,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a11006 excludes standard forms and trusts" do
-    Setting.create!(
-      organization: @organization,
-      key: "can_distinguish_trust_clients",
-      category: "entity_info",
-      value: "Oui"
-    )
-
     # Standard forms — should NOT appear
     Client.create!(organization: @organization, name: "SCI Co", client_type: "LEGAL_ENTITY", legal_entity_type: "SCI")
     Client.create!(organization: @organization, name: "Trust Co", client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST")
@@ -3961,7 +3749,6 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 1, result["IT"]
     assert_equal 1, result["CH"]
   end
-
 
   # === Section 1.11: Monegasque Client Types (Purchases and Sales) ===
 
@@ -5195,12 +4982,7 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q175 — a3208TOLA: New trust/legal construction clients onboarded during reporting period
-  test "a3208tola returns nil when a1802btola is not Oui" do
-    assert_nil @survey.a3208tola
-  end
-
   test "a3208tola counts new trust clients onboarded in reporting year" do
-    Setting.create!(organization: @organization, key: "can_distinguish_trust_clients", category: "entity_info", value: "Oui")
     baseline = @survey.a3208tola
 
     # Trust onboarded in reporting year (counts)
@@ -5260,18 +5042,12 @@ class SurveyTest < ActiveSupport::TestCase
 
   # Q179 — a3212CTOLA: Trust clients onboarded without face-to-face
   test "a3212ctola returns nil when a3209 is not Oui" do
-    Setting.create!(organization: @organization, key: "can_distinguish_trust_clients", category: "entity_info", value: "Oui")
-    assert_nil @survey.a3212ctola
-  end
-
-  test "a3212ctola returns nil when a1802btola is not Oui" do
-    Setting.create!(organization: @organization, key: "non_face_to_face_onboarding", category: "entity_info", value: "Oui")
     assert_nil @survey.a3212ctola
   end
 
   test "a3212ctola returns setting value when both conditions met" do
     Setting.create!(organization: @organization, key: "non_face_to_face_onboarding", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "can_distinguish_trust_clients", category: "entity_info", value: "Oui")
+
     assert_nil @survey.a3212ctola
 
     Setting.create!(organization: @organization, key: "non_face_to_face_trust_onboarded_count", category: "entity_info", value: "2")

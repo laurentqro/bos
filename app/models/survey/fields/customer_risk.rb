@@ -440,9 +440,9 @@ class Survey
 
       # Q36 — a155: Does your entity distinguish if clients are Monegasque legal entities
       # and the type of legal entity?
-      # Type: stringItemType with enum restriction ("Oui" / "Non") — settings-based
+      # Type: stringItemType with enum restriction ("Oui" / "Non") — CRM capability
       def a155
-        setting_value_for("can_distinguish_monegasque_legal_entity_type")
+        "Oui"
       end
 
       # Q37 — aMLES: Number of Monegasque legal entity clients, broken down by type
@@ -512,9 +512,9 @@ class Survey
       end
 
       # Q40 — a1802BTOLA: Does entity distinguish if clients are trusts or other legal constructions?
-      # Type: stringItemType with enum restriction ("Oui" / "Non") — settings-based
+      # Type: stringItemType with enum restriction ("Oui" / "Non") — crm-capability-based
       def a1802btola
-        setting_value_for("can_distinguish_trust_clients")
+        "Oui"
       end
 
       # Q41 — a1802TOLA: Total unique trust/legal construction clients
@@ -611,19 +611,15 @@ class Survey
       # Q45 — a11001BTOLA: Does entity have information on the number and value
       # of trust/legal construction clients' transactions?
       # Type: stringItemType enum ("Oui" / "Non")
-      # Conditional: only present when a1802btola == "Oui"
+      # Always "Oui" since CRM tracks trust client transactions
       def a11001btola
-        return nil unless a1802btola == "Oui"
-        setting_value_for("trust_clients_transaction_info_available")
+        "Oui"
       end
 
       # Q46 — a1806TOLA: Total number of transactions by trust/legal construction clients
       # for purchase and sale of real estate
       # Type: xbrli:integerItemType
-      # Conditional: only when a11001btola == "Oui"
       def a1806tola
-        return nil unless a11001btola == "Oui"
-
         year_transactions
           .where(transaction_type: %w[PURCHASE SALE])
           .joins(:client)
@@ -634,10 +630,7 @@ class Survey
       # Q47 — a1807TOLA: Total value of funds transferred by trust/legal construction clients
       # for purchase and sale of real estate
       # Type: xbrli:monetaryItemType (EUR)
-      # Conditional: only when a11001btola == "Oui"
       def a1807tola
-        return nil unless a11001btola == "Oui"
-
         year_transactions
           .where(transaction_type: %w[PURCHASE SALE])
           .joins(:client)
