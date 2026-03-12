@@ -71,7 +71,8 @@ class ClientPolicy < ApplicationPolicy
       :third_party_cdd_type,
       :vasp_other_service_type,
       :vasp_type,
-      trustees_attributes: [:id, :_destroy, :is_professional, :name, :nationality]
+      trustees_attributes: [[:id, :_destroy, :is_professional, :name, :nationality]],
+      client_nationalities_attributes: [[:id, :country_code, :_destroy]]
     ]
   end
 

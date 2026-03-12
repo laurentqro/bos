@@ -93,7 +93,20 @@
         <% end %>
         <div class="<%= @client.legal_entity? ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800' %> px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Nationality</dt>
-          <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0"><%= @client.nationality || "—" %></dd>
+          <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">
+            <% if @client.nationality.present? %>
+              <span><%= ISO3166::Country[@client.nationality]&.iso_short_name || @client.nationality %></span>
+              <% if @client.client_nationalities.any? %>
+                <% @client.client_nationalities.each do |cn| %>
+                  <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset bg-gray-50 text-gray-600 ring-gray-500/10 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-400/20 ml-2">
+                    <%= ISO3166::Country[cn.country_code]&.iso_short_name || cn.country_code %>
+                  </span>
+                <% end %>
+              <% end %>
+            <% else %>
+              —
+            <% end %>
+          </dd>
         </div>
         <div class="<%= @client.legal_entity? ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900' %> px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Residence Country</dt>

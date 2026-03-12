@@ -23,6 +23,7 @@ class Client < ApplicationRecord
   has_many :str_reports, dependent: :nullify
 
   accepts_nested_attributes_for :trustees, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :client_nationalities, allow_destroy: true, reject_if: :all_blank
 
   # === Validations ===
   validates :name, presence: true

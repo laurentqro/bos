@@ -74,7 +74,7 @@
     <div class="<%= 'hidden' if client.legal_entity? %>" data-client-form-target="naturalPersonFields">
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div class="form-group">
-          <%= form.label :nationality %>
+          <%= form.label :nationality, "Primary nationality" %>
           <%= form.select :nationality,
               options_for_select(country_options, client.nationality),
               { include_blank: "Select country..." } %>
@@ -86,7 +86,38 @@
               options_for_select(country_options, client.residence_country),
               { include_blank: "Select country..." } %>
         </div>
+      </div>
 
+      <%# Additional Nationalities %>
+      <div class="mt-4">
+        <div class="border rounded-lg p-4" style="border-color: var(--base-border-tertiary); background-color: var(--base-bg-secondary)">
+          <h3 class="text-sm font-medium mb-3">Additional nationalities</h3>
+          <p class="form-hint mb-3">Record all nationalities for dual or multi-national clients.</p>
+
+          <div data-client-form-target="nationalitiesContainer">
+            <% client.client_nationalities.each_with_index do |cn, index| %>
+              <%= form.fields_for :client_nationalities, cn do |nf| %>
+                <div class="nationality-entry flex items-end gap-3 mb-2" data-client-form-target="nationalityEntry">
+                  <div class="form-group flex-1 mb-0">
+                    <%= nf.select :country_code,
+                        options_for_select(country_options, nf.object.country_code),
+                        { include_blank: "Select country..." },
+                        { class: "form-control" } %>
+                  </div>
+                  <% if nf.object.persisted? %>
+                    <%= nf.hidden_field :id %>
+                    <%= nf.hidden_field :_destroy, value: "0" %>
+                  <% end %>
+                  <button type="button" class="btn btn-sm text-red-600 mb-0" data-action="client-form#removeNationality">Remove</button>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+
+          <button type="button" class="btn btn-secondary btn-sm mt-2" data-action="client-form#addNationality">
+            + Add nationality
+          </button>
+        </div>
       </div>
     </div>
 

@@ -24,11 +24,14 @@ export default class extends Controller {
     "introducerCountry",
     "thirdPartyCdd",
     "thirdPartyCddType",
-    "thirdPartyCddCountry"
+    "thirdPartyCddCountry",
+    "nationalitiesContainer",
+    "nationalityEntry"
   ]
 
   connect() {
     this.trusteeCounter = 0
+    this.nationalityCounter = 0
     this.toggleFields()
     this.toggleLegalEntityType()
     this.togglePepType()
@@ -191,6 +194,47 @@ export default class extends Controller {
       entry.style.display = "none"
     } else {
       // For new records, just remove the DOM element
+      entry.remove()
+    }
+  }
+
+  addNationality() {
+    if (!this.hasNationalitiesContainerTarget) return
+
+    const container = this.nationalitiesContainerTarget
+    const id = `new_${++this.nationalityCounter}`
+
+    // Clone country options from the reference select
+    let countryOptionsHtml = '<option value="">Select country...</option>'
+    if (this.hasCountryOptionsTarget) {
+      const temp = this.countryOptionsTarget.cloneNode(true)
+      temp.selectedIndex = 0
+      Array.from(temp.options).forEach(opt => opt.removeAttribute("selected"))
+      countryOptionsHtml = temp.innerHTML
+    }
+
+    const template = `
+      <div class="nationality-entry flex items-end gap-3 mb-2" data-client-form-target="nationalityEntry">
+        <div class="form-group flex-1 mb-0">
+          <select name="client[client_nationalities_attributes][${id}][country_code]" class="form-control">
+            ${countryOptionsHtml}
+          </select>
+        </div>
+        <button type="button" class="btn btn-sm text-red-600 mb-0" data-action="client-form#removeNationality">Remove</button>
+      </div>
+    `
+    container.insertAdjacentHTML("beforeend", template)
+  }
+
+  removeNationality(event) {
+    const entry = event.target.closest("[data-client-form-target='nationalityEntry']")
+    if (!entry) return
+
+    const destroyField = entry.querySelector("input[name*='_destroy']")
+    if (destroyField) {
+      destroyField.value = "1"
+      entry.style.display = "none"
+    } else {
       entry.remove()
     }
   }
