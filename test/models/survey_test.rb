@@ -3663,7 +3663,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13603db counts transactions by other-services VASP clients" do
-
     vasp_client = Client.create!(
       organization: @organization,
       client_type: "LEGAL_ENTITY",
@@ -3696,7 +3695,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13603db excludes rental transactions below 10000 EUR monthly rent" do
-
     other_client = Client.create!(
       organization: @organization,
       name: "Other VASP Services",
@@ -3750,7 +3748,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13604db sums transaction values by other-services VASP clients" do
-
     vasp_client = Client.create!(
       organization: @organization,
       client_type: "LEGAL_ENTITY",
@@ -3783,7 +3780,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13604db excludes rental transactions below 10000 EUR monthly rent" do
-
     other_client = Client.create!(
       organization: @organization,
       name: "Other VASP Services",
@@ -4085,7 +4081,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13602d returns unique other-services VASP clients by incorporation country" do
-
     vasp = Client.create!(
       organization: @organization,
       client_type: "LEGAL_ENTITY",
@@ -4107,7 +4102,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13602d excludes clients with only non-qualifying rental transactions" do
-
     other_a = Client.create!(
       organization: @organization,
       name: "Other A",
@@ -4162,7 +4156,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13604e returns distinct other VASP service types" do
-
     Client.create!(
       organization: @organization,
       client_type: "LEGAL_ENTITY",
@@ -4189,7 +4182,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13604e returns nil when no other-services VASP clients exist" do
-
     assert_nil @survey.a13604e
   end
 
