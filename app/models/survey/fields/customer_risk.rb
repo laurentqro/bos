@@ -974,10 +974,9 @@ class Survey
       end
 
       # Q70 — a13601OTHER: Does your entity have PSAV clients who provide other services?
-      # Type: enum "Oui" / "Non" (settings-based, conditional on a13601c2)
+      # Type: enum "Oui" / "Non" — computed from clients table
       def a13601other
-        return nil unless a13601c2 == "Oui"
-        setting_value_for("has_other_vasp_service_clients")
+        clients_kept.where(is_vasp: true, vasp_type: "OTHER").exists? ? "Oui" : "Non"
       end
 
       # Q71 — a13603DB: Total transactions by other-services PSAV clients

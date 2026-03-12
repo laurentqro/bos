@@ -3632,15 +3632,25 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q70 — a13601OTHER: Does your entity have PSAV clients who provide other services?
-  # Type: enum "Oui" / "Non" (settings-based, conditional on a13601c2)
+  # Type: enum "Oui" / "Non" — computed from clients table
 
-  test "a13601other returns nil when setting is not set" do
-    assert_nil @survey.a13601other
+  test "a13601other returns Oui when entity has other-services VASP clients" do
+    Client.create!(
+      organization: @organization,
+      name: "Other VASP Client",
+      client_type: "NATURAL_PERSON",
+      nationality: "FR",
+      residence_country: "FR",
+      became_client_at: 3.months.ago,
+      is_vasp: true,
+      vasp_type: "OTHER",
+      vasp_other_service_type: "Crypto ATM operator"
+    )
+    assert_equal "Oui", @survey.a13601other
   end
 
-  test "a13601other returns setting value" do
-    Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
-    assert_equal "Oui", @survey.a13601other
+  test "a13601other returns Non when entity has no other-services VASP clients" do
+    assert_equal "Non", @survey.a13601other
   end
 
   # Q71 — a13603DB: Total transactions by other-services PSAV clients
@@ -3653,9 +3663,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13603db counts transactions by other-services VASP clients" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
 
     vasp_client = Client.create!(
       organization: @organization,
@@ -3689,9 +3696,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13603db excludes rental transactions below 10000 EUR monthly rent" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
 
     other_client = Client.create!(
       organization: @organization,
@@ -3746,9 +3750,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13604db sums transaction values by other-services VASP clients" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
 
     vasp_client = Client.create!(
       organization: @organization,
@@ -3782,9 +3783,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13604db excludes rental transactions below 10000 EUR monthly rent" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
 
     other_client = Client.create!(
       organization: @organization,
@@ -4087,9 +4085,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13602d returns unique other-services VASP clients by incorporation country" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
 
     vasp = Client.create!(
       organization: @organization,
@@ -4112,9 +4107,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13602d excludes clients with only non-qualifying rental transactions" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
 
     other_a = Client.create!(
       organization: @organization,
@@ -4170,9 +4162,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13604e returns distinct other VASP service types" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
 
     Client.create!(
       organization: @organization,
@@ -4200,9 +4189,6 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a13604e returns nil when no other-services VASP clients exist" do
-    Setting.create!(organization: @organization, key: "has_vasp_clients", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "distinguishes_other_vasp_services", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "has_other_vasp_service_clients", category: "entity_info", value: "Oui")
 
     assert_nil @survey.a13604e
   end
