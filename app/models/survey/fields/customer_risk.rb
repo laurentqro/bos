@@ -1320,17 +1320,13 @@ class Survey
       def a14702b = mc_clients_by_sector("TRANSPORT")
 
       # Q110 — a14801: Does entity have comments on inherent risk section?
-      # Type: enum (Oui/Non) — settings-based
+      # Type: enum (Oui/Non)
       def a14801
-        setting_value_for("has_inherent_risk_comments")
       end
 
       # Q111 — a14001: Comments on inherent risk section
-      # Type: xbrli:stringItemType — settings-based
-      # Conditional: only when a14801 == "Oui"
+      # Type: xbrli:stringItemType
       def a14001
-        return nil unless a14801 == "Oui"
-        setting_value_for("inherent_risk_comments")
       end
 
       private
