@@ -4965,11 +4965,30 @@ class SurveyTest < ActiveSupport::TestCase
   # === Section 2.6: Cash operations BY clients ===
 
   # Q136 — a2107B: Did clients perform cash operations?
-  test "a2107b returns setting value for clients_performed_cash_operations" do
-    assert_nil @survey.a2107b
-    Setting.create!(organization: @organization, key: "clients_performed_cash_operations", category: "entity_info", value: "Oui")
-    @survey = Survey.new(organization: @organization, year: @year)
+  test "a2107b returns Oui when cash transactions exist" do
+    client = Client.create!(organization: @organization, client_type: "NATURAL_PERSON", name: "Cash Client", nationality: "FR")
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_value: 50_000,
+      payment_method: "CASH",
+      cash_amount: 50_000
+    )
+
     assert_equal "Oui", @survey.a2107b
+  end
+
+  test "a2107b falls back to setting when no cash transactions exist" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    Setting.create!(organization: organizations(:company), key: "clients_performed_cash_operations", category: "entity_info", value: "Oui")
+    assert_equal "Oui", survey.a2107b
+  end
+
+  test "a2107b returns nil when no transactions and no setting" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a2107b
   end
 
   # Q137 — a2108B: Total cash operations count by clients
@@ -4987,7 +5006,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a2108b returns nil when a2107b is not Oui" do
-    assert_nil @survey.a2108b
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a2108b
   end
 
   # Q138 — a2109B: Total value of cash operations by clients
@@ -5005,7 +5025,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a2109b returns nil when a2107b is not Oui" do
-    assert_nil @survey.a2109b
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a2109b
   end
 
   # Q139 — aG24010B: Total value of cash in foreign currencies by clients
@@ -5022,7 +5043,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "ag24010b returns nil when a2107b is not Oui" do
-    assert_nil @survey.ag24010b
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.ag24010b
   end
 
   # Q140 — a2110B: Cash operations >= 10,000 EUR by clients
@@ -5040,7 +5062,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a2110b returns nil when a2107b is not Oui" do
-    assert_nil @survey.a2110b
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a2110b
   end
 
   # Q141 — a2113B: Can entity distinguish cash ops > 100,000 EUR by clients?
@@ -5051,7 +5074,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a2113b returns nil when a2107b is not Oui" do
-    assert_nil @survey.a2113b
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a2113b
   end
 
   # Q142 — a2113AB: Cash ops by NP > 100,000 EUR

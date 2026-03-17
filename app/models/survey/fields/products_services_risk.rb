@@ -233,9 +233,16 @@ class Survey
       end
 
       # Q136 — a2107B: Did clients perform cash operations?
-      # Type: enum (Oui/Non) — settings-based
+      # Type: enum (Oui/Non) — three-tier: evidence first, then setting fallback
       def a2107b
-        setting_value_for("clients_performed_cash_operations")
+        if year_transactions
+            .where(transaction_type: %w[PURCHASE SALE RENTAL])
+            .where(payment_method: %w[CASH MIXED])
+            .exists?
+          "Oui"
+        else
+          setting_value_for("clients_performed_cash_operations")
+        end
       end
 
       # Q137 — a2108B: Total cash operations count by clients
