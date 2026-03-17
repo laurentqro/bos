@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_153441) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_17_203655) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -561,6 +561,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_153441) do
     t.text "notes"
     t.bigint "organization_id", null: false
     t.string "payment_method"
+    t.boolean "preempted_by_state", default: false
     t.string "property_country", default: "MC"
     t.string "property_type"
     t.string "purchase_purpose"

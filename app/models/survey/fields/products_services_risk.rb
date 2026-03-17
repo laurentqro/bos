@@ -433,9 +433,16 @@ class Survey
       end
 
       # Q159 — aIR2391: Has the State of Monaco pre-empted properties for sale?
-      # Type: enum (Oui/Non) — settings-based
+      # Type: enum (Oui/Non) — three-tier: evidence first, then setting fallback
       def air2391
-        setting_value_for("monaco_preempted_properties")
+        if year_transactions
+            .where(transaction_type: %w[PURCHASE SALE])
+            .where(preempted_by_state: true)
+            .exists?
+          "Oui"
+        else
+          setting_value_for("monaco_preempted_properties")
+        end
       end
 
       # Q160 — aIR2392: How many properties were pre-empted by Monaco?

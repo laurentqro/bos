@@ -5383,12 +5383,28 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q159 — aIR2391: Has the State of Monaco pre-empted properties for sale?
-  test "air2391 returns setting value for monaco_preempted_properties" do
-    assert_nil @survey.air2391
+  test "air2391 returns Oui when preempted transactions exist" do
+    client = Client.create!(organization: @organization, client_type: "NATURAL_PERSON", name: "Preempt Client", nationality: "FR")
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "SALE",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_value: 1_000_000,
+      payment_method: "WIRE",
+      preempted_by_state: true
+    )
 
-    Setting.create!(organization: @organization, key: "monaco_preempted_properties", category: "entity_info", value: "Oui")
-    @survey = Survey.new(organization: @organization, year: @year)
     assert_equal "Oui", @survey.air2391
+  end
+
+  test "air2391 falls back to setting when no preempted transactions exist" do
+    Setting.create!(organization: @organization, key: "monaco_preempted_properties", category: "entity_info", value: "Oui")
+    assert_equal "Oui", @survey.air2391
+  end
+
+  test "air2391 returns nil when no preempted transactions and no setting" do
+    assert_nil @survey.air2391
   end
 
   # Q160 — aIR2392: How many properties were pre-empted by Monaco?
