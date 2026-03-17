@@ -4685,13 +4685,29 @@ class SurveyTest < ActiveSupport::TestCase
 
   # === Section 2.4: Wire Transfers BY Clients ===
 
-  test "a2104b returns setting value" do
-    Setting.create!(organization: @organization, key: "clients_performed_wire_transfers", category: "entity_info", value: "Oui")
+  test "a2104b returns Oui when wire transfer transactions exist" do
+    client = Client.create!(organization: @organization, client_type: "NATURAL_PERSON", name: "Wire Client", nationality: "FR")
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "SALE",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_value: 100_000,
+      payment_method: "WIRE"
+    )
+
     assert_equal "Oui", @survey.a2104b
   end
 
-  test "a2104b returns nil when not set" do
-    assert_nil @survey.a2104b
+  test "a2104b falls back to setting when no wire transfer transactions exist" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    Setting.create!(organization: organizations(:company), key: "clients_performed_wire_transfers", category: "entity_info", value: "Oui")
+    assert_equal "Oui", survey.a2104b
+  end
+
+  test "a2104b returns nil when no transactions and no setting" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a2104b
   end
 
   test "a2105b returns count of wire transfer transactions by clients when a2104b is Oui" do
@@ -4706,7 +4722,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a2105b returns nil when a2104b is not Oui" do
-    assert_nil @survey.a2105b
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a2105b
   end
 
   test "a2105bb returns total value of wire transfers by clients when a2104b is Oui" do
@@ -4721,7 +4738,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a2105bb returns nil when a2104b is not Oui" do
-    assert_nil @survey.a2105bb
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a2105bb
   end
 
   # === Section 2.5: Cash operations WITH clients ===

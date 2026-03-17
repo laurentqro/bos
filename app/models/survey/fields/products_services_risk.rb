@@ -105,9 +105,16 @@ class Survey
       end
 
       # Q123 — a2104B: Did clients accept or make electronic wire transfers in period?
-      # Type: enum (Oui/Non) — settings-based
+      # Type: enum (Oui/Non) — three-tier: evidence first, then setting fallback
       def a2104b
-        setting_value_for("clients_performed_wire_transfers")
+        if year_transactions
+            .where(transaction_type: %w[PURCHASE SALE RENTAL])
+            .where(payment_method: "WIRE")
+            .exists?
+          "Oui"
+        else
+          setting_value_for("clients_performed_wire_transfers")
+        end
       end
 
       # Q124 — a2105B: Total electronic wire transfer operations by clients
