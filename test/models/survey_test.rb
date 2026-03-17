@@ -4598,13 +4598,28 @@ class SurveyTest < ActiveSupport::TestCase
 
   # === Section 2.3: Wire Transfers WITH Clients ===
 
-  test "a2104w returns setting value" do
+  test "a2104w returns Oui when wire transfer transactions exist" do
+    client = Client.create!(organization: @organization, client_type: "NATURAL_PERSON", name: "Wire Client", nationality: "FR")
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "SALE",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_value: 100_000,
+      payment_method: "WIRE"
+    )
+
+    assert_equal "Oui", @survey.a2104w
+  end
+
+  test "a2104w falls back to setting when no wire transfer transactions exist" do
     Setting.create!(organization: @organization, key: "accepts_wire_transfers", category: "entity_info", value: "Oui")
     assert_equal "Oui", @survey.a2104w
   end
 
-  test "a2104w returns nil when not set" do
-    assert_nil @survey.a2104w
+  test "a2104w returns nil when no transactions and no setting" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a2104w
   end
 
   test "a2104wrp returns setting when a2104w is Oui" do

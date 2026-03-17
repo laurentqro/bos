@@ -62,9 +62,16 @@ class Survey
       end
 
       # Q119 — a2104W: Does entity accept or make electronic wire transfers with clients?
-      # Type: enum (Oui/Non) — settings-based
+      # Type: enum (Oui/Non) — three-tier: evidence first, then setting fallback
       def a2104w
-        setting_value_for("accepts_wire_transfers")
+        if year_transactions
+            .where(transaction_type: %w[PURCHASE SALE RENTAL])
+            .where(payment_method: "WIRE")
+            .exists?
+          "Oui"
+        else
+          setting_value_for("accepts_wire_transfers")
+        end
       end
 
       # Q120 — a2104WRP: Did entity accept or make electronic wire transfers with clients in period?
