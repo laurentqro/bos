@@ -5134,12 +5134,29 @@ class SurveyTest < ActiveSupport::TestCase
   # === Section 2.7: Virtual Currencies (Q145-Q148) ===
 
   # Q145 — a2201A: Does entity accept/conduct cryptocurrency operations with clients?
-  test "a2201a returns setting value" do
-    assert_nil @survey.a2201a
+  test "a2201a returns Oui when crypto transactions exist" do
+    client = Client.create!(organization: @organization, client_type: "NATURAL_PERSON", name: "Crypto Client", nationality: "FR")
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_value: 500_000,
+      payment_method: "CRYPTO"
+    )
 
-    Setting.create!(organization: @organization, key: "accepts_cryptocurrency_operations", category: "entity_info", value: "Oui")
-    @survey = Survey.new(organization: @organization, year: @year)
     assert_equal "Oui", @survey.a2201a
+  end
+
+  test "a2201a falls back to setting when no crypto transactions exist" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    Setting.create!(organization: organizations(:company), key: "accepts_cryptocurrency_operations", category: "entity_info", value: "Oui")
+    assert_equal "Oui", survey.a2201a
+  end
+
+  test "a2201a returns nil when no transactions and no setting" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a2201a
   end
 
   # Q146 — a2201D: Plans to accept virtual currency payments next year?

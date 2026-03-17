@@ -325,9 +325,16 @@ class Survey
       end
 
       # Q145 — a2201A: Does entity accept or conduct cryptocurrency operations with clients?
-      # Type: enum (Oui/Non) — settings-based
+      # Type: enum (Oui/Non) — three-tier: evidence first, then setting fallback
       def a2201a
-        setting_value_for("accepts_cryptocurrency_operations")
+        if year_transactions
+            .where(transaction_type: %w[PURCHASE SALE RENTAL])
+            .where(payment_method: "CRYPTO")
+            .exists?
+          "Oui"
+        else
+          setting_value_for("accepts_cryptocurrency_operations")
+        end
       end
 
       # Q146 — a2201D: Plans to accept virtual currency payments next year?
