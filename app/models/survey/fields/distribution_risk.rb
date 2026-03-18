@@ -26,9 +26,13 @@ class Survey
       end
 
       # Q170 — a3103: Does entity use foreign third parties for CDD?
-      # Type: enum (Oui/Non) — settings-based
+      # Type: enum (Oui/Non) — three-tier: evidence first, then setting fallback
       def a3103
-        setting_value_for("uses_foreign_third_party_cdd")
+        if clients_kept.where(third_party_cdd: true, third_party_cdd_type: "FOREIGN").exists?
+          "Oui"
+        else
+          setting_value_for("uses_foreign_third_party_cdd")
+        end
       end
 
       # Q171 — a3104: Clients with foreign third-party CDD, by primary nationality (dimensional)
@@ -90,9 +94,13 @@ class Survey
       end
 
       # Q176 — a3209: Does entity onboard clients without face-to-face?
-      # Type: enum (Oui/Non) — settings-based
+      # Type: enum (Oui/Non) — three-tier: evidence first, then setting fallback
       def a3209
-        setting_value_for("non_face_to_face_onboarding")
+        if clients_kept.where(non_face_to_face_onboarding: true).exists?
+          "Oui"
+        else
+          setting_value_for("non_face_to_face_onboarding")
+        end
       end
 
       # Q177 — a3210C: NP clients onboarded without face-to-face during reporting period
@@ -136,9 +144,13 @@ class Survey
       end
 
       # Q180 — a3201: Entity accepts clients through introducers
-      # Type: enum (Oui/Non) — settings-based
+      # Type: enum (Oui/Non) — three-tier: evidence first, then setting fallback
       def a3201
-        setting_value_for("accepts_clients_through_introducers")
+        if clients_kept.where(introduced_by_third_party: true).exists?
+          "Oui"
+        else
+          setting_value_for("accepts_clients_through_introducers")
+        end
       end
 
       # Q181 — a3501B: Can entity provide nationality info for introduced clients?

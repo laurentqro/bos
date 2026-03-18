@@ -5757,7 +5757,17 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q170 — a3103: Does entity use foreign third parties for CDD?
-  test "a3103 returns setting value for uses_foreign_third_party_cdd" do
+  test "a3103 returns Oui when DB has clients with foreign third-party CDD" do
+    assert_nil @survey.a3103
+
+    Client.create!(organization: @organization, name: "Foreign CDD Client", client_type: "NATURAL_PERSON",
+      nationality: "FR", became_client_at: Date.new(@year - 1, 1, 1),
+      third_party_cdd: true, third_party_cdd_type: "FOREIGN", third_party_cdd_country: "FR")
+
+    assert_equal "Oui", @survey.a3103
+  end
+
+  test "a3103 falls back to setting when no DB evidence" do
     assert_nil @survey.a3103
 
     Setting.create!(organization: @organization, key: "uses_foreign_third_party_cdd", category: "entity_info", value: "Oui")
@@ -5885,7 +5895,17 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q176 — a3209: Does entity onboard clients without face-to-face?
-  test "a3209 returns setting value for non_face_to_face_onboarding" do
+  test "a3209 returns Oui when DB has clients with non-face-to-face onboarding" do
+    assert_nil @survey.a3209
+
+    Client.create!(organization: @organization, name: "Remote Client", client_type: "NATURAL_PERSON",
+      nationality: "FR", became_client_at: Date.new(@year - 1, 1, 1),
+      non_face_to_face_onboarding: true)
+
+    assert_equal "Oui", @survey.a3209
+  end
+
+  test "a3209 falls back to setting when no DB evidence" do
     assert_nil @survey.a3209
 
     Setting.create!(organization: @organization, key: "non_face_to_face_onboarding", category: "entity_info", value: "Oui")
@@ -5992,7 +6012,17 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q180 — a3201: Entity accepts clients through introducers
-  test "a3201 returns setting value for accepts_clients_through_introducers" do
+  test "a3201 returns Oui when DB has clients introduced by third party" do
+    assert_nil @survey.a3201
+
+    Client.create!(organization: @organization, name: "Introduced Client", client_type: "NATURAL_PERSON",
+      nationality: "FR", became_client_at: Date.new(@year - 1, 1, 1),
+      introduced_by_third_party: true, introducer_country: "FR")
+
+    assert_equal "Oui", @survey.a3201
+  end
+
+  test "a3201 falls back to setting when no DB evidence" do
     assert_nil @survey.a3201
 
     Setting.create!(organization: @organization, key: "accepts_clients_through_introducers", category: "entity_info", value: "Oui")
