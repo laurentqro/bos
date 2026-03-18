@@ -82,10 +82,14 @@ class Survey
       end
 
       # Q120 — a2104WRP: Did entity accept or make electronic wire transfers with clients in period?
-      # Type: enum (Oui/Non) — settings-based, conditional on a2104w
+      # Type: enum (Oui/Non) — computed from DB, conditional on a2104w
       def a2104wrp
         return nil unless a2104w == "Oui"
-        setting_value_for("had_wire_transfers_in_period")
+
+        year_transactions
+          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+          .where(payment_method: "WIRE")
+          .exists? ? "Oui" : "Non"
       end
 
       # Q121 — a2105W: Total electronic wire transfer operations with clients
@@ -147,10 +151,14 @@ class Survey
       end
 
       # Q127 — a2107WRP: Did entity accept or carry out cash operations with clients during reporting period?
-      # Type: enum (Oui/Non) — settings-based, conditional on a2107w
+      # Type: enum (Oui/Non) — computed from DB, conditional on a2107w
       def a2107wrp
         return nil unless a2107w == "Oui"
-        setting_value_for("had_cash_operations_in_period")
+
+        year_transactions
+          .where(transaction_type: %w[PURCHASE SALE RENTAL])
+          .where(payment_method: %w[CASH MIXED])
+          .exists? ? "Oui" : "Non"
       end
 
       # Q128 — a2108W: Total number of cash operations with clients
