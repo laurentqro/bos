@@ -462,7 +462,7 @@ class Survey
       def amles
         return nil unless a155 == "Oui"
 
-        year_transactions
+        app_counts = year_transactions
           .where(transaction_type: %w[PURCHASE SALE])
           .joins(:client)
           .where(clients: {client_type: "LEGAL_ENTITY", incorporation_country: "MC"})
@@ -471,6 +471,13 @@ class Survey
           .distinct
           .group("clients.legal_entity_type")
           .count("clients.id")
+
+        xbrl_counts = {}
+        app_counts.each do |app_type, count|
+          xbrl_key = AmsfConstants::LEGAL_ENTITY_TYPE_TO_XBRL[app_type] || app_type
+          xbrl_counts[xbrl_key] = (xbrl_counts[xbrl_key] || 0) + count
+        end
+        xbrl_counts
       end
 
       # Q38 — a11206B: Total unique HNWI beneficial owners of legal entity clients,

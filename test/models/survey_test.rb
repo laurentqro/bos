@@ -1847,7 +1847,7 @@ class SurveyTest < ActiveSupport::TestCase
   # Scope: Purchase/Sale only, Monegasque (incorporation_country == "MC"), excludes trusts
   # Conditional: only when a155 == "Oui"
 
-  test "amles returns hash of Monegasque legal entity clients grouped by legal_entity_type" do
+  test "amles returns hash keyed by XBRL member codes, not app-level legal_entity_type" do
     # Create Monegasque SAM client with a purchase transaction
     sam_client = Client.create!(
       organization: @organization,
@@ -1891,9 +1891,42 @@ class SurveyTest < ActiveSupport::TestCase
     result = @survey.amles
 
     assert_instance_of Hash, result
-    # vasp_client fixture is also SAM with incorporation_country MC and a PURCHASE txn
+    # vasp_client fixture is SAM (MC) with a PURCHASE txn; SAM maps to XBRL "SAM"
+    # sam_client is also SAM -> "SAM", so 2 total under "SAM"
     assert_equal 2, result["SAM"]
     assert_equal 1, result["SCI"]
+    # Keys must be XBRL member codes, not app-level types
+    assert_nil result["TRUST"]
+    result.each_key { |k| assert_includes AmsfConstants::LEGAL_ENTITY_TYPE_TO_XBRL.values, k }
+  end
+
+  test "amles merges many-to-one XBRL mappings (SA and SAM both map to SAM)" do
+    # SA maps to XBRL "SAM" — same as SAM
+    sa_client = Client.create!(
+      organization: @organization,
+      name: "Monaco SA Corp",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      incorporation_country: "MC",
+      became_client_at: 3.months.ago
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: sa_client,
+      reference: "AMLES-SA",
+      transaction_date: Date.current - 10.days,
+      transaction_type: "PURCHASE",
+      transaction_value: 2_000_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
+    result = @survey.amles
+
+    # vasp_client (SAM) + sa_client (SA) both map to XBRL "SAM" = 2
+    assert_equal 2, result["SAM"]
+    # No "SA" key should exist — it's merged into "SAM"
+    assert_nil result["SA"]
   end
 
   test "amles excludes trusts" do
@@ -1913,6 +1946,8 @@ class SurveyTest < ActiveSupport::TestCase
     )
 
     result = @survey.amles
+    # TRUST maps to XBRL "LA1" but trusts are excluded from amles
+    assert_nil result["LA1"]
     assert_nil result["TRUST"]
   end
 
@@ -1938,7 +1973,6 @@ class SurveyTest < ActiveSupport::TestCase
 
     result = @survey.amles
     # The SARL count should not include the French SARL
-    # Only vasp_client (SAM, MC) from fixtures should appear, no SARL from MC
     assert_nil result["SARL"]
   end
 
@@ -1997,7 +2031,7 @@ class SurveyTest < ActiveSupport::TestCase
     end
 
     result = @survey.amles
-    # vasp_client (SAM, MC) + sam_client = 2 SAMs
+    # vasp_client (SAM, MC) + sam_client = 2 SAMs (XBRL key)
     assert_equal 2, result["SAM"]
   end
 
