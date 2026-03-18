@@ -522,9 +522,16 @@ class Survey
       end
 
       # Q40 — a1802BTOLA: Does entity distinguish if clients are trusts or other legal constructions?
-      # Type: stringItemType with enum restriction ("Oui" / "Non") — crm-capability-based
+      # Type: stringItemType with enum restriction ("Oui" / "Non") — three-tier check
       def a1802btola
-        "Oui"
+        if year_transactions
+            .joins(:client)
+            .where(clients: {client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST"})
+            .exists?
+          "Oui"
+        else
+          setting_value_for("entity_distinguishes_trusts")
+        end
       end
 
       # Q41 — a1802TOLA: Total unique trust/legal construction clients

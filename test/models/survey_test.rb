@@ -2277,9 +2277,38 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q40 — a1802BTOLA: Does entity distinguish if clients are trusts or other legal constructions?
-  # Type: stringItemType with enum restriction ("Oui" / "Non") — crm-capability-based
-  test "a1802btola returns Oui (CRM always captures legal_entity_type including TRUST)" do
+  # Type: stringItemType with enum restriction ("Oui" / "Non") — three-tier check
+
+  test "a1802btola returns Oui when trust clients have transactions in the reporting period" do
+    trust_client = Client.create!(
+      organization: @organization,
+      name: "Trust Client",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST",
+      became_client_at: 6.months.ago
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: trust_client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_value: 500_000,
+      property_country: "MC",
+      payment_method: "WIRE"
+    )
+
     assert_equal "Oui", @survey.a1802btola
+  end
+
+  test "a1802btola falls back to setting when no trust client transactions exist" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    Setting.create!(organization: organizations(:company), key: "entity_distinguishes_trusts", category: "entity_info", value: "Oui")
+    assert_equal "Oui", survey.a1802btola
+  end
+
+  test "a1802btola returns nil when no trust transactions and no setting" do
+    survey = Survey.new(organization: organizations(:company), year: @year)
+    assert_nil survey.a1802btola
   end
 
   # Q41 — a1802TOLA: Total unique trust/legal construction clients
@@ -2807,6 +2836,9 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a11006 returns labels for non-standard legal entity types" do
+    trust_client = Client.create!(organization: @organization, name: "Trust Gate", client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST", became_client_at: 6.months.ago)
+    Transaction.create!(organization: @organization, client: trust_client, transaction_type: "PURCHASE", transaction_date: Date.new(@year, 3, 1), transaction_value: 100_000, property_country: "MC", payment_method: "WIRE")
+
     Client.create!(
       organization: @organization,
       name: "Foundation Client",
@@ -2827,6 +2859,9 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a11006 includes free-text for OTHER legal entity type" do
+    trust_client = Client.create!(organization: @organization, name: "Trust Gate", client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST", became_client_at: 6.months.ago)
+    Transaction.create!(organization: @organization, client: trust_client, transaction_type: "PURCHASE", transaction_date: Date.new(@year, 3, 1), transaction_value: 100_000, property_country: "MC", payment_method: "WIRE")
+
     Client.create!(
       organization: @organization,
       name: "Fiducie Client",
@@ -2840,6 +2875,9 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a11006 excludes standard forms and trusts" do
+    trust_client = Client.create!(organization: @organization, name: "Trust Gate", client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST", became_client_at: 6.months.ago)
+    Transaction.create!(organization: @organization, client: trust_client, transaction_type: "PURCHASE", transaction_date: Date.new(@year, 3, 1), transaction_value: 100_000, property_country: "MC", payment_method: "WIRE")
+
     # Standard forms — should NOT appear
     Client.create!(organization: @organization, name: "SCI Co", client_type: "LEGAL_ENTITY", legal_entity_type: "SCI")
     Client.create!(organization: @organization, name: "Trust Co", client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST")
@@ -5441,11 +5479,28 @@ class SurveyTest < ActiveSupport::TestCase
     assert_nil @survey.air2393
   end
 
-  test "air2393 returns setting value when air2391 is Oui" do
-    Setting.create!(organization: @organization, key: "monaco_preempted_properties", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "monaco_preempted_property_value", category: "entity_info", value: "2500000")
+  test "air2393 returns total value of preempted transactions when air2391 is Oui" do
+    client = Client.create!(organization: @organization, client_type: "NATURAL_PERSON", name: "Preempt Client", nationality: "FR")
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "SALE",
+      transaction_date: Date.new(@year, 3, 1),
+      transaction_value: 1_000_000,
+      payment_method: "WIRE",
+      preempted_by_state: true
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: client,
+      transaction_type: "SALE",
+      transaction_date: Date.new(@year, 9, 1),
+      transaction_value: 2_000_000,
+      payment_method: "WIRE",
+      preempted_by_state: true
+    )
 
-    assert_equal "2500000", @survey.air2393
+    assert_equal 3_000_000, @survey.air2393
   end
 
   # Q162 — aIR234: Total unique properties rented in the reporting period
@@ -5702,6 +5757,10 @@ class SurveyTest < ActiveSupport::TestCase
 
   # Q175 — a3208TOLA: New trust/legal construction clients onboarded during reporting period
   test "a3208tola counts new trust clients onboarded in reporting year" do
+    # Ensure a1802btola gate is open via trust transaction evidence
+    trust_gate = Client.create!(organization: @organization, name: "Trust Gate", client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST", became_client_at: Date.new(@year - 1, 1, 1))
+    Transaction.create!(organization: @organization, client: trust_gate, transaction_type: "PURCHASE", transaction_date: Date.new(@year, 1, 15), transaction_value: 100_000, property_country: "MC", payment_method: "WIRE")
+
     baseline = @survey.a3208tola
 
     # Trust onboarded in reporting year (counts)
@@ -5736,13 +5795,28 @@ class SurveyTest < ActiveSupport::TestCase
     assert_nil @survey.a3210c
   end
 
-  test "a3210c returns setting value when a3209 is Oui" do
+  test "a3210c counts NP clients onboarded non-face-to-face in reporting period" do
     Setting.create!(organization: @organization, key: "non_face_to_face_onboarding", category: "entity_info", value: "Oui")
-    assert_nil @survey.a3210c
+    baseline = @survey.a3210c
 
-    Setting.create!(organization: @organization, key: "non_face_to_face_np_onboarded_count", category: "entity_info", value: "5")
-    @survey = Survey.new(organization: @organization, year: @year)
-    assert_equal "5", @survey.a3210c
+    # NP onboarded non-face-to-face in year (counts)
+    Client.create!(organization: @organization, name: "Remote NP", client_type: "NATURAL_PERSON",
+      nationality: "FR", became_client_at: Date.new(@year, 3, 1), non_face_to_face_onboarding: true)
+
+    # NP onboarded face-to-face in year (does NOT count)
+    Client.create!(organization: @organization, name: "In-person NP", client_type: "NATURAL_PERSON",
+      nationality: "IT", became_client_at: Date.new(@year, 6, 1), non_face_to_face_onboarding: false)
+
+    # NP onboarded non-face-to-face outside year (does NOT count)
+    Client.create!(organization: @organization, name: "Old Remote NP", client_type: "NATURAL_PERSON",
+      nationality: "DE", became_client_at: Date.new(@year - 1, 3, 1), non_face_to_face_onboarding: true)
+
+    # LE onboarded non-face-to-face in year (does NOT count — wrong client type)
+    Client.create!(organization: @organization, name: "Remote LE", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SARL", incorporation_country: "FR",
+      became_client_at: Date.new(@year, 4, 1), non_face_to_face_onboarding: true)
+
+    assert_equal baseline + 1, @survey.a3210c
   end
 
   # Q178 — a3211C: LP clients onboarded without face-to-face
@@ -5765,6 +5839,10 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   test "a3212ctola returns setting value when both conditions met" do
+    # Ensure a1802btola gate is open via trust transaction evidence
+    trust_gate = Client.create!(organization: @organization, name: "Trust Gate", client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST", became_client_at: Date.new(@year - 1, 1, 1))
+    Transaction.create!(organization: @organization, client: trust_gate, transaction_type: "PURCHASE", transaction_date: Date.new(@year, 1, 15), transaction_value: 100_000, property_country: "MC", payment_method: "WIRE")
+
     Setting.create!(organization: @organization, key: "non_face_to_face_onboarding", category: "entity_info", value: "Oui")
 
     assert_nil @survey.a3212ctola
