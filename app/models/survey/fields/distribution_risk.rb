@@ -12,7 +12,7 @@ class Survey
       # Q169 — a3102: Clients with local third-party CDD, by primary nationality (dimensional)
       # Type: xbrli:integerItemType — dimensional by country, conditional on a3101
       def a3102
-        return nil unless a3101 == "Oui"
+        return {} unless a3101 == "Oui"
 
         country_sql = client_country_sql
 
@@ -32,7 +32,7 @@ class Survey
       # Q171 — a3104: Clients with foreign third-party CDD, by primary nationality (dimensional)
       # Type: xbrli:integerItemType — dimensional by country, conditional on a3103
       def a3104
-        return nil unless a3103 == "Oui"
+        return {} unless a3103 == "Oui"
 
         country_sql = client_country_sql
 
@@ -46,7 +46,7 @@ class Survey
       # Q172 — a3105: Clients with foreign third-party CDD, by third-party country (dimensional)
       # Type: xbrli:integerItemType — dimensional by country, conditional on a3103
       def a3105
-        return nil unless a3103 == "Oui"
+        return {} unless a3103 == "Oui"
 
         clients_kept
           .where(third_party_cdd: true, third_party_cdd_type: "FOREIGN")
@@ -155,7 +155,7 @@ class Survey
       # Q183 — a3204: Introduced clients in reporting period by primary nationality (dimensional)
       # Type: xbrli:integerItemType — computed, dimensional by country, conditional on a3501B
       def a3204
-        return nil unless a3501b == "Oui"
+        return {} unless a3501b == "Oui"
 
         country_sql = client_country_sql
 
@@ -191,7 +191,7 @@ class Survey
       # Q186 — a3205: Introduced clients in reporting period by introducer residence (dimensional)
       # Type: xbrli:integerItemType — computed, dimensional by country, conditional on a3501C
       def a3205
-        return nil unless a3501c == "Oui"
+        return {} unless a3501c == "Oui"
 
         year_range = Date.new(year, 1, 1)..Date.new(year, 12, 31)
 

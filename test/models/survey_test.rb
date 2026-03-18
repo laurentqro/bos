@@ -5715,8 +5715,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q169 — a3102: Clients with local third-party CDD, by nationality (dimensional)
-  test "a3102 returns nil when a3101 is not Oui" do
-    assert_nil @survey.a3102
+  test "a3102 returns empty hash when a3101 is not Oui" do
+    assert_equal({}, @survey.a3102)
   end
 
   test "a3102 returns client count by nationality for local third-party CDD" do
@@ -5755,8 +5755,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q171 — a3104: Clients with foreign third-party CDD, by nationality (dimensional)
-  test "a3104 returns nil when a3103 is not Oui" do
-    assert_nil @survey.a3104
+  test "a3104 returns empty hash when a3103 is not Oui" do
+    assert_equal({}, @survey.a3104)
   end
 
   test "a3104 returns client count by nationality for foreign third-party CDD" do
@@ -5782,8 +5782,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q172 — a3105: Clients with foreign third-party CDD, by third-party country (dimensional)
-  test "a3105 returns nil when a3103 is not Oui" do
-    assert_nil @survey.a3105
+  test "a3105 returns empty hash when a3103 is not Oui" do
+    assert_equal({}, @survey.a3105)
   end
 
   test "a3105 returns client count by third-party country for foreign CDD" do
@@ -5998,8 +5998,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q183 — a3204: Introduced clients in reporting period by primary nationality (dimensional)
-  test "a3204 returns nil when a3501b is not Oui" do
-    assert_nil @survey.a3204
+  test "a3204 returns empty hash when a3501b is not Oui" do
+    assert_equal({}, @survey.a3204)
   end
 
   test "a3204 returns introduced clients in reporting period grouped by country" do
@@ -6063,8 +6063,8 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q186 — a3205: Introduced clients in reporting period by introducer residence (dimensional)
-  test "a3205 returns nil when a3501c is not Oui" do
-    assert_nil @survey.a3205
+  test "a3205 returns empty hash when a3501c is not Oui" do
+    assert_equal({}, @survey.a3205)
   end
 
   test "a3205 returns introduced clients in reporting period grouped by introducer country" do
