@@ -72,13 +72,13 @@
 
           <div class="flex items-start">
             <div class="flex items-center h-5">
-              <%= check_box_tag "settings[written_aml_policy]", "true",
-                  @settings&.dig(:written_aml_policy) == "true",
+              <%= check_box_tag "settings[has_written_aml_policies]", "true",
+                  @settings&.dig(:has_written_aml_policies) == "true",
                   class: "focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded",
-                  id: "written_aml_policy" %>
+                  id: "has_written_aml_policies" %>
             </div>
             <div class="ml-3 text-sm">
-              <%= label_tag "written_aml_policy", "Written AML/CFT policy", class: "font-medium text-gray-700" %>
+              <%= label_tag "has_written_aml_policies", "Written AML/CFT policy", class: "font-medium text-gray-700" %>
               <p class="text-gray-500">Your organization has a documented AML/CFT policy</p>
             </div>
           </div>

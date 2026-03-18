@@ -60,10 +60,10 @@
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <%= label_tag "settings_total_employees", "Total employees", class: "block text-sm font-medium text-gray-700" %>
+              <%= label_tag "settings_total_employee_headcount", "Total employees", class: "block text-sm font-medium text-gray-700" %>
               <div class="mt-1">
-                <%= number_field_tag "settings[total_employees]",
-                    @settings&.dig(:total_employees) || session.dig(:onboarding, :settings, "total_employees"),
+                <%= number_field_tag "settings[total_employee_headcount]",
+                    @settings&.dig(:total_employee_headcount) || session.dig(:onboarding, :settings, "total_employee_headcount"),
                     min: 1,
                     class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
               </div>

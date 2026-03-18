@@ -47,9 +47,9 @@ class SettingsTest < ApplicationSystemTestCase
 
     within ".entity-info-section" do
       assert_selector "input[name*='entity_name']"
-      assert_selector "input[name*='total_employees']"
+      assert_selector "input[name*='total_employee_headcount']"
       assert_selector "input[name*='compliance_officers']"
-      assert_selector "input[name*='annual_revenue']"
+      assert_selector "input[name*='revenue_reporting_period']"
     end
   end
 
@@ -70,11 +70,11 @@ class SettingsTest < ApplicationSystemTestCase
 
     visit settings_path
 
-    fill_in "total_employees", with: "10"
+    fill_in "total_employee_headcount", with: "10"
     click_button "Save Settings"
 
     assert_text "Settings saved"
-    assert_field "total_employees", with: "10"
+    assert_field "total_employee_headcount", with: "10"
   end
 
   # === KYC Procedures Section ===
@@ -124,8 +124,8 @@ class SettingsTest < ApplicationSystemTestCase
     visit settings_path
 
     within ".compliance-policies-section" do
-      assert_selector "input[name*='written_aml_policy']"
-      assert_selector "input[name*='policy_last_updated']"
+      assert_selector "input[name*='has_written_aml_policies']"
+      assert_selector "input[name*='last_policy_update_date']"
       assert_selector "input[name*='risk_assessment_performed']"
       assert_selector "input[name*='internal_controls']"
     end
@@ -136,11 +136,11 @@ class SettingsTest < ApplicationSystemTestCase
 
     visit settings_path
 
-    fill_in "policy_last_updated", with: "2025-12-01"
+    fill_in "last_policy_update_date", with: "2025-12-01"
     click_button "Save Settings"
 
     assert_text "Settings saved"
-    assert_field "policy_last_updated", with: "2025-12-01"
+    assert_field "last_policy_update_date", with: "2025-12-01"
   end
 
   test "can toggle written AML policy" do
@@ -148,11 +148,11 @@ class SettingsTest < ApplicationSystemTestCase
 
     visit settings_path
 
-    check "written_aml_policy"
+    check "has_written_aml_policies"
     click_button "Save Settings"
 
     assert_text "Settings saved"
-    assert_checked_field "written_aml_policy"
+    assert_checked_field "has_written_aml_policies"
   end
 
   # === Category Tab Navigation ===
@@ -196,9 +196,9 @@ class SettingsTest < ApplicationSystemTestCase
     visit settings_path
 
     fill_in "entity_name", with: "Multi Update Agency"
-    fill_in "total_employees", with: "25"
+    fill_in "total_employee_headcount", with: "25"
     check "edd_for_peps"
-    check "written_aml_policy"
+    check "has_written_aml_policies"
 
     click_button "Save Settings"
 
@@ -206,9 +206,9 @@ class SettingsTest < ApplicationSystemTestCase
 
     # Verify all were saved
     assert_field "entity_name", with: "Multi Update Agency"
-    assert_field "total_employees", with: "25"
+    assert_field "total_employee_headcount", with: "25"
     assert_checked_field "edd_for_peps"
-    assert_checked_field "written_aml_policy"
+    assert_checked_field "has_written_aml_policies"
   end
 
   # === Auto-save Behavior ===

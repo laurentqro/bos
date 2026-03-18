@@ -43,7 +43,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "input[name='settings[entity_name]']"
-    assert_select "input[name='settings[total_employees]']"
+    assert_select "input[name='settings[total_employee_headcount]']"
   end
 
   test "show shows kyc procedure settings" do
@@ -61,7 +61,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     get settings_path
 
     assert_response :success
-    assert_select "input[name='settings[written_aml_policy]']"
+    assert_select "input[name='settings[has_written_aml_policies]']"
   end
 
   # === Update Action ===
@@ -72,7 +72,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     patch settings_path, params: {
       settings: {
         entity_name: "Updated Agency Name",
-        total_employees: "10"
+        total_employee_headcount: "10"
       }
     }
 

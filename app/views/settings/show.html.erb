@@ -43,8 +43,8 @@
                   class: "mt-1 form-control" %>
             </div>
             <div>
-              <%= label_tag :legal_form, "Legal Form", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
-              <%= select_tag "settings[legal_form]",
+              <%= label_tag :entity_legal_form, "Legal Form", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+              <%= select_tag "settings[entity_legal_form]",
                   options_for_select([
                     ["Select legal form...", ""],
                     ["Société Anonyme Monégasque (SAM)", "SAM"],
@@ -63,21 +63,21 @@
                     ["Autres arrangements juridiques", "AAJ"],
                     ["Domaine Privé de l'État Monégasque", "DPE"],
                     ["Inconnu", "INCONNU"]
-                  ], get_setting_value("legal_form")),
-                  id: "legal_form", name: "settings[legal_form]",
+                  ], get_setting_value("entity_legal_form")),
+                  id: "entity_legal_form", name: "settings[entity_legal_form]",
                   class: "mt-1 form-control" %>
             </div>
             <div>
-              <%= label_tag :total_employees, "Nombre total de personnes", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
-              <%= number_field_tag "settings[total_employees]", get_setting_value("total_employees"),
-                  id: "total_employees", name: "settings[total_employees]",
+              <%= label_tag :total_employee_headcount, "Nombre total de personnes", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+              <%= number_field_tag "settings[total_employee_headcount]", get_setting_value("total_employee_headcount"),
+                  id: "total_employee_headcount", name: "settings[total_employee_headcount]",
                   class: "mt-1 form-control", min: 0 %>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Employés + partenaires et propriétaires non salariés, à la fin de la période</p>
             </div>
             <div>
-              <%= label_tag :total_employees_fte, "Équivalents temps plein (ETP)", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
-              <%= number_field_tag "settings[total_employees_fte]", get_setting_value("total_employees_fte"),
-                  id: "total_employees_fte", name: "settings[total_employees_fte]",
+              <%= label_tag :fte_employees, "Équivalents temps plein (ETP)", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+              <%= number_field_tag "settings[fte_employees]", get_setting_value("fte_employees"),
+                  id: "fte_employees", name: "settings[fte_employees]",
                   class: "mt-1 form-control", min: 0, step: "0.5" %>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Employés équivalents temps plein + partenaires et propriétaires non salariés</p>
             </div>
@@ -96,14 +96,14 @@
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Q188: Is the professional card holder a legal entity?</p>
             </div>
             <div>
-              <%= label_tag :annual_revenue, "Annual Revenue", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
-              <%= number_field_tag "settings[annual_revenue]", get_setting_value("annual_revenue"),
-                  id: "annual_revenue", name: "settings[annual_revenue]",
+              <%= label_tag :revenue_reporting_period, "Annual Revenue", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+              <%= number_field_tag "settings[revenue_reporting_period]", get_setting_value("revenue_reporting_period"),
+                  id: "revenue_reporting_period", name: "settings[revenue_reporting_period]",
                   class: "mt-1 form-control", min: 0, step: "0.01" %>
             </div>
             <div>
-              <%= label_tag :last_external_audit, "Last SICCFIN/AMSF Audit", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
-              <%= select_tag "settings[last_external_audit]",
+              <%= label_tag :last_amsf_audit_recency, "Last SICCFIN/AMSF Audit", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+              <%= select_tag "settings[last_amsf_audit_recency]",
                   options_for_select([
                     ["Select...", ""],
                     ["Never", "Jamais"],
@@ -113,8 +113,8 @@
                     ["Between 2 and 3 years", "Entre deux et trois ans"],
                     ["Between 1 and 2 years", "Entre un et deux ans"],
                     ["Within the last 12 months", "Au cours des 12 derniers mois"]
-                  ], get_setting_value("last_external_audit")),
-                  id: "last_external_audit", name: "settings[last_external_audit]",
+                  ], get_setting_value("last_amsf_audit_recency")),
+                  id: "last_amsf_audit_recency", name: "settings[last_amsf_audit_recency]",
                   class: "mt-1 form-control" %>
             </div>
           </div>
@@ -122,25 +122,25 @@
           <%# Foreign Parent Company Section %>
           <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700"
                data-controller="toggle"
-               data-toggle-open-value="<%= get_setting_value('is_foreign_subsidiary') == 'true' %>">
+               data-toggle-open-value="<%= get_setting_value('is_branch_of_foreign_entity') == 'true' %>">
             <h3 class="text-base font-medium text-gray-900 dark:text-white mb-4">Corporate Structure</h3>
             <div class="space-y-4">
               <div class="flex items-start">
-                <%= hidden_field_tag "settings[is_foreign_subsidiary]", "false" %>
-                <%= check_box_tag "settings[is_foreign_subsidiary]", "true", get_setting_value("is_foreign_subsidiary") == "true",
-                    id: "is_foreign_subsidiary", name: "settings[is_foreign_subsidiary]",
+                <%= hidden_field_tag "settings[is_branch_of_foreign_entity]", "false" %>
+                <%= check_box_tag "settings[is_branch_of_foreign_entity]", "true", get_setting_value("is_branch_of_foreign_entity") == "true",
+                    id: "is_branch_of_foreign_entity", name: "settings[is_branch_of_foreign_entity]",
                     class: "h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 mt-1",
                     data: { action: "change->toggle#toggleInput" },
-                    aria: { describedby: "is_foreign_subsidiary_description", controls: "parent_company_country_field" } %>
-                <%= label_tag :is_foreign_subsidiary, class: "ml-3" do %>
+                    aria: { describedby: "is_branch_of_foreign_entity_description", controls: "parent_company_country_field" } %>
+                <%= label_tag :is_branch_of_foreign_entity, class: "ml-3" do %>
                   <span class="block text-sm font-medium text-gray-700 dark:text-gray-300">Branch or Subsidiary of Foreign Entity</span>
-                  <span id="is_foreign_subsidiary_description" class="block text-sm text-gray-500 dark:text-gray-400">Check if your entity is a branch or subsidiary of a company based outside Monaco</span>
+                  <span id="is_branch_of_foreign_entity_description" class="block text-sm text-gray-500 dark:text-gray-400">Check if your entity is a branch or subsidiary of a company based outside Monaco</span>
                 <% end %>
               </div>
 
               <div id="parent_company_country_field"
                    data-toggle-target="toggleable"
-                   class="<%= 'hidden' unless get_setting_value('is_foreign_subsidiary') == 'true' %> ml-7 mt-2">
+                   class="<%= 'hidden' unless get_setting_value('is_branch_of_foreign_entity') == 'true' %> ml-7 mt-2">
                 <%= label_tag :parent_company_country, "Parent Company Country", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
                 <%= select_tag "settings[parent_company_country]",
                     xbrl_country_options(get_setting_value("parent_company_country")),
@@ -191,10 +191,10 @@
           </p>
           <div class="space-y-4">
             <div>
-              <%= label_tag :applies_aml_risk_ratings, "Does entity apply AML/CFT risk ratings to clients?", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
-              <%= select_tag "settings[applies_aml_risk_ratings]",
-                  options_for_select([["Select...", ""], ["Oui", "Oui"], ["Non", "Non"]], get_setting_value("applies_aml_risk_ratings")),
-                  id: "applies_aml_risk_ratings", name: "settings[applies_aml_risk_ratings]",
+              <%= label_tag :applies_risk_ratings_to_clients, "Does entity apply AML/CFT risk ratings to clients?", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+              <%= select_tag "settings[applies_risk_ratings_to_clients]",
+                  options_for_select([["Select...", ""], ["Oui", "Oui"], ["Non", "Non"]], get_setting_value("applies_risk_ratings_to_clients")),
+                  id: "applies_risk_ratings_to_clients", name: "settings[applies_risk_ratings_to_clients]",
                   class: "mt-1 form-control max-w-xs" %>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">C70: AML/CFT risk rating application</p>
             </div>
@@ -255,13 +255,13 @@
                 ]
               %>
               <div>
-                <%= label_tag "settings_high_risk_cdd_frequency", "High-risk client CDD frequency", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+                <%= label_tag "settings_high_risk_purchase_sale_review_frequency", "High-risk client CDD frequency", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
                 <div class="mt-1">
-                  <%= select_tag "settings[high_risk_cdd_frequency]",
-                      options_for_select(cdd_frequency_options, get_setting_value("high_risk_cdd_frequency")),
+                  <%= select_tag "settings[high_risk_purchase_sale_review_frequency]",
+                      options_for_select(cdd_frequency_options, get_setting_value("high_risk_purchase_sale_review_frequency")),
                       include_blank: "-- Select --",
                       class: "block w-full form-control max-w-xs",
-                      id: "settings_high_risk_cdd_frequency" %>
+                      id: "settings_high_risk_purchase_sale_review_frequency" %>
                 </div>
               </div>
               <div>
@@ -287,20 +287,20 @@
           </p>
           <div class="space-y-6">
             <div class="flex items-start">
-              <%= hidden_field_tag "settings[written_aml_policy]", "false" %>
-              <%= check_box_tag "settings[written_aml_policy]", "true", get_setting_value("written_aml_policy") == "true",
-                  id: "written_aml_policy", name: "settings[written_aml_policy]",
+              <%= hidden_field_tag "settings[has_written_aml_policies]", "false" %>
+              <%= check_box_tag "settings[has_written_aml_policies]", "true", get_setting_value("has_written_aml_policies") == "true",
+                  id: "has_written_aml_policies", name: "settings[has_written_aml_policies]",
                   class: "h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 mt-1",
-                  aria: { describedby: "written_aml_policy_description" } %>
-              <%= label_tag :written_aml_policy, class: "ml-3" do %>
+                  aria: { describedby: "has_written_aml_policies_description" } %>
+              <%= label_tag :has_written_aml_policies, class: "ml-3" do %>
                 <span class="block text-sm font-medium text-gray-700 dark:text-gray-300">Written AML Policy</span>
-                <span id="written_aml_policy_description" class="block text-sm text-gray-500 dark:text-gray-400">Organization has documented AML/CFT policies</span>
+                <span id="has_written_aml_policies_description" class="block text-sm text-gray-500 dark:text-gray-400">Organization has documented AML/CFT policies</span>
               <% end %>
             </div>
             <div>
-              <%= label_tag :policy_last_updated, "Policy Last Updated", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
-              <%= date_field_tag "settings[policy_last_updated]", get_setting_value("policy_last_updated"),
-                  id: "policy_last_updated", name: "settings[policy_last_updated]",
+              <%= label_tag :last_policy_update_date, "Policy Last Updated", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+              <%= date_field_tag "settings[last_policy_update_date]", get_setting_value("last_policy_update_date"),
+                  id: "last_policy_update_date", name: "settings[last_policy_update_date]",
                   class: "mt-1 form-control max-w-xs" %>
             </div>
             <div class="flex items-start">
@@ -327,17 +327,17 @@
             </div>
 
             <div class="mt-6">
-              <%= label_tag :compliance_policies_author, "Policy Author", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+              <%= label_tag :policy_preparer, "Policy Author", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
               <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Who prepared your entity's AML/CFT policies and procedures?</p>
-              <%= select_tag "settings[compliance_policies_author]",
+              <%= select_tag "settings[policy_preparer]",
                   options_for_select([
                     ["Select an option...", ""],
                     ["By the entity itself", "Par l'entité"],
                     ["By another group member", "Par un autre membre du groupe"],
                     ["By external consultants", "Par des consultants externes"],
                     ["Combination of self, member or external", "Combinaison de soi, membre ou externe"]
-                  ], get_setting_value("compliance_policies_author")),
-                  id: "compliance_policies_author", name: "settings[compliance_policies_author]",
+                  ], get_setting_value("policy_preparer")),
+                  id: "policy_preparer", name: "settings[policy_preparer]",
                   class: "mt-1 form-control max-w-md" %>
             </div>
           </div>

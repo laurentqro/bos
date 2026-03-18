@@ -9,22 +9,10 @@ entity_name:
   value: "Agence Immobilière Monaco"
   category: "entity_info"
 
-total_employees:
-  organization: one
-  key: "total_employees"
-  value: "5"
-  category: "entity_info"
-
 compliance_officers:
   organization: one
   key: "compliance_officers"
   value: "1"
-  category: "entity_info"
-
-annual_revenue:
-  organization: one
-  key: "annual_revenue"
-  value: "850000.00"
   category: "entity_info"
 
 # === KYC Procedures ===
@@ -54,18 +42,6 @@ sdd_applied:
   category: "kyc_procedures"
 
 # === Compliance Policies ===
-
-written_aml_policy:
-  organization: one
-  key: "written_aml_policy"
-  value: "true"
-  category: "compliance_policies"
-
-policy_last_updated:
-  organization: one
-  key: "policy_last_updated"
-  value: "2024-06-15"
-  category: "compliance_policies"
 
 risk_assessment_performed:
   organization: one
@@ -151,6 +127,7 @@ other_org_entity_name:
 
 other_org_employees:
   organization: two
-  key: "total_employees"
+  key: "total_employee_headcount"
   value: "3"
   category: "entity_info"
+

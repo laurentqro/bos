@@ -655,14 +655,14 @@ def create_setting(org, key:, value:, category:)
 end
 
 # --- Entity Information ---
-create_setting(organization, key: "legal_form", value: "SAM", category: "entity_info")
+create_setting(organization, key: "entity_legal_form", value: "SAM", category: "entity_info")
 create_setting(organization, key: "registration_date", value: "2018-03-15", category: "entity_info")
-create_setting(organization, key: "total_employees", value: "12", category: "entity_info")
+create_setting(organization, key: "total_employee_headcount", value: "12", category: "entity_info")
 create_setting(organization, key: "risk_factors_not_considered", value: "Transactions immobilières effectuées hors de Monaco", category: "entity_info")
 create_setting(organization, key: "high_risk_client_activities", value: "Investissement locatif de luxe, achat-revente rapide, transactions avec des structures offshore", category: "entity_info")
-create_setting(organization, key: "is_foreign_subsidiary", value: "false", category: "entity_info")
+create_setting(organization, key: "is_branch_of_foreign_entity", value: "false", category: "entity_info")
 create_setting(organization, key: "parent_company_country", value: "FR", category: "entity_info")
-create_setting(organization, key: "last_external_audit", value: "Entre un et deux ans", category: "entity_info")
+create_setting(organization, key: "last_amsf_audit_recency", value: "Entre un et deux ans", category: "entity_info")
 create_setting(organization, key: "records_other_le_data", value: "Oui", category: "entity_info")
 create_setting(organization, key: "other_le_data_details", value: "Numéro RCI, date de constitution, siège social, liste des dirigeants", category: "entity_info")
 create_setting(organization, key: "cdd_tools_description", value: "Logiciel de gestion immobilière, base de données cadastrale Monaco", category: "entity_info")
@@ -678,9 +678,9 @@ create_setting(organization, key: "status_2", value: "Marie Laurent, Responsable
 create_setting(organization, key: "survey_incomplete", value: "Non", category: "entity_info")
 
 # --- KYC Procedures ---
-create_setting(organization, key: "high_risk_cdd_frequency", value: "< Annuel", category: "kyc_procedures")
+create_setting(organization, key: "high_risk_purchase_sale_review_frequency", value: "< Annuel", category: "kyc_procedures")
 create_setting(organization, key: "high_risk_rental_cdd_frequency", value: "> Annuel", category: "kyc_procedures")
-create_setting(organization, key: "compliance_policies_author", value: "Par des consultants externes", category: "kyc_procedures")
+create_setting(organization, key: "policy_preparer", value: "Par des consultants externes", category: "kyc_procedures")
 create_setting(organization, key: "policies_last_updated_date", value: "2024-11-15", category: "kyc_procedures")
 create_setting(organization, key: "monthly_compliance_hours", value: "40", category: "kyc_procedures")
 create_setting(organization, key: "third_party_cdd_difficulties_details", value: "Difficultés liées à l'obtention de documents d'identité certifiés pour les clients non-résidents", category: "kyc_procedures")
