@@ -5706,7 +5706,17 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q168 — a3101: Does entity use local third parties for CDD?
-  test "a3101 returns setting value for uses_local_third_party_cdd" do
+  test "a3101 returns Oui when DB has clients with local third-party CDD" do
+    assert_nil @survey.a3101
+
+    Client.create!(organization: @organization, name: "Local CDD Client", client_type: "NATURAL_PERSON",
+      nationality: "FR", became_client_at: Date.new(@year - 1, 1, 1),
+      third_party_cdd: true, third_party_cdd_type: "LOCAL", third_party_cdd_country: "MC")
+
+    assert_equal "Oui", @survey.a3101
+  end
+
+  test "a3101 falls back to setting when no DB evidence" do
     assert_nil @survey.a3101
 
     Setting.create!(organization: @organization, key: "uses_local_third_party_cdd", category: "entity_info", value: "Oui")
