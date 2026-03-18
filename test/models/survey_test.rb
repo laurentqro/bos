@@ -6908,15 +6908,10 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal "Oui", @survey.ac1610
   end
 
-  # C51 — aC1611: Total unique active clients (integerItemType, conditional on aC1609)
-  test "ac1611 returns nil when ac1609 is not Oui" do
-    assert_nil @survey.ac1611
-  end
-
-  test "ac1611 returns setting value when ac1609 is Oui" do
-    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
-    Setting.create!(organization: @organization, key: "total_unique_active_clients_cdd", category: "kyc_procedures", value: "150")
-    assert_equal "150", @survey.ac1611
+  # C51 — aC1611: Total unique active clients (integerItemType, unconditional)
+  # PDF says "Please repeat the answer provided in Q4" — delegates to a1101
+  test "ac1611 delegates to a1101" do
+    assert_equal @survey.a1101, @survey.ac1611
   end
 
   # C52 — aC1612A: Implemented simplified DD? (enum Oui/Non, conditional on aC1609)

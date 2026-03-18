@@ -332,10 +332,10 @@ class Survey
       end
 
       # C51 — aC1611: Total unique active clients
-      # Type: xbrli:integerItemType — settings-based, conditional on aC1609
+      # Type: xbrli:integerItemType — unconditional, reuses Q4 (a1101)
+      # PDF: "Please repeat the answer provided in Q4"
       def ac1611
-        return nil unless ac1609 == "Oui"
-        setting_value_for("total_unique_active_clients_cdd")
+        a1101
       end
 
       # C52 — aC1612A: Implemented simplified due diligence?
