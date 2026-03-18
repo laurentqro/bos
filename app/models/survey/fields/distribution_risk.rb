@@ -258,11 +258,10 @@ class Survey
         setting_value_for("parent_company_country")
       end
 
-      # Q195 — a3306: Total foreign branches count (outside Monaco)
-      # Type: xbrli:integerItemType — settings-based, conditional on a3304
+      # Q195 — a3306: Foreign branches by country (dimensional, outside Monaco)
+      # Type: xbrli:integerItemType — computed from DB, dimensional by country
       def a3306
-        return nil unless a3304 == "Oui"
-        setting_value_for("total_foreign_branches")
+        organization.branches.foreign.group(:country).count
       end
 
       # Q196 — a3306A: Shareholders with 25%+ by nationality (dimensional)

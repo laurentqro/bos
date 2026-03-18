@@ -6072,16 +6072,18 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal "France", @survey.a3305
   end
 
-  # Q195 — a3306: Total foreign branches count
-  test "a3306 returns nil when a3304 is not Oui" do
-    assert_nil @survey.a3306
+  # Q195 — a3306: Foreign branches by country (dimensional)
+  test "a3306 returns empty hash when no foreign branches" do
+    assert_equal({}, @survey.a3306)
   end
 
-  test "a3306 returns setting value when a3304 is Oui" do
-    Setting.create!(organization: @organization, key: "is_branch_of_another_entity", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "is_branch_of_foreign_entity", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "total_foreign_branches", category: "entity_info", value: "3")
-    assert_equal "3", @survey.a3306
+  test "a3306 returns foreign branches grouped by country" do
+    Branch.create!(organization: @organization, name: "Paris Office", country: "FR")
+    Branch.create!(organization: @organization, name: "Lyon Office", country: "FR")
+    Branch.create!(organization: @organization, name: "Milan Office", country: "IT")
+    Branch.create!(organization: @organization, name: "Monaco Office", country: "MC")
+    @survey = Survey.new(organization: @organization, year: @year)
+    assert_equal({"FR" => 2, "IT" => 1}, @survey.a3306)
   end
 
   # Q196 — a3306A: Shareholders 25%+ by nationality (dimensional)
