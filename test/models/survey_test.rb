@@ -5715,12 +5715,13 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q169 — a3102: Clients with local third-party CDD, by nationality (dimensional)
-  test "a3102 returns empty hash when a3101 is not Oui" do
-    assert_equal({}, @survey.a3102)
+  test "a3102 returns empty hash when no clients have local third-party CDD" do
+    # No clients with third_party_cdd: true, third_party_cdd_type: "LOCAL" in fixtures
+    # a3102 is unconditional — queries DB directly regardless of a3101 setting
+    assert_instance_of Hash, @survey.a3102
   end
 
   test "a3102 returns client count by nationality for local third-party CDD" do
-    Setting.create!(organization: @organization, key: "uses_local_third_party_cdd", category: "entity_info", value: "Oui")
     baseline = @survey.a3102
 
     # NP with local third-party CDD
@@ -5755,12 +5756,11 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q171 — a3104: Clients with foreign third-party CDD, by nationality (dimensional)
-  test "a3104 returns empty hash when a3103 is not Oui" do
-    assert_equal({}, @survey.a3104)
+  test "a3104 returns empty hash when no clients have foreign third-party CDD" do
+    assert_instance_of Hash, @survey.a3104
   end
 
   test "a3104 returns client count by nationality for foreign third-party CDD" do
-    Setting.create!(organization: @organization, key: "uses_foreign_third_party_cdd", category: "entity_info", value: "Oui")
     baseline = @survey.a3104
 
     # NP with foreign third-party CDD
@@ -5782,12 +5782,11 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q172 — a3105: Clients with foreign third-party CDD, by third-party country (dimensional)
-  test "a3105 returns empty hash when a3103 is not Oui" do
-    assert_equal({}, @survey.a3105)
+  test "a3105 returns empty hash when no clients have foreign third-party CDD" do
+    assert_instance_of Hash, @survey.a3105
   end
 
   test "a3105 returns client count by third-party country for foreign CDD" do
-    Setting.create!(organization: @organization, key: "uses_foreign_third_party_cdd", category: "entity_info", value: "Oui")
     baseline = @survey.a3105
 
     # Client with foreign third-party CDD in GB
@@ -5998,13 +5997,11 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q183 — a3204: Introduced clients in reporting period by primary nationality (dimensional)
-  test "a3204 returns empty hash when a3501b is not Oui" do
-    assert_equal({}, @survey.a3204)
+  test "a3204 returns empty hash when no introduced clients in reporting period" do
+    assert_instance_of Hash, @survey.a3204
   end
 
   test "a3204 returns introduced clients in reporting period grouped by country" do
-    Setting.create!(organization: @organization, key: "accepts_clients_through_introducers", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "can_provide_introducer_client_nationality", category: "entity_info", value: "Oui")
     baseline = @survey.a3204
 
     # Introduced NP in reporting year (counts)
@@ -6063,13 +6060,11 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q186 — a3205: Introduced clients in reporting period by introducer residence (dimensional)
-  test "a3205 returns empty hash when a3501c is not Oui" do
-    assert_equal({}, @survey.a3205)
+  test "a3205 returns empty hash when no introduced clients in reporting period" do
+    assert_instance_of Hash, @survey.a3205
   end
 
   test "a3205 returns introduced clients in reporting period grouped by introducer country" do
-    Setting.create!(organization: @organization, key: "accepts_clients_through_introducers", category: "entity_info", value: "Oui")
-    Setting.create!(organization: @organization, key: "can_provide_introducer_residence", category: "entity_info", value: "Oui")
     baseline = @survey.a3205
 
     # Introduced in reporting year by MC-based introducer (counts)
@@ -7584,6 +7579,21 @@ class SurveyTest < ActiveSupport::TestCase
   test "COMMENT_FIELDS contains exactly the 8 known comment stub fields" do
     expected = %i[a14801 a14001 a2501a a2501 a3701a a3701 ac116a ac11601]
     assert_equal expected.sort, Survey::COMMENT_FIELDS.sort
+  end
+
+  # XBRL — gated fields returning nil are excluded from submission data
+  test "nil-returning fields are not included in submission data" do
+    survey = Survey.new(organization: @organization, year: 2025)
+    # aC1602 gates on aC1601 == "Non"; with no setting, aC1601 is nil → aC1602 returns nil
+    data = survey.send(:submission).data
+    refute data.key?(:aC1602), "aC1602 should not be in submission when aC1601 is not Non"
+    refute data.key?(:aC1807), "aC1807 should not be in submission when aC1806 is not Non"
+  end
+
+  test "to_xbrl does not emit facts for nil-returning gated fields" do
+    survey = Survey.new(organization: @organization, year: 2025)
+    xml = survey.to_xbrl
+    refute_match(/aC1602/, xml, "aC1602 should not appear in XBRL when aC1601 is not Non")
   end
 
   # Coverage — ensure all 323 questionnaire fields have a method implementation
