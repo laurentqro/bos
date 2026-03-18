@@ -6177,6 +6177,12 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal "1500000.00", @survey.a381
   end
 
+  test "setting_value_for returns nil for empty string values" do
+    Setting.create!(organization: @organization, key: "revenue_reporting_period", category: "entity_info", value: "")
+    @survey = Survey.new(organization: @organization, year: @year)
+    assert_nil @survey.a381
+  end
+
   # Q205 — a3802: Revenue in Monaco (monetaryItemType)
   test "a3802 returns setting value for revenue in Monaco" do
     assert_nil @survey.a3802

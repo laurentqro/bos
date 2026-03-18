@@ -7,7 +7,8 @@ class Survey
 
       def setting_value_for(key)
         load_settings_cache unless @settings_cache
-        @settings_cache[key]
+        value = @settings_cache[key]
+        value.presence
       end
 
       def load_settings_cache
