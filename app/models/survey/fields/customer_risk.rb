@@ -862,8 +862,8 @@ class Survey
         clients_kept.where(is_vasp: true, vasp_type: "CUSTODIAN").exists? ? "Oui" : "Non"
       end
 
-      # Q59 — a13603BB: Total unique PSAV clients who are custodian wallet providers
-      # for purchases, sales, and rentals of real estate
+      # Q59 — a13603BB: Total number of transactions by custodian wallet provider
+      # PSAV clients for purchases, sales, and rentals of real estate
       # Type: xbrli:integerItemType (scalar — NoCountryDimension)
       # Conditional: only when a13601cw == "Oui"
       def a13603bb
@@ -873,16 +873,16 @@ class Survey
           .joins(:client)
           .where(clients: {is_vasp: true, vasp_type: "CUSTODIAN"})
 
-        ps_client_ids = txns
+        purchase_sale_count = txns
           .where(transaction_type: %w[PURCHASE SALE])
-          .pluck(:client_id)
+          .count
 
-        rental_client_ids = txns
+        rental_count = txns
           .where(transaction_type: "RENTAL")
           .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
-          .pluck(:client_id)
+          .count
 
-        (ps_client_ids + rental_client_ids).uniq.count
+        purchase_sale_count + rental_count
       end
 
       # Q60 — a13604BB: Total value of funds transferred by custodian wallet provider

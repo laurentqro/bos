@@ -3069,8 +3069,8 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal "Non", @survey.a13601cw
   end
 
-  # Q59 — a13603BB: Total unique PSAV clients who are custodian wallet providers
-  # for purchases, sales, and rentals of real estate
+  # Q59 — a13603BB: Total number of transactions by custodian wallet provider
+  # PSAV clients for purchases, sales, and rentals of real estate
   # Type: xbrli:integerItemType (scalar — NoCountryDimension)
   # Conditional: only when a13601cw == "Oui"
 
@@ -3078,7 +3078,7 @@ class SurveyTest < ActiveSupport::TestCase
     assert_nil @survey.a13603bb
   end
 
-  test "a13603bb counts unique custodian wallet provider VASP clients with transactions" do
+  test "a13603bb counts transactions not clients for custodian wallet provider VASPs" do
     custodian_client = Client.create!(
       organization: @organization,
       name: "Test Custodian Provider",
@@ -3089,6 +3089,7 @@ class SurveyTest < ActiveSupport::TestCase
       incorporation_country: "LU"
     )
 
+    # Same client, two purchase transactions = 2
     Transaction.create!(
       organization: @organization,
       client: custodian_client,
@@ -3096,11 +3097,18 @@ class SurveyTest < ActiveSupport::TestCase
       transaction_date: Date.new(@year, 6, 15),
       transaction_value: 500_000
     )
+    Transaction.create!(
+      organization: @organization,
+      client: custodian_client,
+      transaction_type: "SALE",
+      transaction_date: Date.new(@year, 7, 15),
+      transaction_value: 700_000
+    )
 
-    assert_equal 1, @survey.a13603bb
+    assert_equal 2, @survey.a13603bb
   end
 
-  test "a13603bb does not count non-custodian VASP clients" do
+  test "a13603bb does not count non-custodian VASP transactions" do
     # Create a custodian client so a13601cw == "Oui"
     Client.create!(
       organization: @organization,
@@ -3133,9 +3141,8 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 0, @survey.a13603bb
   end
 
-  test "a13603bb excludes clients with only non-qualifying rental transactions" do
-    # Client with qualifying purchase
-    custodian_client_a = Client.create!(
+  test "a13603bb excludes non-qualifying rental transactions" do
+    custodian_client = Client.create!(
       organization: @organization,
       name: "Custodian A",
       client_type: "LEGAL_ENTITY",
@@ -3145,35 +3152,26 @@ class SurveyTest < ActiveSupport::TestCase
       incorporation_country: "LU"
     )
 
+    # One qualifying purchase
     Transaction.create!(
       organization: @organization,
-      client: custodian_client_a,
+      client: custodian_client,
       transaction_type: "PURCHASE",
       transaction_date: Date.new(@year, 3, 15),
       transaction_value: 500_000
     )
 
-    # Client with only non-qualifying rental (monthly < 10,000 EUR)
-    custodian_client_b = Client.create!(
-      organization: @organization,
-      name: "Custodian B",
-      client_type: "LEGAL_ENTITY",
-      legal_entity_type: "SA",
-      is_vasp: true,
-      vasp_type: "CUSTODIAN",
-      incorporation_country: "DE"
-    )
-
+    # One non-qualifying rental (annual < 120,000)
     Transaction.create!(
       organization: @organization,
-      client: custodian_client_b,
+      client: custodian_client,
       transaction_type: "RENTAL",
       transaction_date: Date.new(@year, 6, 1),
       transaction_value: 60_000,
       rental_annual_value: 60_000
     )
 
-    # Only client A should be counted
+    # Only the purchase counts
     assert_equal 1, @survey.a13603bb
   end
 
