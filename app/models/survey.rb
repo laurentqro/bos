@@ -20,6 +20,15 @@ class Survey
   include Survey::Fields::Controls
   include Survey::Fields::Signatories
 
+  # Optional free-text comment fields at the end of each section.
+  # These stubs intentionally return nil — the XBRL instance omits them.
+  COMMENT_FIELDS = %i[
+    a14801 a14001
+    a2501a a2501
+    a3701a a3701
+    ac116a ac11601
+  ].freeze
+
   attr_reader :organization, :year
 
   def initialize(organization:, year:)

@@ -7543,6 +7543,21 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal "Complet", @survey.aincomplete
   end
 
+  # Coverage — COMMENT_FIELDS lists the intentionally-nil comment/feedback stub fields
+  test "COMMENT_FIELDS are all defined methods that return nil" do
+    survey = Survey.new(organization: @organization, year: 2025)
+
+    Survey::COMMENT_FIELDS.each do |field_id|
+      assert survey.respond_to?(field_id, true), "#{field_id} is listed in COMMENT_FIELDS but not defined"
+      assert_nil survey.send(field_id), "#{field_id} should return nil (it's a comment stub)"
+    end
+  end
+
+  test "COMMENT_FIELDS contains exactly the 8 known comment stub fields" do
+    expected = %i[a14801 a14001 a2501a a2501 a3701a a3701 ac116a ac11601]
+    assert_equal expected.sort, Survey::COMMENT_FIELDS.sort
+  end
+
   # Coverage — ensure all 323 questionnaire fields have a method implementation
   test "Survey implements all questionnaire fields" do
     questionnaire = AmsfSurvey.questionnaire(industry: :real_estate, year: 2025)
