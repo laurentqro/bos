@@ -6447,14 +6447,15 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal "Non", @survey.ac1201
   end
 
-  # C8 — aC1202: Policies approved by board/senior management? (conditional on aC114)
-  test "ac1202 returns nil when ac114 is not Oui" do
+  # C8 — aC1202: Policies approved by board/senior management? (conditional on aC1201)
+  test "ac1202 returns nil when ac1201 is not Oui" do
     assert_nil @survey.ac1202
   end
 
-  test "ac1202 returns setting value when ac114 is Oui" do
-    Setting.create!(organization: @organization, key: "has_board_or_senior_management", category: "entity_info", value: "Oui")
+  test "ac1202 returns setting value when ac1201 is Oui" do
+    Setting.create!(organization: @organization, key: "has_written_aml_policies", category: "compliance_policies", value: "Oui")
     Setting.create!(organization: @organization, key: "policies_approved_by_board", category: "compliance_policies", value: "Oui")
+    @survey = Survey.new(organization: @organization, year: @year)
     assert_equal "Oui", @survey.ac1202
   end
 

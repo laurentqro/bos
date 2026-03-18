@@ -46,9 +46,9 @@ class Survey
       end
 
       # C8 — aC1202: Policies approved by board/senior management?
-      # Type: enum (Oui/Non) — settings-based, conditional on aC114
+      # Type: enum (Oui/Non) — settings-based, conditional on aC1201
       def ac1202
-        return nil unless ac114 == "Oui"
+        return nil unless ac1201 == "Oui"
         setting_value_for("policies_approved_by_board")
       end
 
