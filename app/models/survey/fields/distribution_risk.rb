@@ -203,10 +203,30 @@ class Survey
           .count
       end
 
+      LEGAL_FORM_XBRL_LABELS = {
+        "AM" => "01. Associations monégasques",
+        "ASC" => "02. Autres sociétés civiles",
+        "AAJ" => "04. Autres arrangements juridiques",
+        "DPE" => "05. Domaine Privé de l'Etat Monégasque",
+        "EI" => "06. Entreprise individuelle",
+        "FM" => "07. Fondation monégasque",
+        "GIE" => "08. Groupement d'Intérêt économiques",
+        "SNC" => "09. Sociétés en nom collectif",
+        "SCI" => "10. Sociétés civiles immobilières",
+        "SCP" => "11. Sociétés civiles particulières",
+        "SCS" => "12. Sociétés en commandite simple",
+        "SARL" => "13. Sociétés à responsabilité limitée",
+        "SAM" => "14. Sociétés anonymes monégasques",
+        "SCA" => "15. Sociétés en commandite par actions",
+        "TRUST" => "16. Trusts",
+        "INCONNU" => "17. Inconnu (LE)"
+      }.freeze
+
       # Q187 — aIR33LF: Legal form of entity
       # Type: enum (various legal forms) — settings-based
       def air33lf
-        setting_value_for("entity_legal_form")
+        code = setting_value_for("entity_legal_form")
+        LEGAL_FORM_XBRL_LABELS[code]
       end
 
       # Q188 — aIR328: Is professional card holder a legal entity?

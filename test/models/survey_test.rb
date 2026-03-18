@@ -6087,12 +6087,20 @@ class SurveyTest < ActiveSupport::TestCase
   end
 
   # Q187 — aIR33LF: Legal form of entity
-  test "air33lf returns setting value for entity_legal_form" do
+  test "air33lf returns nil when setting is missing" do
     assert_nil @survey.air33lf
+  end
 
-    Setting.create!(organization: @organization, key: "entity_legal_form", category: "entity_info", value: "13. Sociétés à responsabilité limitée")
+  test "air33lf maps short code to XBRL label" do
+    Setting.create!(organization: @organization, key: "entity_legal_form", category: "entity_info", value: "SAM")
     @survey = Survey.new(organization: @organization, year: @year)
-    assert_equal "13. Sociétés à responsabilité limitée", @survey.air33lf
+    assert_equal "14. Sociétés anonymes monégasques", @survey.air33lf
+  end
+
+  test "air33lf returns nil for unknown legal form code" do
+    Setting.create!(organization: @organization, key: "entity_legal_form", category: "entity_info", value: "UNKNOWN")
+    @survey = Survey.new(organization: @organization, year: @year)
+    assert_nil @survey.air33lf
   end
 
   # Q188 — aIR328: Is professional card holder a legal entity?
