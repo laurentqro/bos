@@ -118,11 +118,17 @@ class Survey
       end
 
       # Q179 — a3212CTOLA: Trust clients onboarded without face-to-face during reporting period
-      # Type: xbrli:integerItemType — settings-based, conditional on a3209 AND a1802btola
+      # Type: xbrli:integerItemType — DB-computed, conditional on a3209 AND a1802btola
       def a3212ctola
         return nil unless a3209 == "Oui"
         return nil unless a1802btola == "Oui"
-        setting_value_for("non_face_to_face_trust_onboarded_count")
+
+        year_range = Date.new(year, 1, 1)..Date.new(year, 12, 31)
+
+        clients_kept
+          .where(client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST", non_face_to_face_onboarding: true)
+          .where(became_client_at: year_range)
+          .count
       end
 
       # Q180 — a3201: Entity accepts clients through introducers

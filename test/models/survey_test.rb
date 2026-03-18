@@ -5948,18 +5948,37 @@ class SurveyTest < ActiveSupport::TestCase
     assert_nil @survey.a3212ctola
   end
 
-  test "a3212ctola returns setting value when both conditions met" do
+  test "a3212ctola returns nil when a1802btola is not Oui" do
+    Setting.create!(organization: @organization, key: "non_face_to_face_onboarding", category: "entity_info", value: "Oui")
+    assert_nil @survey.a3212ctola
+  end
+
+  test "a3212ctola counts trust clients onboarded non-face-to-face in reporting period" do
     # Ensure a1802btola gate is open via trust transaction evidence
     trust_gate = Client.create!(organization: @organization, name: "Trust Gate", client_type: "LEGAL_ENTITY", legal_entity_type: "TRUST", became_client_at: Date.new(@year - 1, 1, 1))
     Transaction.create!(organization: @organization, client: trust_gate, transaction_type: "PURCHASE", transaction_date: Date.new(@year, 1, 15), transaction_value: 100_000, property_country: "MC", payment_method: "WIRE")
 
     Setting.create!(organization: @organization, key: "non_face_to_face_onboarding", category: "entity_info", value: "Oui")
+    baseline = @survey.a3212ctola
 
-    assert_nil @survey.a3212ctola
+    # Trust onboarded non-face-to-face in year (counts)
+    Client.create!(organization: @organization, name: "Remote Trust", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST", became_client_at: Date.new(@year, 3, 1), non_face_to_face_onboarding: true)
 
-    Setting.create!(organization: @organization, key: "non_face_to_face_trust_onboarded_count", category: "entity_info", value: "2")
-    @survey = Survey.new(organization: @organization, year: @year)
-    assert_equal "2", @survey.a3212ctola
+    # Trust onboarded face-to-face in year (does NOT count)
+    Client.create!(organization: @organization, name: "In-person Trust", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST", became_client_at: Date.new(@year, 6, 1), non_face_to_face_onboarding: false)
+
+    # Trust onboarded non-face-to-face outside year (does NOT count)
+    Client.create!(organization: @organization, name: "Old Remote Trust", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "TRUST", became_client_at: Date.new(@year - 1, 3, 1), non_face_to_face_onboarding: true)
+
+    # Non-trust LE onboarded non-face-to-face in year (does NOT count — wrong legal_entity_type)
+    Client.create!(organization: @organization, name: "Remote SARL", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SARL", incorporation_country: "FR",
+      became_client_at: Date.new(@year, 4, 1), non_face_to_face_onboarding: true)
+
+    assert_equal baseline + 1, @survey.a3212ctola
   end
 
   # Q180 — a3201: Entity accepts clients through introducers
