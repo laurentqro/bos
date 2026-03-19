@@ -7,15 +7,16 @@ module ApplicationHelper
     markdown.render(text).html_safe
   end
 
-  # Format a dimensional survey answer (Hash of country code => value) as structured rows.
+  # Format a dimensional survey answer (Hash of code => value) as structured rows.
   # Returns array of {flag:, name:, value:} hashes, sorted by value descending.
+  # Handles both country-dimensioned (ISO alpha-2) and non-country-dimensioned fields.
   def format_dimensional_answer(hash)
     return [] if hash.blank?
 
     hash.sort_by { |_, v| -v }.map do |code, value|
       country = ISO3166::Country[code]
       {
-        flag: country_flag_emoji(code),
+        flag: country ? country_flag_emoji(code) : "",
         name: country&.common_name || country&.iso_short_name || code,
         value: value.is_a?(Float) ? "#{value}%" : value.to_s
       }
