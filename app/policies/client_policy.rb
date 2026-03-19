@@ -43,7 +43,7 @@ class ClientPolicy < ApplicationPolicy
       :became_client_at,
       :business_sector,
       :client_type,
-      :due_diligence_level,
+
       :incorporation_country,
       :introduced_by_third_party,
       :introducer_country,
@@ -65,7 +65,7 @@ class ClientPolicy < ApplicationPolicy
       :relationship_ended_at,
       :residence_country,
       :risk_level,
-      :simplified_dd_reason,
+
       :source_of_funds_verified,
       :source_of_wealth_verified,
       :third_party_cdd,

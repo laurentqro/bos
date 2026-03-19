@@ -319,38 +319,6 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
 
   # === Compliance Fields (US2 - AMSF Data Capture) ===
 
-  test "creates client with due diligence level" do
-    sign_in @user
-
-    post clients_path, params: {
-      client: {
-        name: "Compliance Client",
-        client_type: "NATURAL_PERSON",
-        due_diligence_level: "STANDARD"
-      }
-    }
-
-    client = Client.last
-    assert_equal "STANDARD", client.due_diligence_level
-  end
-
-  test "creates client with simplified due diligence and reason" do
-    sign_in @user
-
-    post clients_path, params: {
-      client: {
-        name: "Simplified DD Client",
-        client_type: "NATURAL_PERSON",
-        due_diligence_level: "SIMPLIFIED",
-        simplified_dd_reason: "Low-risk regulated entity"
-      }
-    }
-
-    client = Client.last
-    assert_equal "SIMPLIFIED", client.due_diligence_level
-    assert_equal "Low-risk regulated entity", client.simplified_dd_reason
-  end
-
   test "creates client with professional category" do
     sign_in @user
 
@@ -399,12 +367,11 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "CLIENT_REQUEST", client.relationship_end_reason
   end
 
-  test "updates client with all compliance fields" do
+  test "updates client with compliance fields" do
     sign_in @user
 
     patch client_path(@client), params: {
       client: {
-        due_diligence_level: "REINFORCED",
         professional_category: "ACCOUNTANT",
         source_of_funds_verified: true,
         source_of_wealth_verified: true
@@ -412,7 +379,6 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     }
 
     @client.reload
-    assert_equal "REINFORCED", @client.due_diligence_level
     assert_equal "ACCOUNTANT", @client.professional_category
     assert @client.source_of_funds_verified
     assert @client.source_of_wealth_verified
@@ -427,21 +393,6 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
 
     @client.reload
     assert_equal "OVER_50M", @client.net_worth_range
-  end
-
-  test "requires simplified_dd_reason when due_diligence_level is SIMPLIFIED" do
-    sign_in @user
-
-    post clients_path, params: {
-      client: {
-        name: "Missing Reason Client",
-        client_type: "NATURAL_PERSON",
-        due_diligence_level: "SIMPLIFIED"
-        # Missing simplified_dd_reason
-      }
-    }
-
-    assert_response :unprocessable_entity
   end
 
   # === AMSF Data Capture Fields (Issue #113) ===

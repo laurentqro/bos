@@ -139,9 +139,6 @@ module AmsfConstants
   # Source of submission values
   SUBMISSION_VALUE_SOURCES = %w[calculated from_settings manual].freeze
 
-  # Due Diligence Levels (FR-001)
-  DUE_DILIGENCE_LEVELS = %w[STANDARD SIMPLIFIED REINFORCED].freeze
-
   # Relationship End Reasons
   RELATIONSHIP_END_REASONS = %w[
     CLIENT_REQUEST

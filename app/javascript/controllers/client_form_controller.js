@@ -18,9 +18,7 @@ export default class extends Controller {
     "vaspType",
     "legalEntityTypeOther",
     "vaspOtherServiceType",
-    "dueDiligenceLevel",
-    "simplifiedDdReason",
-    "introducedByThirdParty",
+"introducedByThirdParty",
     "introducerCountry",
     "thirdPartyCdd",
     "thirdPartyCddType",
@@ -37,7 +35,6 @@ export default class extends Controller {
     this.toggleLegalEntityType()
     this.togglePepType()
     this.toggleVaspType()
-    this.toggleSimplifiedReason()
     this.toggleIntroducerCountry()
     this.toggleThirdPartyCdd()
   }
@@ -110,13 +107,6 @@ export default class extends Controller {
       const isOther = isVasp && vaspTypeSelect?.value === "OTHER"
       this.vaspOtherServiceTypeTarget.classList.toggle("hidden", !isOther)
     }
-  }
-
-  toggleSimplifiedReason() {
-    if (!this.hasDueDiligenceLevelTarget || !this.hasSimplifiedDdReasonTarget) return
-
-    const isSimplified = this.dueDiligenceLevelTarget.value === "SIMPLIFIED"
-    this.simplifiedDdReasonTarget.classList.toggle("hidden", !isSimplified)
   }
 
   toggleIntroducerCountry() {

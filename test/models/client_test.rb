@@ -579,64 +579,67 @@ class ClientTest < ActiveSupport::TestCase
     assert_nil Client.new(business_sector: nil).business_sector_label
   end
 
-  # === Due Diligence Fields (AMSF Data Capture) ===
+  # === Due Diligence (derived from DueDiligenceReview) ===
 
-  test "due_diligence_level must be valid when present" do
-    client = Client.new(
-      organization: @organization,
-      name: "John Doe",
-      client_type: "NATURAL_PERSON",
-      due_diligence_level: "INVALID"
-    )
-    assert_not client.valid?
-    assert_includes client.errors[:due_diligence_level], "is not included in the list"
+  test "has many due_diligence_reviews" do
+    client = clients(:natural_person)
+    assert_respond_to client, :due_diligence_reviews
   end
 
-  test "accepts all valid due_diligence_levels" do
-    %w[STANDARD SIMPLIFIED REINFORCED].each do |level|
-      attrs = {
-        organization: @organization,
-        name: "Test Client",
-        client_type: "NATURAL_PERSON",
-        due_diligence_level: level
-      }
-      # SIMPLIFIED requires a reason
-      attrs[:simplified_dd_reason] = "Low-risk domestic client" if level == "SIMPLIFIED"
-
-      client = Client.new(attrs)
-      assert client.valid?, "Expected due_diligence_level '#{level}' to be valid"
-    end
+  test "current_dd_level returns STANDARD when no reviews exist" do
+    client = Client.create!(
+      organization: @organization,
+      name: "New Client",
+      client_type: "NATURAL_PERSON"
+    )
+    assert_equal "STANDARD", client.current_dd_level
   end
 
-  test "due_diligence_level can be blank" do
-    client = Client.new(
+  test "current_dd_level returns ENHANCED when most recent review is ENHANCED" do
+    client = Client.create!(
       organization: @organization,
-      name: "John Doe",
-      client_type: "NATURAL_PERSON",
-      due_diligence_level: nil
+      name: "EDD Client",
+      client_type: "NATURAL_PERSON"
     )
-    assert client.valid?
+    client.due_diligence_reviews.create!(
+      review_type: "ENHANCED",
+      trigger: "ONBOARDING",
+      performed_at: 1.month.ago
+    )
+    assert_equal "ENHANCED", client.current_dd_level
   end
 
-  test "requires simplified_dd_reason when due_diligence_level is SIMPLIFIED" do
-    client = Client.new(
+  test "current_dd_level returns SIMPLIFIED when most recent review is SIMPLIFIED" do
+    client = Client.create!(
       organization: @organization,
-      name: "John Doe",
-      client_type: "NATURAL_PERSON",
-      due_diligence_level: "SIMPLIFIED"
+      name: "SDD Client",
+      client_type: "NATURAL_PERSON"
     )
-    assert_not client.valid?
-    assert_includes client.errors[:simplified_dd_reason], "can't be blank"
+    client.due_diligence_reviews.create!(
+      review_type: "SIMPLIFIED",
+      trigger: "ONBOARDING",
+      performed_at: 1.month.ago
+    )
+    assert_equal "SIMPLIFIED", client.current_dd_level
   end
 
-  test "simplified_dd_reason not required when due_diligence_level is not SIMPLIFIED" do
-    client = Client.new(
+  test "current_dd_level uses most recent review by performed_at" do
+    client = Client.create!(
       organization: @organization,
-      name: "John Doe",
-      client_type: "NATURAL_PERSON",
-      due_diligence_level: "STANDARD"
+      name: "Multi-Review Client",
+      client_type: "NATURAL_PERSON"
     )
-    assert client.valid?
+    client.due_diligence_reviews.create!(
+      review_type: "SIMPLIFIED",
+      trigger: "ONBOARDING",
+      performed_at: 2.months.ago
+    )
+    client.due_diligence_reviews.create!(
+      review_type: "ENHANCED",
+      trigger: "ONGOING_MONITORING",
+      performed_at: 1.week.ago
+    )
+    assert_equal "ENHANCED", client.current_dd_level
   end
 
   test "relationship_end_reason must be valid when present" do

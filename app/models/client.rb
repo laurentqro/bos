@@ -20,6 +20,7 @@ class Client < ApplicationRecord
   has_many :transactions, dependent: :destroy  # cascades on org/account deletion; use discard for soft-delete
   has_many :managed_properties, dependent: :destroy
   has_many :client_nationalities, dependent: :destroy
+  has_many :due_diligence_reviews, dependent: :destroy
   has_many :str_reports, dependent: :nullify
 
   accepts_nested_attributes_for :trustees, allow_destroy: true, reject_if: :all_blank
@@ -65,9 +66,6 @@ class Client < ApplicationRecord
     format: {with: /\A[A-Z]{2}\z/, message: "must be ISO 3166-1 alpha-2 format"},
     if: -> { third_party_cdd? && third_party_cdd_type == "FOREIGN" }
 
-  # AMSF Data Capture validations
-  validates :due_diligence_level, inclusion: {in: DUE_DILIGENCE_LEVELS}, allow_blank: true
-  validates :simplified_dd_reason, presence: true, if: -> { due_diligence_level == "SIMPLIFIED" }
   validates :relationship_end_reason, inclusion: {in: RELATIONSHIP_END_REASONS}, allow_blank: true
   validates :professional_category, inclusion: {in: PROFESSIONAL_CATEGORIES}, allow_blank: true
   validates :business_sector, inclusion: {in: BUSINESS_SECTORS}, allow_blank: true
@@ -147,6 +145,10 @@ class Client < ApplicationRecord
 
   def business_sector_label
     BUSINESS_SECTOR_LABELS[business_sector]
+  end
+
+  def current_dd_level
+    due_diligence_reviews.order(performed_at: :desc, created_at: :desc).first&.review_type || "STANDARD"
   end
 
   def risk_badge_class

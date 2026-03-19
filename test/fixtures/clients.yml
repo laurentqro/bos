@@ -609,8 +609,6 @@ simplified_dd_client_1:
   residence_country: "MC"
   is_pep: false
   risk_level: "LOW"
-  due_diligence_level: "SIMPLIFIED"
-  simplified_dd_reason: "Listed company on regulated market"
   became_client_at: <%= 3.months.ago %>
 
 # Second client with simplified due diligence in organization :one
@@ -623,6 +621,4 @@ simplified_dd_client_2:
   residence_country: "MC"
   is_pep: false
   risk_level: "LOW"
-  due_diligence_level: "SIMPLIFIED"
-  simplified_dd_reason: "Public authority or body"
   became_client_at: <%= 2.months.ago %>

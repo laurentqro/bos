@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_18_185335) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_19_144546) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -189,7 +189,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_185335) do
     t.string "client_type", null: false
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
-    t.string "due_diligence_level"
     t.string "incorporation_country"
     t.boolean "introduced_by_third_party", default: false, null: false
     t.string "introducer_country"
@@ -212,7 +211,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_185335) do
     t.datetime "relationship_ended_at"
     t.string "residence_country"
     t.string "risk_level"
-    t.text "simplified_dd_reason"
     t.boolean "source_of_funds_verified", default: false
     t.boolean "source_of_wealth_verified", default: false
     t.boolean "third_party_cdd", default: false, null: false
@@ -223,7 +221,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_185335) do
     t.string "vasp_type"
     t.index ["client_type"], name: "index_clients_on_client_type"
     t.index ["deleted_at"], name: "index_clients_on_deleted_at"
-    t.index ["due_diligence_level"], name: "index_clients_on_due_diligence_level"
     t.index ["incorporation_country"], name: "index_clients_on_incorporation_country"
     t.index ["introduced_by_third_party"], name: "index_clients_on_introduced_by_third_party"
     t.index ["is_pep"], name: "index_clients_on_is_pep"
@@ -252,6 +249,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_185335) do
     t.string "uid"
     t.datetime "updated_at", precision: nil, null: false
     t.index ["owner_id", "owner_type"], name: "index_connected_accounts_on_owner_id_and_owner_type"
+  end
+
+  create_table "due_diligence_reviews", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.datetime "created_at", null: false
+    t.text "notes"
+    t.date "performed_at", null: false
+    t.string "review_type", null: false
+    t.string "trigger", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_due_diligence_reviews_on_client_id"
   end
 
   create_table "entity_beneficial_owners", force: :cascade do |t|
@@ -654,6 +662,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_185335) do
   add_foreign_key "branches", "organizations"
   add_foreign_key "client_nationalities", "clients"
   add_foreign_key "clients", "organizations"
+  add_foreign_key "due_diligence_reviews", "clients"
   add_foreign_key "entity_beneficial_owners", "organizations"
   add_foreign_key "entity_shareholders", "organizations"
   add_foreign_key "managed_properties", "clients"
