@@ -7198,37 +7198,99 @@ class SurveyTest < ActiveSupport::TestCase
   # Section 1.7 — EDD (C67–C69)
   # ============================================================
 
-  # C67 — aC1701: Total EDD clients at onboarding (integerItemType, conditional on aC1609)
+  # C67 — aC1701: Total unique EDD clients at onboarding (integerItemType, conditional on aC1609)
   test "ac1701 returns nil when ac1609 is not Oui" do
     assert_nil @survey.ac1701
   end
 
-  test "ac1701 returns setting value when ac1609 is Oui" do
+  test "ac1701 returns 0 when no EDD onboarding reviews exist" do
     Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
-    Setting.create!(organization: @organization, key: "edd_clients_at_onboarding_count", category: "controls", value: "8")
-    assert_equal "8", @survey.ac1701
+    assert_equal 0, @survey.ac1701
   end
 
-  # C68 — aC1702: Total EDD clients during ongoing relationship (integerItemType, conditional on aC1609)
+  test "ac1701 counts unique clients with EDD ONBOARDING reviews" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    client1 = clients(:natural_person)
+    client2 = clients(:legal_entity)
+    client1.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "ONBOARDING", performed_at: Date.new(@year, 3, 1))
+    client2.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "ONBOARDING", performed_at: Date.new(@year, 4, 1))
+    assert_equal 2, @survey.ac1701
+  end
+
+  test "ac1701 excludes non-ONBOARDING triggers" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    client = clients(:natural_person)
+    client.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "ONBOARDING", performed_at: Date.new(@year, 3, 1))
+    client.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "ONGOING_MONITORING", performed_at: Date.new(@year, 6, 1))
+    assert_equal 1, @survey.ac1701
+  end
+
+  test "ac1701 counts unique clients not reviews" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    client = clients(:natural_person)
+    client.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "ONBOARDING", performed_at: Date.new(@year, 3, 1))
+    client.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "ONBOARDING", performed_at: Date.new(@year, 6, 1))
+    assert_equal 1, @survey.ac1701
+  end
+
+  test "ac1701 excludes reviews outside reporting year" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    client = clients(:natural_person)
+    client.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "ONBOARDING", performed_at: Date.new(@year - 1, 3, 1))
+    assert_equal 0, @survey.ac1701
+  end
+
+  # C68 — aC1702: Total unique EDD clients during ongoing relationship (integerItemType, conditional on aC1609)
   test "ac1702 returns nil when ac1609 is not Oui" do
     assert_nil @survey.ac1702
   end
 
-  test "ac1702 returns setting value when ac1609 is Oui" do
+  test "ac1702 returns 0 when no EDD ongoing reviews exist" do
     Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
-    Setting.create!(organization: @organization, key: "edd_clients_ongoing_count", category: "controls", value: "12")
-    assert_equal "12", @survey.ac1702
+    assert_equal 0, @survey.ac1702
   end
 
-  # C69 — aC1703: Percentage of EDD clients (pureItemType 0-100, conditional on aC1609)
+  test "ac1702 counts unique clients with EDD non-ONBOARDING reviews" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    client1 = clients(:natural_person)
+    client2 = clients(:legal_entity)
+    client1.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "ONGOING_MONITORING", performed_at: Date.new(@year, 3, 1))
+    client2.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "PEP_DETECTION", performed_at: Date.new(@year, 4, 1))
+    assert_equal 2, @survey.ac1702
+  end
+
+  test "ac1702 excludes ONBOARDING triggers" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    client = clients(:natural_person)
+    client.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "ONBOARDING", performed_at: Date.new(@year, 3, 1))
+    assert_equal 0, @survey.ac1702
+  end
+
+  test "ac1702 client with both ONBOARDING and ONGOING counts in ac1702" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    client = clients(:natural_person)
+    client.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "ONBOARDING", performed_at: Date.new(@year, 3, 1))
+    client.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "SUSPICIOUS_ACTIVITY", performed_at: Date.new(@year, 6, 1))
+    assert_equal 1, @survey.ac1702
+  end
+
+  # C69 — aC1703: Percentage of active clients with EDD (pureItemType 0-100, conditional on aC1609)
   test "ac1703 returns nil when ac1609 is not Oui" do
     assert_nil @survey.ac1703
   end
 
-  test "ac1703 returns setting value when ac1609 is Oui" do
+  test "ac1703 returns 0 when no EDD reviews exist" do
     Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
-    Setting.create!(organization: @organization, key: "edd_clients_percentage", category: "controls", value: "15.5")
-    assert_equal "15.5", @survey.ac1703
+    assert_equal 0, @survey.ac1703
+  end
+
+  test "ac1703 returns rounded percentage of active clients with EDD" do
+    Setting.create!(organization: @organization, key: "risk_based_approach_for_cdd", category: "kyc_procedures", value: "Oui")
+    client = clients(:natural_person)
+    client.due_diligence_reviews.create!(review_type: "ENHANCED", trigger: "ONBOARDING", performed_at: Date.new(@year, 3, 1))
+    total_active = @organization.clients.kept.active.count
+    expected = (1.0 / total_active * 100).round
+    assert_equal expected, @survey.ac1703
   end
 
   # ============================================================

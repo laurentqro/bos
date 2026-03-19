@@ -62,6 +62,14 @@ class Survey
           filter.call(year_rentals).sum { |t| (t.send(column) || 0) * t.transaction_count_in_year(year) }
       end
 
+      def edd_reviews_in_year(year_range)
+        DueDiligenceReview
+          .joins(:client)
+          .where(clients: {organization_id: organization.id})
+          .merge(Client.kept)
+          .where(review_type: "ENHANCED", performed_at: year_range)
+      end
+
       def beneficial_owners_base
         BeneficialOwner
           .joins(:client)

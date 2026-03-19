@@ -459,25 +459,44 @@ class Survey
       # Section 1.7 — EDD (C67–C69)
       # ============================================================
 
-      # C67 — aC1701: Total EDD clients at onboarding
-      # Type: xbrli:integerItemType — settings-based, conditional on aC1609
+      # C67 — aC1701: Total unique EDD clients at onboarding
+      # Type: xbrli:integerItemType — computed from DB, conditional on aC1609
       def ac1701
         return nil unless ac1609 == "Oui"
-        setting_value_for("edd_clients_at_onboarding_count")
+
+        year_range = Date.new(year, 1, 1)..Date.new(year, 12, 31)
+        edd_reviews_in_year(year_range)
+          .where(trigger: "ONBOARDING")
+          .distinct
+          .count(:client_id)
       end
 
-      # C68 — aC1702: Total EDD clients during ongoing relationship
-      # Type: xbrli:integerItemType — settings-based, conditional on aC1609
+      # C68 — aC1702: Total unique EDD clients during ongoing relationship
+      # Type: xbrli:integerItemType — computed from DB, conditional on aC1609
       def ac1702
         return nil unless ac1609 == "Oui"
-        setting_value_for("edd_clients_ongoing_count")
+
+        year_range = Date.new(year, 1, 1)..Date.new(year, 12, 31)
+        edd_reviews_in_year(year_range)
+          .where.not(trigger: "ONBOARDING")
+          .distinct
+          .count(:client_id)
       end
 
-      # C69 — aC1703: Percentage of EDD clients
-      # Type: xbrli:pureItemType (0–100) — settings-based, conditional on aC1609
+      # C69 — aC1703: Percentage of active clients with EDD
+      # Type: xbrli:pureItemType (0–100) — computed from DB, conditional on aC1609
       def ac1703
         return nil unless ac1609 == "Oui"
-        setting_value_for("edd_clients_percentage")
+
+        total_active = clients_kept.active.count
+        return 0 if total_active == 0
+
+        year_range = Date.new(year, 1, 1)..Date.new(year, 12, 31)
+        edd_client_count = edd_reviews_in_year(year_range)
+          .distinct
+          .count(:client_id)
+
+        (edd_client_count.to_f / total_active * 100).round
       end
 
       # ============================================================
