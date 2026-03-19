@@ -3,6 +3,22 @@
 class DueDiligenceReview < ApplicationRecord
   REVIEW_TYPES = %w[ENHANCED SIMPLIFIED].freeze
   TRIGGERS = %w[ONBOARDING ONGOING_MONITORING PEP_DETECTION HIGH_RISK_COUNTRY SUSPICIOUS_ACTIVITY OTHER].freeze
+  EDD_TRIGGERS = TRIGGERS.freeze
+  SDD_TRIGGERS = %w[ONBOARDING].freeze
+
+  REVIEW_TYPE_LABELS = {
+    "ENHANCED" => "Enhanced (EDD)",
+    "SIMPLIFIED" => "Simplified (SDD)"
+  }.freeze
+
+  TRIGGER_LABELS = {
+    "ONBOARDING" => "Onboarding",
+    "ONGOING_MONITORING" => "Ongoing monitoring",
+    "PEP_DETECTION" => "PEP detection",
+    "HIGH_RISK_COUNTRY" => "High-risk country",
+    "SUSPICIOUS_ACTIVITY" => "Suspicious activity",
+    "OTHER" => "Other"
+  }.freeze
 
   belongs_to :client
 

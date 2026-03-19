@@ -30,6 +30,7 @@ authenticate :user do
   # Client management (US2) - Phase 2
   resources :clients do
     resources :beneficial_owners, shallow: true
+    resources :due_diligence_reviews, only: [:create]
   end
 
   # Managed Properties (US3 - AMSF Data Capture)

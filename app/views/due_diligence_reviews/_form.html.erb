@@ -1,0 +1,59 @@
+<%= form_with(model: [client, due_diligence_review], data: { controller: "due-diligence-review-form" }) do |form| %>
+  <% if due_diligence_review.errors.any? %>
+    <div class="rounded-md bg-red-50 dark:bg-red-900/20 p-4 mb-4">
+      <div class="text-sm text-red-700 dark:text-red-300">
+        <ul class="list-disc pl-5 space-y-1">
+          <% due_diligence_review.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="form-group">
+      <%= form.label :review_type, "Review type" %>
+      <%= form.select :review_type,
+          options_for_select(
+            DueDiligenceReview::REVIEW_TYPE_LABELS.map { |k, v| [v, k] },
+            due_diligence_review.review_type
+          ),
+          { include_blank: "Select type..." },
+          {
+            data: {
+              due_diligence_review_form_target: "reviewType",
+              action: "change->due-diligence-review-form#filterTriggers"
+            }
+          } %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :trigger, "Trigger reason" %>
+      <%= form.select :trigger,
+          options_for_select(
+            DueDiligenceReview::TRIGGER_LABELS.map { |k, v| [v, k] },
+            due_diligence_review.trigger
+          ),
+          { include_blank: "Select trigger..." },
+          { data: { due_diligence_review_form_target: "trigger" } } %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :performed_at, "Date performed" %>
+    <%= form.date_field :performed_at, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :notes, "Notes (optional)" %>
+    <%= form.text_area :notes,
+        rows: 2,
+        class: "form-control",
+        placeholder: "Document measures taken or rationale..." %>
+  </div>
+
+  <div class="flex justify-end">
+    <%= form.submit "Record Review", class: "btn btn-primary" %>
+  </div>
+<% end %>

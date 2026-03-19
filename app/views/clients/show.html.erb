@@ -134,6 +134,38 @@
     </div>
   </div>
 
+  <%# Due Diligence Section %>
+  <div class="mt-8 overflow-hidden bg-white dark:bg-gray-900 shadow sm:rounded-lg border border-gray-200 dark:border-gray-700">
+    <div class="px-4 py-5 sm:px-6 flex items-center justify-between">
+      <div>
+        <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Due Diligence</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Current level:
+          <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= @client.dd_level_badge_class %>">
+            <%= Client::DD_LEVEL_LABELS[@client.current_dd_level] %>
+          </span>
+        </p>
+      </div>
+    </div>
+    <div class="border-t border-gray-200 dark:border-gray-700">
+      <% if @due_diligence_reviews.any? %>
+        <ul role="list" class="list-none divide-y divide-gray-200 dark:divide-gray-700">
+          <% @due_diligence_reviews.each do |review| %>
+            <%= render partial: "due_diligence_reviews/due_diligence_review", locals: { due_diligence_review: review } %>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+          No due diligence reviews recorded yet. Standard due diligence applies by default.
+        </div>
+      <% end %>
+    </div>
+    <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:px-6">
+      <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">Add Review</h4>
+      <%= render "due_diligence_reviews/form", client: @client, due_diligence_review: @due_diligence_review %>
+    </div>
+  </div>
+
   <%# Trustees Section (only for Trust clients) %>
   <% if @client.trust? && @client.trustees.any? %>
     <div class="mt-8 overflow-hidden bg-white dark:bg-gray-900 shadow sm:rounded-lg border border-gray-200 dark:border-gray-700">

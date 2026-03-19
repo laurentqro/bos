@@ -22,6 +22,8 @@ class ClientsController < ApplicationController
 
   def show
     authorize @client
+    @due_diligence_reviews = @client.due_diligence_reviews.order(performed_at: :desc, created_at: :desc)
+    @due_diligence_review = @client.due_diligence_reviews.build(performed_at: Date.current)
   end
 
   def new

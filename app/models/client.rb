@@ -147,8 +147,22 @@ class Client < ApplicationRecord
     BUSINESS_SECTOR_LABELS[business_sector]
   end
 
+  DD_LEVEL_LABELS = {
+    "STANDARD" => "Standard",
+    "ENHANCED" => "Enhanced (EDD)",
+    "SIMPLIFIED" => "Simplified (SDD)"
+  }.freeze
+
   def current_dd_level
     due_diligence_reviews.order(performed_at: :desc, created_at: :desc).first&.review_type || "STANDARD"
+  end
+
+  def dd_level_badge_class
+    case current_dd_level
+    when "ENHANCED" then "bg-orange-100 text-orange-800"
+    when "SIMPLIFIED" then "bg-blue-100 text-blue-800"
+    else "bg-gray-100 text-gray-800"
+    end
   end
 
   def risk_badge_class
