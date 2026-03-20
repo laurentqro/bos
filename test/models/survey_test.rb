@@ -135,10 +135,10 @@ class SurveyTest < ActiveSupport::TestCase
   # Q5 — a1105B: Total number of transactions during reporting period
   # for purchase, sale, and rental (>= 10k/month) of real estate
   test "a1105b counts all qualifying transactions in the year" do
-    # Org :one has 7 current-year kept purchase/sale transactions:
-    # purchase, sale, cash_payment, high_value, pep_transaction, crypto_payment, check_payment
-    # The rental fixture doesn't qualify (no rental_annual_value >= 120,000)
-    assert_equal 7, @survey.a1105b
+    # Org :one has 7 current-year kept purchase/sale transactions +
+    # the rental fixture counted by monthly equivalents
+    rental_months = transactions(:rental).transaction_count_in_year(@year)
+    assert_equal 7 + rental_months, @survey.a1105b
   end
 
   test "a1105b returns 0 when organization has no transactions" do
@@ -146,37 +146,34 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 0, survey.a1105b
   end
 
-  test "a1105b includes qualifying rental transactions" do
-    Transaction.create!(
-      organization: @organization,
-      client: clients(:legal_entity),
-      reference: "RENTAL-HIGH-Q5",
-      transaction_date: Date.current - 5.days,
-      transaction_type: "RENTAL",
-      rental_annual_value: 120_000
-    )
-    # 7 purchase/sale + 1 qualifying rental = 8
-    assert_equal 8, @survey.a1105b
-  end
+  test "a1105b counts rental transactions by monthly equivalents" do
+    org = organizations(:company)
+    client = clients(:company_client)
+    survey = Survey.new(organization: org, year: @year)
 
-  test "a1105b excludes rental transactions below 10000 monthly threshold" do
+    # 1 purchase + 1 twelve-month rental
     Transaction.create!(
-      organization: @organization,
-      client: clients(:legal_entity),
-      reference: "RENTAL-LOW-Q5",
-      transaction_date: Date.current - 5.days,
-      transaction_type: "RENTAL",
-      rental_annual_value: 60_000
+      organization: org, client: client, reference: "PS-1",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_type: "PURCHASE", transaction_value: 500_000
     )
-    # Still 7 — low-value rental excluded
-    assert_equal 7, @survey.a1105b
+    Transaction.create!(
+      organization: org, client: client, reference: "RENTAL-12M",
+      transaction_date: Date.new(@year, 1, 1),
+      transaction_type: "RENTAL", rental_annual_value: 120_000,
+      rental_start_date: Date.new(@year, 1, 1),
+      rental_end_date: Date.new(@year, 12, 31)
+    )
+
+    # 1 purchase + 12 monthly rental equivalents = 13
+    assert_equal 13, survey.a1105b
   end
 
   test "a1105b excludes soft-deleted transactions" do
     assert @organization.transactions.discarded.exists?,
       "Precondition: there should be discarded transactions"
-    # discarded_transaction should not be counted
-    assert_equal 7, @survey.a1105b
+    rental_months = transactions(:rental).transaction_count_in_year(@year)
+    assert_equal 7 + rental_months, @survey.a1105b
   end
 
   test "a1105b counts multiple transactions per client separately" do
@@ -184,8 +181,8 @@ class SurveyTest < ActiveSupport::TestCase
     np_count = @organization.transactions.kept.for_year(@year)
       .where(client: clients(:natural_person), transaction_type: %w[PURCHASE SALE]).count
     assert np_count > 1, "Precondition: natural_person should have multiple transactions"
-    # Each transaction counted individually (not deduplicated by client)
-    assert_equal 7, @survey.a1105b
+    rental_months = transactions(:rental).transaction_count_in_year(@year)
+    assert_equal 7 + rental_months, @survey.a1105b
   end
 
   # Q6 — a1106B: Total value of funds transferred for purchase and sale of real estate
@@ -254,8 +251,8 @@ class SurveyTest < ActiveSupport::TestCase
   # for purchase, sale, and rental (>= 10k/month) of real estate
   # Type: xbrli:integerItemType
   test "a1105w counts all qualifying transactions in the year" do
-    # Org :one has 7 current-year kept purchase/sale transactions + 0 qualifying rentals
-    assert_equal 7, @survey.a1105w
+    rental_months = transactions(:rental).transaction_count_in_year(@year)
+    assert_equal 7 + rental_months, @survey.a1105w
   end
 
   test "a1105w returns 0 when organization has no transactions" do
@@ -263,36 +260,33 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 0, survey.a1105w
   end
 
-  test "a1105w includes qualifying rental transactions" do
-    Transaction.create!(
-      organization: @organization,
-      client: clients(:legal_entity),
-      reference: "RENTAL-HIGH-Q8",
-      transaction_date: Date.current - 5.days,
-      transaction_type: "RENTAL",
-      rental_annual_value: 120_000
-    )
-    # 7 purchase/sale + 1 qualifying rental = 8
-    assert_equal 8, @survey.a1105w
-  end
+  test "a1105w counts rental transactions by monthly equivalents" do
+    org = organizations(:company)
+    client = clients(:company_client)
+    survey = Survey.new(organization: org, year: @year)
 
-  test "a1105w excludes rental transactions below 10000 monthly threshold" do
     Transaction.create!(
-      organization: @organization,
-      client: clients(:legal_entity),
-      reference: "RENTAL-LOW-Q8",
-      transaction_date: Date.current - 5.days,
-      transaction_type: "RENTAL",
-      rental_annual_value: 60_000
+      organization: org, client: client, reference: "PS-1",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_type: "PURCHASE", transaction_value: 500_000
     )
-    # Still 7 — low-value rental excluded
-    assert_equal 7, @survey.a1105w
+    Transaction.create!(
+      organization: org, client: client, reference: "RENTAL-12M",
+      transaction_date: Date.new(@year, 1, 1),
+      transaction_type: "RENTAL", rental_annual_value: 120_000,
+      rental_start_date: Date.new(@year, 1, 1),
+      rental_end_date: Date.new(@year, 12, 31)
+    )
+
+    # 1 purchase + 12 monthly rental equivalents = 13
+    assert_equal 13, survey.a1105w
   end
 
   test "a1105w excludes soft-deleted transactions" do
     assert @organization.transactions.discarded.exists?,
       "Precondition: there should be discarded transactions"
-    assert_equal 7, @survey.a1105w
+    rental_months = transactions(:rental).transaction_count_in_year(@year)
+    assert_equal 7 + rental_months, @survey.a1105w
   end
 
   # Q9 — a1106W: Total value of funds transferred with clients during reporting period
@@ -1405,81 +1399,56 @@ class SurveyTest < ActiveSupport::TestCase
   # Q30 — a1403R: Total transactions by natural person clients
   # for rental of real estate (monthly rent >= 10,000 EUR)
 
-  test "a1403r counts transactions by NP clients for qualifying rentals" do
-    np_fr = clients(:natural_person)
-    np_mc = clients(:pep_client)
+  test "a1403r counts rental transactions by monthly equivalents for NP clients" do
+    org = organizations(:company)
+    np = clients(:company_client) # NATURAL_PERSON
+    survey = Survey.new(organization: org, year: @year)
 
     Transaction.create!(
-      organization: @organization,
-      client: np_fr,
-      reference: "RENTAL-A1403R-1",
-      transaction_date: Date.current - 5.days,
-      transaction_type: "RENTAL",
-      rental_annual_value: 180_000
+      organization: org, client: np, reference: "PS-NP-1",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_type: "PURCHASE", transaction_value: 500_000
     )
     Transaction.create!(
-      organization: @organization,
-      client: np_mc,
-      reference: "RENTAL-A1403R-2",
-      transaction_date: Date.current - 3.days,
-      transaction_type: "RENTAL",
-      rental_annual_value: 120_000
+      organization: org, client: np, reference: "RENTAL-NP-12M",
+      transaction_date: Date.new(@year, 1, 1),
+      transaction_type: "RENTAL", rental_annual_value: 120_000,
+      rental_start_date: Date.new(@year, 1, 1),
+      rental_end_date: Date.new(@year, 12, 31)
     )
 
-    assert_equal 2, @survey.a1403r
-  end
-
-  test "a1403r excludes rentals below 10000 monthly threshold" do
-    np = clients(:natural_person)
-    Transaction.create!(
-      organization: @organization,
-      client: np,
-      reference: "RENTAL-A1403R-LOW",
-      transaction_date: Date.current - 5.days,
-      transaction_type: "RENTAL",
-      rental_annual_value: 60_000
-    )
-
-    assert_equal 0, @survey.a1403r
+    # 1 purchase + 12 monthly rental equivalents = 13
+    assert_equal 13, survey.a1403r
   end
 
   test "a1403r excludes legal entity clients" do
-    le = clients(:legal_entity)
+    org = organizations(:company)
+    np = clients(:company_client)   # NATURAL_PERSON
+    le = Client.create!(
+      organization: org, name: "LE Client", client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SARL"
+    )
+    survey = Survey.new(organization: org, year: @year)
+
+    # LE transaction should not be counted
     Transaction.create!(
-      organization: @organization,
-      client: le,
-      reference: "RENTAL-A1403R-LE",
-      transaction_date: Date.current - 5.days,
-      transaction_type: "RENTAL",
-      rental_annual_value: 120_000
+      organization: org, client: le, reference: "RENTAL-LE",
+      transaction_date: Date.new(@year, 3, 1),
+      transaction_type: "RENTAL", rental_annual_value: 120_000,
+      rental_start_date: Date.new(@year, 1, 1),
+      rental_end_date: Date.new(@year, 12, 31)
+    )
+    # NP purchase should be counted
+    Transaction.create!(
+      organization: org, client: np, reference: "PS-NP-2",
+      transaction_date: Date.new(@year, 6, 1),
+      transaction_type: "PURCHASE", transaction_value: 500_000
     )
 
-    assert_equal 0, @survey.a1403r
+    assert_equal 1, survey.a1403r
   end
 
-  test "a1403r counts each transaction individually even for same client" do
-    np = clients(:natural_person)
-    Transaction.create!(
-      organization: @organization,
-      client: np,
-      reference: "RENTAL-A1403R-MULTI-1",
-      transaction_date: Date.current - 5.days,
-      transaction_type: "RENTAL",
-      rental_annual_value: 120_000
-    )
-    Transaction.create!(
-      organization: @organization,
-      client: np,
-      reference: "RENTAL-A1403R-MULTI-2",
-      transaction_date: Date.current - 3.days,
-      transaction_type: "RENTAL",
-      rental_annual_value: 150_000
-    )
-
-    assert_equal 2, @survey.a1403r
-  end
-
-  test "a1403r returns 0 when no qualifying rental transactions exist" do
+  test "a1403r returns 0 when no qualifying transactions exist" do
     survey = Survey.new(organization: organizations(:company), year: @year)
     assert_equal 0, survey.a1403r
   end
@@ -3206,6 +3175,38 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 0, @survey.a13603bb
   end
 
+  test "a13603bb counts rental transactions by monthly equivalents" do
+    custodian_client = Client.create!(
+      organization: @organization,
+      name: "Custodian Monthly",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      is_vasp: true,
+      vasp_type: "CUSTODIAN",
+      incorporation_country: "LU"
+    )
+
+    Transaction.create!(
+      organization: @organization,
+      client: custodian_client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 6, 15),
+      transaction_value: 500_000
+    )
+    Transaction.create!(
+      organization: @organization,
+      client: custodian_client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 1, 1),
+      rental_annual_value: 120_000,
+      rental_start_date: Date.new(@year, 1, 1),
+      rental_end_date: Date.new(@year, 12, 31)
+    )
+
+    # 1 purchase + 12 monthly rental equivalents = 13
+    assert_equal 13, @survey.a13603bb
+  end
+
   test "a13603bb excludes non-qualifying rental transactions" do
     custodian_client = Client.create!(
       organization: @organization,
@@ -3421,7 +3422,40 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal baseline + 2, @survey.a13603ab
   end
 
-  test "a13603ab excludes rental transactions below 10000 EUR monthly rent" do
+  test "a13603ab counts rental transactions by monthly equivalents" do
+    org = organizations(:company)
+    survey = Survey.new(organization: org, year: @year)
+
+    exchange_client = Client.create!(
+      organization: org,
+      name: "Exchange Monthly",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      is_vasp: true,
+      vasp_type: "EXCHANGE",
+      incorporation_country: "CH"
+    )
+
+    Transaction.create!(
+      organization: org, client: exchange_client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 6, 15),
+      transaction_value: 500_000
+    )
+    Transaction.create!(
+      organization: org, client: exchange_client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 1, 1),
+      rental_annual_value: 120_000,
+      rental_start_date: Date.new(@year, 1, 1),
+      rental_end_date: Date.new(@year, 12, 31)
+    )
+
+    # 1 purchase + 12 monthly rental equivalents = 13
+    assert_equal 13, survey.a13603ab
+  end
+
+  test "a13603ab counts all active rentals by monthly equivalents regardless of value" do
     baseline = @survey.a13603ab
 
     exchange_client = Client.create!(
@@ -3434,24 +3468,15 @@ class SurveyTest < ActiveSupport::TestCase
       incorporation_country: "CH"
     )
 
-    # Qualifying rental
+    # Rental spanning 6 months
     Transaction.create!(
       organization: @organization,
       client: exchange_client,
       transaction_type: "RENTAL",
-      transaction_date: Date.new(@year, 6, 1),
-      transaction_value: 120_000,
-      rental_annual_value: 120_000
-    )
-
-    # Non-qualifying rental
-    Transaction.create!(
-      organization: @organization,
-      client: exchange_client,
-      transaction_type: "RENTAL",
-      transaction_date: Date.new(@year, 7, 1),
-      transaction_value: 60_000,
-      rental_annual_value: 60_000
+      transaction_date: Date.new(@year, 1, 1),
+      rental_annual_value: 60_000,
+      rental_start_date: Date.new(@year, 1, 1),
+      rental_end_date: Date.new(@year, 6, 30)
     )
 
     # Purchase
@@ -3463,7 +3488,8 @@ class SurveyTest < ActiveSupport::TestCase
       transaction_value: 500_000
     )
 
-    assert_equal baseline + 2, @survey.a13603ab
+    # 6 monthly rental equivalents + 1 purchase = 7 new
+    assert_equal baseline + 7, @survey.a13603ab
   end
 
   # Q64 — a13604AB: Total value of funds transferred by virtual currency exchange provider
@@ -3627,7 +3653,40 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 2, @survey.a13603cacb
   end
 
-  test "a13603cacb excludes rental transactions below 10000 EUR monthly rent" do
+  test "a13603cacb counts rental transactions by monthly equivalents" do
+    org = organizations(:company)
+    survey = Survey.new(organization: org, year: @year)
+
+    ico_client = Client.create!(
+      organization: org,
+      name: "ICO Monthly",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      is_vasp: true,
+      vasp_type: "ICO",
+      incorporation_country: "CH"
+    )
+
+    Transaction.create!(
+      organization: org, client: ico_client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 6, 15),
+      transaction_value: 500_000
+    )
+    Transaction.create!(
+      organization: org, client: ico_client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 1, 1),
+      rental_annual_value: 120_000,
+      rental_start_date: Date.new(@year, 1, 1),
+      rental_end_date: Date.new(@year, 12, 31)
+    )
+
+    # 1 purchase + 12 monthly rental equivalents = 13
+    assert_equal 13, survey.a13603cacb
+  end
+
+  test "a13603cacb counts all active rentals by monthly equivalents regardless of value" do
     ico_client = Client.create!(
       organization: @organization,
       name: "ICO Service Provider",
@@ -3638,27 +3697,18 @@ class SurveyTest < ActiveSupport::TestCase
       incorporation_country: "FR"
     )
 
-    # Qualifying rental: annual value >= 120,000 (monthly >= 10,000)
+    # Rental spanning 6 months
     Transaction.create!(
       organization: @organization,
       client: ico_client,
       transaction_type: "RENTAL",
-      transaction_date: Date.new(@year, 6, 1),
-      transaction_value: 120_000,
-      rental_annual_value: 120_000
+      transaction_date: Date.new(@year, 1, 1),
+      rental_annual_value: 60_000,
+      rental_start_date: Date.new(@year, 1, 1),
+      rental_end_date: Date.new(@year, 6, 30)
     )
 
-    # Non-qualifying rental: annual value < 120,000 (monthly < 10,000)
-    Transaction.create!(
-      organization: @organization,
-      client: ico_client,
-      transaction_type: "RENTAL",
-      transaction_date: Date.new(@year, 7, 1),
-      transaction_value: 60_000,
-      rental_annual_value: 60_000
-    )
-
-    # Purchase (always counts)
+    # Purchase
     Transaction.create!(
       organization: @organization,
       client: ico_client,
@@ -3667,7 +3717,8 @@ class SurveyTest < ActiveSupport::TestCase
       transaction_value: 500_000
     )
 
-    assert_equal 2, @survey.a13603cacb
+    # 6 monthly rental equivalents + 1 purchase = 7
+    assert_equal 7, @survey.a13603cacb
   end
 
   # Q68 — a13604CB: Total value of funds transferred by ICO service provider
@@ -3829,7 +3880,41 @@ class SurveyTest < ActiveSupport::TestCase
     assert_equal 2, @survey.a13603db
   end
 
-  test "a13603db excludes rental transactions below 10000 EUR monthly rent" do
+  test "a13603db counts rental transactions by monthly equivalents" do
+    org = organizations(:company)
+    survey = Survey.new(organization: org, year: @year)
+
+    other_client = Client.create!(
+      organization: org,
+      name: "Other VASP Monthly",
+      client_type: "LEGAL_ENTITY",
+      legal_entity_type: "SA",
+      is_vasp: true,
+      vasp_type: "OTHER",
+      vasp_other_service_type: "DeFi Lending",
+      incorporation_country: "JP"
+    )
+
+    Transaction.create!(
+      organization: org, client: other_client,
+      transaction_type: "PURCHASE",
+      transaction_date: Date.new(@year, 6, 15),
+      transaction_value: 500_000
+    )
+    Transaction.create!(
+      organization: org, client: other_client,
+      transaction_type: "RENTAL",
+      transaction_date: Date.new(@year, 1, 1),
+      rental_annual_value: 120_000,
+      rental_start_date: Date.new(@year, 1, 1),
+      rental_end_date: Date.new(@year, 12, 31)
+    )
+
+    # 1 purchase + 12 monthly rental equivalents = 13
+    assert_equal 13, survey.a13603db
+  end
+
+  test "a13603db counts all active rentals by monthly equivalents regardless of value" do
     other_client = Client.create!(
       organization: @organization,
       name: "Other VASP Services",
@@ -3841,24 +3926,15 @@ class SurveyTest < ActiveSupport::TestCase
       incorporation_country: "JP"
     )
 
-    # Qualifying rental
+    # Rental spanning 6 months
     Transaction.create!(
       organization: @organization,
       client: other_client,
       transaction_type: "RENTAL",
-      transaction_date: Date.new(@year, 6, 1),
-      transaction_value: 120_000,
-      rental_annual_value: 120_000
-    )
-
-    # Non-qualifying rental
-    Transaction.create!(
-      organization: @organization,
-      client: other_client,
-      transaction_type: "RENTAL",
-      transaction_date: Date.new(@year, 7, 1),
-      transaction_value: 60_000,
-      rental_annual_value: 60_000
+      transaction_date: Date.new(@year, 1, 1),
+      rental_annual_value: 60_000,
+      rental_start_date: Date.new(@year, 1, 1),
+      rental_end_date: Date.new(@year, 6, 30)
     )
 
     # Purchase
@@ -3870,7 +3946,8 @@ class SurveyTest < ActiveSupport::TestCase
       transaction_value: 500_000
     )
 
-    assert_equal 2, @survey.a13603db
+    # 6 monthly rental equivalents + 1 purchase = 7
+    assert_equal 7, @survey.a13603db
   end
 
   # Q72 — a13604DB: Total value of funds transferred by other-services PSAV clients

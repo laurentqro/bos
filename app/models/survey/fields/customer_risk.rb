@@ -49,18 +49,7 @@ class Survey
       # for purchase, sale, and rental (monthly rent >= 10,000 EUR) of real estate
       # Type: xbrli:integerItemType
       def a1105b
-        txns = year_transactions
-
-        purchase_sale_count = txns
-          .where(transaction_type: %w[PURCHASE SALE])
-          .count
-
-        rental_count = txns
-          .where(transaction_type: "RENTAL")
-          .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
-          .count
-
-        purchase_sale_count + rental_count
+        operations_count { |scope| scope }
       end
 
       # Q6 — a1106B: Total value of funds transferred for purchase and sale of real estate
@@ -101,18 +90,7 @@ class Survey
       # for purchase, sale, and rental (monthly rent >= 10,000 EUR) of real estate
       # Type: xbrli:integerItemType
       def a1105w
-        txns = year_transactions
-
-        purchase_sale_count = txns
-          .where(transaction_type: %w[PURCHASE SALE])
-          .count
-
-        rental_count = txns
-          .where(transaction_type: "RENTAL")
-          .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
-          .count
-
-        purchase_sale_count + rental_count
+        operations_count { |scope| scope }
       end
 
       # Q10 — a1204S: Can your entity distinguish the nationality of the beneficial owner of clients?
@@ -369,12 +347,9 @@ class Survey
       # for rental of real estate (monthly rent >= 10,000 EUR)
       # Type: xbrli:integerItemType (scalar — NoCountryDimension)
       def a1403r
-        year_transactions
-          .where(transaction_type: "RENTAL")
-          .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
-          .joins(:client)
-          .where(clients: {client_type: "NATURAL_PERSON"})
-          .count
+        operations_count do |scope|
+          scope.joins(:client).where(clients: {client_type: "NATURAL_PERSON"})
+        end
       end
 
       # Q27 — a1403B: Total transactions by natural person clients for purchase/sale
@@ -895,20 +870,9 @@ class Survey
       def a13603bb
         return nil unless a13601cw == "Oui"
 
-        txns = year_transactions
-          .joins(:client)
-          .where(clients: {is_vasp: true, vasp_type: "CUSTODIAN"})
-
-        purchase_sale_count = txns
-          .where(transaction_type: %w[PURCHASE SALE])
-          .count
-
-        rental_count = txns
-          .where(transaction_type: "RENTAL")
-          .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
-          .count
-
-        purchase_sale_count + rental_count
+        operations_count do |scope|
+          scope.joins(:client).where(clients: {is_vasp: true, vasp_type: "CUSTODIAN"})
+        end
       end
 
       # Q60 — a13604BB: Total value of funds transferred by custodian wallet provider
@@ -967,20 +931,9 @@ class Survey
       def a13603cacb
         return nil unless a13601ico == "Oui"
 
-        txns = year_transactions
-          .joins(:client)
-          .where(clients: {is_vasp: true, vasp_type: "ICO"})
-
-        purchase_sale_count = txns
-          .where(transaction_type: %w[PURCHASE SALE])
-          .count
-
-        rental_count = txns
-          .where(transaction_type: "RENTAL")
-          .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
-          .count
-
-        purchase_sale_count + rental_count
+        operations_count do |scope|
+          scope.joins(:client).where(clients: {is_vasp: true, vasp_type: "ICO"})
+        end
       end
 
       # Q68 — a13604CB: Total value of funds transferred by ICO service provider
@@ -1026,20 +979,9 @@ class Survey
       def a13603db
         return nil unless a13601other == "Oui"
 
-        txns = year_transactions
-          .joins(:client)
-          .where(clients: {is_vasp: true, vasp_type: "OTHER"})
-
-        purchase_sale_count = txns
-          .where(transaction_type: %w[PURCHASE SALE])
-          .count
-
-        rental_count = txns
-          .where(transaction_type: "RENTAL")
-          .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
-          .count
-
-        purchase_sale_count + rental_count
+        operations_count do |scope|
+          scope.joins(:client).where(clients: {is_vasp: true, vasp_type: "OTHER"})
+        end
       end
 
       # Q72 — a13604DB: Total value of funds transferred by other-services PSAV clients
@@ -1229,20 +1171,9 @@ class Survey
       def a13603ab
         return nil unless a13601ep == "Oui"
 
-        txns = year_transactions
-          .joins(:client)
-          .where(clients: {is_vasp: true, vasp_type: "EXCHANGE"})
-
-        purchase_sale_count = txns
-          .where(transaction_type: %w[PURCHASE SALE])
-          .count
-
-        rental_count = txns
-          .where(transaction_type: "RENTAL")
-          .where(Transaction.arel_table[:rental_annual_value].gteq(120_000))
-          .count
-
-        purchase_sale_count + rental_count
+        operations_count do |scope|
+          scope.joins(:client).where(clients: {is_vasp: true, vasp_type: "EXCHANGE"})
+        end
       end
 
       # Q11 — a1204S1: Percentage breakdown of beneficial owners' primary nationalities
